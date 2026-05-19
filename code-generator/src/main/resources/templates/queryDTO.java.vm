@@ -1,0 +1,32 @@
+package ${cfg.apiPackage}.dto;
+
+import lombok.Data;
+
+import java.io.Serializable;
+#foreach($pkg in ${cfg.fieldImports})
+import ${pkg};
+#end
+
+/**
+ * ${table.comment!} 分页查询参数
+ *
+ * @author ${author}
+ * @version V1.0
+ * @since ${date}
+ */
+@Data
+public class ${entity}QueryDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    /** 页码 */
+    private int pageNum = 1;
+
+    /** 每页条数 */
+    private int pageSize = 10;
+#foreach($field in ${cfg.queryFields})
+
+    /** ${field.comment} */
+    private ${field.propertyType} ${field.propertyName};
+#end
+}

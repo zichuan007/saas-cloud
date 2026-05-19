@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.saas.cloud.common.data.config.MybatisPlusConfig,\
+  com.saas.cloud.common.data.handler.AuditFieldHandler

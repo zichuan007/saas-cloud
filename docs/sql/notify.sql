@@ -1,0 +1,70 @@
+USE notify;
+
+CREATE TABLE `notify_message` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '消息ID',
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `receiver_id` bigint(20) NOT NULL COMMENT '接收人ID',
+  `sender_id` bigint(20) DEFAULT NULL COMMENT '发送人ID',
+  `sender_name` varchar(64) DEFAULT NULL COMMENT '发送人姓名',
+  `title` varchar(256) NOT NULL COMMENT '消息标题',
+  `content` text COMMENT '消息内容',
+  `type` tinyint(4) NOT NULL COMMENT '类型 0-系统通知 1-审批通知 2-催办 3-公告',
+  `biz_type` varchar(64) DEFAULT NULL COMMENT '业务类型',
+  `biz_id` varchar(128) DEFAULT NULL COMMENT '业务ID',
+  `jump_url` varchar(512) DEFAULT NULL COMMENT '跳转链接',
+  `is_read` tinyint(4) NOT NULL DEFAULT 0 COMMENT '是否已读 0-未读 1-已读',
+  `read_time` datetime DEFAULT NULL COMMENT '阅读时间',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
+  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`),
+  KEY `idx_tenant_receiver` (`tenant_id`, `receiver_id`, `is_read`),
+  KEY `idx_tenant_time` (`tenant_id`, `create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='站内消息表';
+
+CREATE TABLE `notify_template` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '模板ID',
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `template_code` varchar(64) NOT NULL COMMENT '模板编码',
+  `template_name` varchar(128) NOT NULL COMMENT '模板名称',
+  `type` tinyint(4) NOT NULL COMMENT '渠道 0-站内信 1-邮件 2-IM Webhook',
+  `title_template` varchar(256) DEFAULT NULL COMMENT '标题模板',
+  `content_template` text COMMENT '内容模板',
+  `status` tinyint(4) NOT NULL DEFAULT 1 COMMENT '状态 0-禁用 1-启用',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
+  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_code_type` (`template_code`, `type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='通知模板表';
+
+CREATE TABLE `notify_channel_config` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `channel_type` tinyint(4) NOT NULL COMMENT '渠道 0-站内信 1-邮件 2-飞书 3-钉钉 4-企业微信',
+  `enabled` tinyint(4) NOT NULL DEFAULT 0 COMMENT '是否启用 0-否 1-是',
+  `config_json` text COMMENT '渠道配置(JSON)',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
+  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_tenant_channel` (`tenant_id`, `channel_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='租户通知渠道配置表';

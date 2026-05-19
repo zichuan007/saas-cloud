@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.saas.cloud.rbac.mapper.MenuMapper">
+
+    <!-- 根据用户ID查询有权限的菜单（仅目录和菜单，不含按钮） -->
+    <select id="selectMenusByUserId" resultType="com.saas.cloud.rbac.entity.Menu">
+        SELECT DISTINCT m.*
+        FROM sys_menu m
+        INNER JOIN sys_role_menu rm ON rm.menu_id = m.id
+        INNER JOIN sys_user_role ur ON ur.role_id = rm.role_id
+        WHERE ur.user_id = #{userId}
+          AND m.menu_type IN (0, 1)
+          AND m.status = 1
+          AND m.delete_flag = 0
+        ORDER BY m.sort_order ASC
+    </select>
+
+</mapper>

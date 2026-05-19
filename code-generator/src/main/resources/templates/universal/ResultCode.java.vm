@@ -1,0 +1,26 @@
+package ${packageName}.common.result;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+/**
+ * 响应状态码枚举
+ *
+ * @author ${author}
+ * @version V1.0
+ * @since ${date}
+ */
+@Getter
+@AllArgsConstructor
+public enum ResultCode {
+
+    SUCCESS(200, "success"),
+    BAD_REQUEST(400, "参数错误"),
+    UNAUTHORIZED(401, "未认证"),
+    FORBIDDEN(403, "无权限"),
+    NOT_FOUND(404, "资源不存在"),
+    INTERNAL_ERROR(500, "服务器错误");
+
+    private final int code;
+    private final String message;
+}

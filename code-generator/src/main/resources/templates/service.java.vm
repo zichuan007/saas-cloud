@@ -1,0 +1,74 @@
+package ${cfg.servicePackage}.service;
+
+import ${cfg.servicePackage}.entity.${entity};
+import ${cfg.apiPackage}.dto.${entity}CreateDTO;
+import ${cfg.apiPackage}.dto.${entity}UpdateDTO;
+import ${cfg.apiPackage}.dto.${entity}QueryDTO;
+import ${cfg.apiPackage}.vo.${entity}VO;
+import com.baomidou.mybatisplus.extension.service.IService;
+import ${cfg.commonPackage}.result.PageResult;
+
+import java.util.List;
+
+/**
+ * ${table.comment!} 服务接口
+ *
+ * @author ${author}
+ * @version V1.0
+ * @since ${date}
+ */
+public interface I${entity}Service extends IService<${entity}> {
+
+    /**
+     * 分页查询
+     *
+     * @param queryDTO 查询条件
+     * @return 分页结果
+     */
+    PageResult<${entity}VO> queryPage(${entity}QueryDTO queryDTO);
+
+    /**
+     * 列表查询(不分页)
+     *
+     * @param queryDTO 查询条件
+     * @return 列表结果
+     */
+    List<${entity}VO> queryList(${entity}QueryDTO queryDTO);
+
+    /**
+     * 根据 ID 查询详情
+     *
+     * @param id 主键
+     * @return 详情
+     */
+    ${entity}VO queryById(Long id);
+
+    /**
+     * 新增
+     *
+     * @param createDTO 新增参数
+     * @return 主键 ID
+     */
+    Long create(${entity}CreateDTO createDTO);
+
+    /**
+     * 修改
+     *
+     * @param updateDTO 修改参数
+     */
+    void update(${entity}UpdateDTO updateDTO);
+
+    /**
+     * 根据 ID 删除
+     *
+     * @param id 主键
+     */
+    void deleteById(Long id);
+
+    /**
+     * 批量删除
+     *
+     * @param ids 主键列表
+     */
+    void deleteByIds(List<Long> ids);
+}

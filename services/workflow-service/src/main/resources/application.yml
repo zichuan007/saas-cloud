@@ -1,0 +1,51 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: workflow-service
+  config:
+    import:
+      - optional:nacos:workflow-service.yml
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/workflow?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:123456}
+  kafka:
+    bootstrap-servers: ${KAFKA_ADDR:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_ADDR:localhost:8848}
+        namespace: ${NACOS_NAMESPACE:e96d2e6b-7bf3-4a42-973a-e020a213cde2}
+      config:
+        server-addr: ${NACOS_ADDR:localhost:8848}
+        namespace: ${NACOS_NAMESPACE:e96d2e6b-7bf3-4a42-973a-e020a213cde2}
+        file-extension: yml
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+  global-config:
+    db-config:
+      logic-delete-field: deleteFlag
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+flowable:
+  database-schema-update: true
+  # 禁用异步执行器，避免不必要的定时任务线程
+  async-executor-activate: false
+  process:
+    # 禁止自动部署 classpath 下的流程定义文件（由业务接口手动部署）
+    deploy-resources: false

@@ -1,0 +1,123 @@
+package ${cfg.servicePackage}.service.impl;
+
+import ${cfg.servicePackage}.entity.${entity};
+import ${cfg.servicePackage}.mapper.${entity}Mapper;
+import ${cfg.servicePackage}.service.I${entity}Service;
+import ${cfg.apiPackage}.dto.${entity}CreateDTO;
+import ${cfg.apiPackage}.dto.${entity}UpdateDTO;
+import ${cfg.apiPackage}.dto.${entity}QueryDTO;
+import ${cfg.apiPackage}.vo.${entity}VO;
+import ${cfg.servicePackage}.converter.${entity}Converter;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import ${cfg.commonPackage}.exception.BusinessException;
+import ${cfg.commonPackage}.result.PageResult;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+#set($hasStringQueryField = false)
+#foreach($field in ${cfg.queryFields})
+#if($field.propertyType == "String")
+#set($hasStringQueryField = true)
+#end
+#end
+#if($hasStringQueryField)
+import org.springframework.util.StringUtils;
+#end
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * ${table.comment!} 服务实现
+ *
+ * @author ${author}
+ * @version V1.0
+ * @since ${date}
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+public class ${entity}ServiceImpl extends ServiceImpl<${entity}Mapper, ${entity}> implements I${entity}Service {
+
+    private final ${entity}Converter ${cfg.entityLowerFirst}Converter;
+
+    @Override
+    public PageResult<${entity}VO> queryPage(${entity}QueryDTO queryDTO) {
+        Page<${entity}> page = new Page<>(queryDTO.getPageNum(), queryDTO.getPageSize());
+        LambdaQueryWrapper<${entity}> wrapper = buildQueryWrapper(queryDTO);
+        Page<${entity}> result = baseMapper.selectPage(page, wrapper);
+        List<${entity}VO> voList = result.getRecords().stream()
+                .map(${cfg.entityLowerFirst}Converter::toVO)
+                .collect(Collectors.toList());
+        return PageResult.of(voList, result.getTotal(), queryDTO.getPageNum(), queryDTO.getPageSize());
+    }
+
+    @Override
+    public List<${entity}VO> queryList(${entity}QueryDTO queryDTO) {
+        LambdaQueryWrapper<${entity}> wrapper = buildQueryWrapper(queryDTO);
+        List<${entity}> list = baseMapper.selectList(wrapper);
+        return list.stream()
+                .map(${cfg.entityLowerFirst}Converter::toVO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ${entity}VO queryById(Long id) {
+        ${entity} entity = baseMapper.selectById(id);
+        if (entity == null) {
+            throw new BusinessException("数据不存在");
+        }
+        return ${cfg.entityLowerFirst}Converter.toVO(entity);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long create(${entity}CreateDTO createDTO) {
+        ${entity} entity = ${cfg.entityLowerFirst}Converter.toEntity(createDTO);
+        baseMapper.insert(entity);
+        return entity.getId();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void update(${entity}UpdateDTO updateDTO) {
+        ${entity} entity = baseMapper.selectById(updateDTO.getId());
+        if (entity == null) {
+            throw new BusinessException("数据不存在");
+        }
+        ${cfg.entityLowerFirst}Converter.updateEntity(updateDTO, entity);
+        baseMapper.updateById(entity);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteById(Long id) {
+        baseMapper.deleteById(id);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteByIds(List<Long> ids) {
+        baseMapper.deleteBatchIds(ids);
+    }
+
+    /**
+     * 构建查询条件
+     */
+    private LambdaQueryWrapper<${entity}> buildQueryWrapper(${entity}QueryDTO queryDTO) {
+        LambdaQueryWrapper<${entity}> wrapper = new LambdaQueryWrapper<>();
+#foreach($field in ${cfg.queryFields})
+#if($field.propertyType == "String")
+        wrapper.like(StringUtils.hasText(queryDTO.get${field.capitalizedName}()), ${entity}::get${field.capitalizedName}, queryDTO.get${field.capitalizedName}());
+#else
+        wrapper.eq(queryDTO.get${field.capitalizedName}() != null, ${entity}::get${field.capitalizedName}, queryDTO.get${field.capitalizedName}());
+#end
+#end
+        wrapper.orderByDesc(${entity}::getCreateTime);
+        return wrapper;
+    }
+}

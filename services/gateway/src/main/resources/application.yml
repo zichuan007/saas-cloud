@@ -1,0 +1,87 @@
+server:
+  port: 8080
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: gateway
+  config:
+    import:
+      - optional:nacos:gateway.yml
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:123456}
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${NACOS_ADDR:localhost:8848}
+        namespace: ${NACOS_NAMESPACE:e96d2e6b-7bf3-4a42-973a-e020a213cde2}
+      config:
+        server-addr: ${NACOS_ADDR:localhost:8848}
+        namespace: ${NACOS_NAMESPACE:e96d2e6b-7bf3-4a42-973a-e020a213cde2}
+        file-extension: yml
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedHeaders: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowCredentials: true
+            maxAge: 3600
+      discovery:
+        locator:
+          enabled: false
+      routes:
+        - id: platform-service
+          uri: lb://platform-service
+          predicates:
+            - Path=/api/platform/**
+          filters:
+            - StripPrefix=2
+
+        - id: rbac-service
+          uri: lb://rbac-service
+          predicates:
+            - Path=/api/rbac/**
+          filters:
+            - StripPrefix=2
+
+        - id: workflow-service
+          uri: lb://workflow-service
+          predicates:
+            - Path=/api/workflow/**
+          filters:
+            - StripPrefix=2
+
+        - id: wechat-oa-service
+          uri: lb://wechat-oa-service
+          predicates:
+            - Path=/api/wechat-oa/**
+          filters:
+            - StripPrefix=2
+
+        - id: notify-service
+          uri: lb://notify-service
+          predicates:
+            - Path=/api/notify/**
+          filters:
+            - StripPrefix=2
+
+        - id: code-generator
+          uri: lb://code-generator
+          predicates:
+            - Path=/api/generator/**
+          filters:
+            - StripPrefix=2
+
+saas:
+  jwt:
+    secret: saas-cloud-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256

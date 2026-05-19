@@ -1,0 +1,112 @@
+package ${cfg.servicePackage}.controller;
+
+import ${cfg.servicePackage}.service.I${entity}Service;
+import ${cfg.apiPackage}.dto.${entity}CreateDTO;
+import ${cfg.apiPackage}.dto.${entity}UpdateDTO;
+import ${cfg.apiPackage}.dto.${entity}QueryDTO;
+import ${cfg.apiPackage}.vo.${entity}VO;
+import ${cfg.commonPackage}.result.ApiResult;
+import ${cfg.commonPackage}.result.PageResult;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
+
+/**
+ * ${table.comment!} 接口
+ *
+ * @author ${author}
+ * @version V1.0
+ * @since ${date}
+ */
+@Slf4j
+@RestController
+@RequestMapping("/${cfg.entityLowerFirst}")
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
+public class ${entity}Controller {
+
+    private final I${entity}Service ${cfg.serviceLowerFirst};
+
+    /**
+     * 分页查询
+     *
+     * @param queryDTO 查询条件
+     * @return 分页结果
+     */
+    @GetMapping("/page")
+    public ApiResult<PageResult<${entity}VO>> page(${entity}QueryDTO queryDTO) {
+        return ApiResult.ok(${cfg.serviceLowerFirst}.queryPage(queryDTO));
+    }
+
+    /**
+     * 列表查询(不分页)
+     *
+     * @param queryDTO 查询条件
+     * @return 列表结果
+     */
+    @GetMapping("/list")
+    public ApiResult<List<${entity}VO>> list(${entity}QueryDTO queryDTO) {
+        return ApiResult.ok(${cfg.serviceLowerFirst}.queryList(queryDTO));
+    }
+
+    /**
+     * 根据 ID 查询详情
+     *
+     * @param id 主键
+     * @return 详情
+     */
+    @GetMapping("/{id}")
+    public ApiResult<${entity}VO> getById(@PathVariable Long id) {
+        return ApiResult.ok(${cfg.serviceLowerFirst}.queryById(id));
+    }
+
+    /**
+     * 新增
+     *
+     * @param createDTO 新增参数
+     * @return 主键 ID
+     */
+    @PostMapping
+    public ApiResult<Long> create(@Valid @RequestBody ${entity}CreateDTO createDTO) {
+        return ApiResult.ok(${cfg.serviceLowerFirst}.create(createDTO));
+    }
+
+    /**
+     * 修改
+     *
+     * @param updateDTO 修改参数
+     * @return 操作结果
+     */
+    @PutMapping
+    public ApiResult<Void> update(@Valid @RequestBody ${entity}UpdateDTO updateDTO) {
+        ${cfg.serviceLowerFirst}.update(updateDTO);
+        return ApiResult.ok();
+    }
+
+    /**
+     * 删除
+     *
+     * @param id 主键
+     * @return 操作结果
+     */
+    @DeleteMapping("/{id}")
+    public ApiResult<Void> delete(@PathVariable Long id) {
+        ${cfg.serviceLowerFirst}.deleteById(id);
+        return ApiResult.ok();
+    }
+
+    /**
+     * 批量删除
+     *
+     * @param ids 主键列表
+     * @return 操作结果
+     */
+    @DeleteMapping("/batch")
+    public ApiResult<Void> batchDelete(@RequestBody List<Long> ids) {
+        ${cfg.serviceLowerFirst}.deleteByIds(ids);
+        return ApiResult.ok();
+    }
+}

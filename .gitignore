@@ -1,0 +1,36 @@
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# Build
+target/
+*.class
+*.jar
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+*.env.local
+bootstrap.yml
+bootstrap.yaml
+
+# Docker
+docker-compose.override.yml
+
+# Node / Frontend
+node_modules/
+dist/
+.turbo/
+*.tsbuildinfo
+
+# Claude
+.claude/

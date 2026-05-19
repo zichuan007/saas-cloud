@@ -1,0 +1,20 @@
+package com.saas.cloud.rbac.service.impl;
+
+import com.saas.cloud.rbac.entity.PasswordHistory;
+import com.saas.cloud.rbac.mapper.PasswordHistoryMapper;
+import com.saas.cloud.rbac.service.IPasswordHistoryService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.stereotype.Service;
+
+/**
+ * <p>
+ * å¯†ç åŽ†å²è¡¨ 服务实现类
+ * </p>
+ *
+ * @author saas-cloud
+ * @since 2026-05-18
+ */
+@Service
+public class PasswordHistoryServiceImpl extends ServiceImpl<PasswordHistoryMapper, PasswordHistory> implements IPasswordHistoryService {
+
+}

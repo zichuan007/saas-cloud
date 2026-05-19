@@ -1,0 +1,41 @@
+package ${cfg.servicePackage}.converter;
+
+import ${cfg.servicePackage}.entity.${entity};
+import ${cfg.apiPackage}.dto.${entity}CreateDTO;
+import ${cfg.apiPackage}.dto.${entity}UpdateDTO;
+import ${cfg.apiPackage}.vo.${entity}VO;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
+
+import java.util.List;
+
+/**
+ * ${table.comment!} 对象转换器
+ *
+ * @author ${author}
+ * @version V1.0
+ * @since ${date}
+ */
+@Mapper(componentModel = "spring")
+public interface ${entity}Converter {
+
+    /**
+     * CreateDTO -> Entity
+     */
+    ${entity} toEntity(${entity}CreateDTO createDTO);
+
+    /**
+     * Entity -> VO
+     */
+    ${entity}VO toVO(${entity} entity);
+
+    /**
+     * Entity 列表 -> VO 列表
+     */
+    List<${entity}VO> toVOList(List<${entity}> list);
+
+    /**
+     * UpdateDTO 更新到已有 Entity
+     */
+    void updateEntity(${entity}UpdateDTO updateDTO, @MappingTarget ${entity} entity);
+}

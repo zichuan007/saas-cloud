@@ -1,0 +1,38 @@
+package ${cfg.packageName}.entity;
+
+import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
+
+import java.io.Serializable;
+#foreach($pkg in ${cfg.allFieldImports})
+import ${pkg};
+#end
+
+/**
+ * ${table.comment!}
+ *
+ * @author ${author}
+ * @version V1.0
+ * @since ${date}
+ */
+@Data
+@TableName("${cfg.tableName}")
+public class ${entity} implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+#foreach($field in ${cfg.allFields})
+
+    /** ${field.comment} */
+#if($field.primaryKey)
+    @TableId(type = IdType.AUTO)
+#end
+#if($field.columnName == "delete_flag")
+    @TableLogic
+#end
+#if($field.columnName == "data_version")
+    @Version
+#end
+    @TableField("${field.columnName}")
+    private ${field.propertyType} ${field.propertyName};
+#end
+}
