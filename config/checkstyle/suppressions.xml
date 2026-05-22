@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<!--
+    Checkstyle 抑制规则
+    适配 Spring Boot + Lombok + MyBatis-Plus 项目
+-->
+<suppressions>
+    <!-- 实体/DTO/VO/DO 类: 放宽命名和文档要求 -->
+    <suppress files=".*[/\\](entity|domain|dto|vo|model)[/\\].*\.java$" checks="MemberName"/>
+    <suppress files=".*[/\\](entity|domain|dto|vo|model)[/\\].*\.java$" checks="JavadocMethod"/>
+    <suppress files=".*[/\\](entity|domain|dto|vo|model)[/\\].*\.java$" checks="JavadocType"/>
+
+    <!-- 测试代码: 放宽大部分规则 -->
+    <suppress files=".*[/\\]test[/\\].*\.java$" checks=".*"/>
+
+    <!-- 自动生成的代码 -->
+    <suppress files=".*[/\\]generated[/\\].*\.java$" checks=".*"/>
+    <suppress files=".*[/\\]generated-sources[/\\].*\.java$" checks=".*"/>
+
+    <!-- MapStruct 生成的 Impl 类 -->
+    <suppress files=".*ConvertImpl\.java$" checks=".*"/>
+    <suppress files=".*MapperImpl\.java$" checks=".*"/>
+
+    <!-- Configuration 类: 允许方法名灵活（@Bean 方法命名） -->
+    <suppress files=".*Configuration\.java$" checks="MethodName"/>
+    <suppress files=".*Config\.java$" checks="MethodName"/>
+
+    <!-- 常量类: 放宽成员命名 -->
+    <suppress files=".*Constants?\.java$" checks="MemberName"/>
+
+    <!-- 枚举类: 放宽变量距离检查 -->
+    <suppress files=".*Enum\.java$" checks="VariableDeclarationUsageDistance"/>
+
+    <!-- API 模块（通常只有接口和 DTO） -->
+    <suppress files=".*-api[/\\].*\.java$" checks="JavadocMethod"/>
+
+    <!-- code-generator 模块: 不检查 -->
+    <suppress files=".*[/\\]code-generator[/\\].*\.java$" checks=".*"/>
+
+    <!-- 单字母变量名: 允许在 Lambda 和循环中使用 -->
+    <suppress checks="LocalVariableName" message=".*'[ijkemnxyz]'.*"/>
+    <suppress checks="LambdaParameterName" message=".*'[emnxyz]'.*"/>
+    <suppress checks="ParameterName" message=".*'[ijkemnxyz]'.*"/>
+</suppressions>
