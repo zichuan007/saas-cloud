@@ -6,9 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.saas.cloud.rbac.entity.OperationLog;
 
 /**
- * <p>
- * æ“ä½œæ—¥å¿—è¡¨ Mapper 接口
- * </p>
+ * 操作日志表 Mapper 接口
  *
  * @author saas-cloud
  * @since 2026-05-18

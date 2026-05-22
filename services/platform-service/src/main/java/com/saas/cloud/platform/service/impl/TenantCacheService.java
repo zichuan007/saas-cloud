@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 租户缓存服务
- * <p>
  * 使用 Redis Hash 结构缓存租户信息，避免每次登录/配额校验都查库。
  * Key 结构：
  * - tenant:cache（Hash，field=tenantId，value=TenantVO JSON）

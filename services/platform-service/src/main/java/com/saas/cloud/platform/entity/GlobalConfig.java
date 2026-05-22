@@ -8,9 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
- * å…¨å±€é…ç½®è¡¨
- * </p>
+ * 全局配置表
  *
  * @author saas-cloud
  * @since 2026-05-18
@@ -23,25 +21,25 @@ public class GlobalConfig extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * é…ç½®é”®
+     * 配置键
      */
     @TableField("config_key")
     private String configKey;
 
     /**
-     * é…ç½®å€¼
+     * 配置值
      */
     @TableField("config_value")
     private String configValue;
 
     /**
-     * å€¼ç±»åž‹
+     * 值类型
      */
     @TableField("config_type")
     private String configType;
 
     /**
-     * é…ç½®è¯´æ˜Ž
+     * 配置说明
      */
     @TableField("description")
     private String description;

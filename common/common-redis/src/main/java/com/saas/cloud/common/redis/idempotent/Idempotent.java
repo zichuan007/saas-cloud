@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 幂等性注解，基于 Redisson 防止重复提交
- * <p>
  * key 支持 SpEL 表达式，例如：{@code @Idempotent(key = "'order:' + #orderId")}
  *
  * @author saas-cloud

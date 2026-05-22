@@ -32,7 +32,6 @@ import net.sf.jsqlparser.statement.select.Select;
  * 数据范围 SQL 拦截器：根据 UserContext 中的数据范围配置，
  * 自动为 SELECT 语句追加 dept_id / create_user_id 条件，
  * 实现不同角色看到不同范围的数据
- * <p>
  * 依赖 DataScopeAspect 通过 ThreadLocal 传递 @DataScope 注解参数，
  * 只有 ThreadLocal 中存在参数时才会注入 SQL 条件
  *

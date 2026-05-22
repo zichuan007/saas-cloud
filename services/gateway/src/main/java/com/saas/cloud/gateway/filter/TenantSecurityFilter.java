@@ -30,7 +30,6 @@ import reactor.core.publisher.Mono;
 
 /**
  * Gateway 租户安全过滤器
- * <p>
  * 防止跨租户访问：校验请求中的租户身份与 JWT 解析出的租户身份是否一致。
  * 在 AuthGlobalFilter 之后执行（order = -90），此时 X-Tenant-Id 头已由 AuthGlobalFilter 设置。
  *

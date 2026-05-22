@@ -8,9 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
- * å¯†ç åŽ†å²è¡¨
- * </p>
+ * 密码历史表
  *
  * @author saas-cloud
  * @since 2026-05-18
@@ -23,13 +21,13 @@ public class PasswordHistory extends TenantBaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * ç”¨æˆ·ID
+     * 用户ID
      */
     @TableField("user_id")
     private Long userId;
 
     /**
-     * åŽ†å²å¯†ç (BCrypt)
+     * 历史密码(BCrypt)
      */
     @TableField("password")
     private String password;

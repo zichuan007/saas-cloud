@@ -8,9 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
- * ç²‰ä¸æ ‡ç­¾è¡¨
- * </p>
+ * 粉丝标签表
  *
  * @author saas-cloud
  * @since 2026-05-18
@@ -23,25 +21,25 @@ public class WechatOaUserTag extends TenantBaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * å…¬ä¼—å·ID
+     * 公众号ID
      */
     @TableField("account_id")
     private Long accountId;
 
     /**
-     * å¾®ä¿¡ç«¯æ ‡ç­¾ID
+     * 微信端标签ID
      */
     @TableField("wx_tag_id")
     private Integer wxTagId;
 
     /**
-     * æ ‡ç­¾åç§°
+     * 标签名称
      */
     @TableField("tag_name")
     private String tagName;
 
     /**
-     * ç²‰ä¸æ•°
+     * 粉丝数
      */
     @TableField("fan_count")
     private Integer fanCount;

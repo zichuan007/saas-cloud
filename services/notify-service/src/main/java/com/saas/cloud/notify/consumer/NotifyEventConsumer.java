@@ -16,9 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 通知事件 Kafka 消费者
- * <p>
  * 监听通知事件 Topic，反序列化后调用消息服务创建站内消息。
- * </p>
  *
  * @author saas-cloud
  * @version V1.0

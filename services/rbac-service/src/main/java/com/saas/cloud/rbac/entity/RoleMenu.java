@@ -8,9 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
- * è§’è‰²èœå•å…³è”è¡¨
- * </p>
+ * 角色菜单关联表
  *
  * @author saas-cloud
  * @since 2026-05-18
@@ -23,13 +21,13 @@ public class RoleMenu extends TenantBaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * è§’è‰²ID
+     * 角色ID
      */
     @TableField("role_id")
     private Long roleId;
 
     /**
-     * èœå•ID
+     * 菜单ID
      */
     @TableField("menu_id")
     private Long menuId;

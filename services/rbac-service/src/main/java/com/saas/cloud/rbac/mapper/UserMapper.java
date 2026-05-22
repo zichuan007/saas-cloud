@@ -6,9 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.saas.cloud.rbac.entity.User;
 
 /**
- * <p>
- * ç”¨æˆ·è¡¨ Mapper 接口
- * </p>
+ * 用户表 Mapper 接口
  *
  * @author saas-cloud
  * @since 2026-05-18

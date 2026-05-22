@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 /**
  * 代码生成器 Web 服务启动类
- * <p>
  * 通过 Nacos 注册到网关，数据库连接由用户通过接口参数传入，按需建立 JDBC 连接。
  *
  * @author saas-cloud

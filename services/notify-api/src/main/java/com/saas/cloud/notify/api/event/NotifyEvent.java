@@ -7,9 +7,7 @@ import lombok.Data;
 
 /**
  * 通知事件（跨服务共享的事件协议）
- * <p>
  * 发送方序列化为 JSON 后通过 Kafka 发送，notify-service 消费并生成站内消息。
- * </p>
  *
  * @author saas-cloud
  * @version V1.0

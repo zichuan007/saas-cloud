@@ -10,7 +10,6 @@ import com.saas.cloud.generator.engine.TableMeta;
 
 /**
  * 代码生成器命令行入口
- * <p>
  * 用法:
  * java -cp code-generator.jar com.saas.cloud.generator.cli.CliRunner \
  *   --jdbc-url=jdbc:mysql://localhost:3306/mydb?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai \

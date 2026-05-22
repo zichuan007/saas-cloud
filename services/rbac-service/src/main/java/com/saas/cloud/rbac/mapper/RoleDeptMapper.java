@@ -6,9 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.saas.cloud.rbac.entity.RoleDept;
 
 /**
- * <p>
- * è§’è‰²éƒ¨é—¨å…³è”è¡¨ Mapper 接口
- * </p>
+ * 角色部门关联表 Mapper 接口
  *
  * @author saas-cloud
  * @since 2026-05-18

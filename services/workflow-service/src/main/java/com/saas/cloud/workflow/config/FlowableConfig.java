@@ -9,10 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Flowable 流程引擎配置
- * <p>
  * Flowable ProcessEngine 由 spring-boot-starter 自动配置，
  * 这里通过 EngineConfigurationConfigurer 对引擎进行额外定制。
- * </p>
  *
  * @author saas-cloud
  * @version V1.0

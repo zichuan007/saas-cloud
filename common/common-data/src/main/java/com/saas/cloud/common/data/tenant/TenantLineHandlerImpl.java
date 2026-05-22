@@ -12,7 +12,6 @@ import net.sf.jsqlparser.expression.LongValue;
 
 /**
  * MyBatis-Plus 多租户处理器
- * <p>
  * 替代自定义 TenantSqlInterceptor，使用 MP 官方 TenantLineInnerInterceptor，
  * 完整支持 SELECT/INSERT/UPDATE/DELETE 以及 JOIN/子查询/UNION 场景。
  *

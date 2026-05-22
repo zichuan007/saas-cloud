@@ -8,9 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
  * 菜单表（平台级）
- * </p>
  *
  * @author saas-cloud
  * @since 2026-05-18

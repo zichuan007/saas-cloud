@@ -8,9 +8,7 @@ import com.saas.cloud.rbac.mapper.UserRoleMapper;
 import com.saas.cloud.rbac.service.IUserRoleService;
 
 /**
- * <p>
- * ç”¨æˆ·è§’è‰²å…³è”è¡¨ 服务实现类
- * </p>
+ * 用户角色关联表 服务实现类
  *
  * @author saas-cloud
  * @since 2026-05-18

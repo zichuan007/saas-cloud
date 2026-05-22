@@ -6,9 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.saas.cloud.rbac.entity.PasswordHistory;
 
 /**
- * <p>
- * å¯†ç åŽ†å²è¡¨ Mapper 接口
- * </p>
+ * 密码历史表 Mapper 接口
  *
  * @author saas-cloud
  * @since 2026-05-18

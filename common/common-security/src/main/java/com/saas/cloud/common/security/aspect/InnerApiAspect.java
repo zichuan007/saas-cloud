@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 内部接口访问控制切面
- * <p>
  * 拦截标注了 {@link com.saas.cloud.common.security.annotation.InnerApi} 的类或方法，
  * 校验请求头中是否携带内部调用标识 {@code X-Internal-Source: true}，
  * 未携带则拒绝访问返回 403。

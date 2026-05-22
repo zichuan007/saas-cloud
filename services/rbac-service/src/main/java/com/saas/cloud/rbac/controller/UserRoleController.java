@@ -4,9 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * <p>
- * ç”¨æˆ·è§’è‰²å…³è”è¡¨ 前端控制器
- * </p>
+ * 用户角色关联表 前端控制器
  *
  * @author saas-cloud
  * @since 2026-05-18

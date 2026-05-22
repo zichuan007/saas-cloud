@@ -8,9 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
- * ç´ æè¡¨
- * </p>
+ * 素材表
  *
  * @author saas-cloud
  * @since 2026-05-18
@@ -23,49 +21,49 @@ public class WechatOaMaterial extends TenantBaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * å…¬ä¼—å·ID
+     * 公众号ID
      */
     @TableField("account_id")
     private Long accountId;
 
     /**
-     * å¾®ä¿¡ç´ æMediaID
+     * 微信素材MediaID
      */
     @TableField("media_id")
     private String mediaId;
 
     /**
-     * ç±»åž‹ 0-å›¾ç‰‡ 1-è¯­éŸ³ 2-è§†é¢‘ 3-ç¼©ç•¥å›¾
+     * 类型 0-图片 1-语音 2-视频 3-缩略图
      */
     @TableField("material_type")
     private Byte materialType;
 
     /**
-     * ç´ ææ ‡é¢˜
+     * 素材标题
      */
     @TableField("title")
     private String title;
 
     /**
-     * åŽŸå§‹æ–‡ä»¶å
+     * 原始文件名
      */
     @TableField("file_name")
     private String fileName;
 
     /**
-     * æœ¬åœ°å­˜å‚¨URL(MinIO)
+     * 本地存储URL(MinIO)
      */
     @TableField("file_url")
     private String fileUrl;
 
     /**
-     * æ–‡ä»¶å¤§å°(å­—èŠ‚)
+     * 文件大小(字节)
      */
     @TableField("file_size")
     private Long fileSize;
 
     /**
-     * å¾®ä¿¡ç«¯URL
+     * 微信端URL
      */
     @TableField("wechat_url")
     private String wechatUrl;

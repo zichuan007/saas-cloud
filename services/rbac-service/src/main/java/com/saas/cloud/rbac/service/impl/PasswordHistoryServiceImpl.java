@@ -8,9 +8,7 @@ import com.saas.cloud.rbac.mapper.PasswordHistoryMapper;
 import com.saas.cloud.rbac.service.IPasswordHistoryService;
 
 /**
- * <p>
- * å¯†ç åŽ†å²è¡¨ 服务实现类
- * </p>
+ * 密码历史表 服务实现类
  *
  * @author saas-cloud
  * @since 2026-05-18

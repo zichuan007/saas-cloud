@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 操作日志 Spring 事件监听器
- * <p>
  * 当 Kafka 不可用时，OperationLogAspect 通过 Spring 事件同步发布日志，
  * 本监听器接收事件并直接写入 sys_operation_log 表。
  *

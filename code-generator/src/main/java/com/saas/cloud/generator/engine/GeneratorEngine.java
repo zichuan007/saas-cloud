@@ -40,7 +40,6 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 
 /**
  * 通用代码生成引擎
- * <p>
  * 读取数据库元数据，通过 Velocity 模板生成完整 CRUD 代码，
  * 支持输出到目录、打包 zip、内存预览三种模式。
  *

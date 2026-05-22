@@ -10,7 +10,6 @@ import cn.dev33.satoken.interceptor.SaInterceptor;
 
 /**
  * Sa-Token 自动配置（Servlet 服务端）
- * <p>
  * 注册 Sa-Token 路由拦截器，所有路由默认不做登录校验（由 Gateway 统一鉴权），
  * 业务服务仅用于权限/角色校验
  *

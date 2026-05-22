@@ -10,9 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
- * æµç¨‹æŠ„é€è¡¨
- * </p>
+ * 流程抄送表
  *
  * @author saas-cloud
  * @since 2026-05-18
@@ -25,61 +23,61 @@ public class WfCopy extends TenantBaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * æµç¨‹å®žä¾‹ID
+     * 流程实例ID
      */
     @TableField("process_instance_id")
     private String processInstanceId;
 
     /**
-     * æµç¨‹åç§°
+     * 流程名称
      */
     @TableField("process_name")
     private String processName;
 
     /**
-     * æµç¨‹æ ‡é¢˜
+     * 流程标题
      */
     @TableField("title")
     private String title;
 
     /**
-     * å‘èµ·äººID
+     * 发起人ID
      */
     @TableField("initiator_id")
     private Long initiatorId;
 
     /**
-     * å‘èµ·äººå§“å
+     * 发起人姓名
      */
     @TableField("initiator_name")
     private String initiatorName;
 
     /**
-     * æŽ¥æ”¶äººID
+     * 接收人ID
      */
     @TableField("receiver_id")
     private Long receiverId;
 
     /**
-     * æŽ¥æ”¶äººå§“å
+     * 接收人姓名
      */
     @TableField("receiver_name")
     private String receiverName;
 
     /**
-     * å‘ç”Ÿåœ¨å“ªä¸ªèŠ‚ç‚¹
+     * 发生在哪个节点
      */
     @TableField("task_name")
     private String taskName;
 
     /**
-     * æ˜¯å¦å·²è¯» 0-æœªè¯» 1-å·²è¯»
+     * 是否已读 0-未读 1-已读
      */
     @TableField("is_read")
     private Byte isRead;
 
     /**
-     * é˜…è¯»æ—¶é—´
+     * 阅读时间
      */
     @TableField("read_time")
     private LocalDateTime readTime;

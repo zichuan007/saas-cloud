@@ -10,7 +10,6 @@ import com.saas.cloud.common.security.context.TenantContext;
 
 /**
  * {@link TenantIgnore} 注解的 AOP 切面
- * <p>
  * 在方法执行前设置忽略租户过滤，执行后恢复原始状态。
  *
  * @author saas-cloud

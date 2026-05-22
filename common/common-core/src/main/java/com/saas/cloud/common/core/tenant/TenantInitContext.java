@@ -8,7 +8,6 @@ import lombok.Data;
 
 /**
  * 租户初始化上下文
- * <p>
  * 携带租户注册信息，并提供 data map 供各初始化器之间传递数据。
  *
  * @author saas-cloud

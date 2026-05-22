@@ -20,11 +20,9 @@ import reactor.core.publisher.Mono;
 
 /**
  * Gateway 全局过滤器 —— 用户信息透传
- * <p>
  * 认证已由 SaReactorFilter 完成，本过滤器仅负责：
  * 1. 剥离外部伪造的内部调用标识头
  * 2. 从 Sa-Token Session 读取用户信息，透传到下游服务请求头
- * </p>
  *
  * @author saas-cloud
  * @version V2.0

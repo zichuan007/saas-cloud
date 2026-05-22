@@ -8,9 +8,7 @@ import com.saas.cloud.rbac.mapper.RoleMenuMapper;
 import com.saas.cloud.rbac.service.IRoleMenuService;
 
 /**
- * <p>
- * è§’è‰²èœå•å…³è”è¡¨ 服务实现类
- * </p>
+ * 角色菜单关联表 服务实现类
  *
  * @author saas-cloud
  * @since 2026-05-18

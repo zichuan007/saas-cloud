@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 租户初始化器注册表
- * <p>
  * 收集所有 {@link TenantInitializer} Bean，按 order 排序后依次执行。
  * 任意一步失败时，倒序调用已成功初始化器的 rollback 方法。
  *

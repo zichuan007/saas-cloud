@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 分布式锁注解，基于 Redisson 实现
- * <p>
  * key 支持 SpEL 表达式，例如：{@code @DistributedLock(key = "'user:' + #userId")}
  *
  * @author saas-cloud

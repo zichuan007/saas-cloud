@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.saas.cloud.rbac.entity.PasswordHistory;
 
 /**
- * <p>
- * å¯†ç åŽ†å²è¡¨ 服务类
- * </p>
+ * 密码历史表 服务类
  *
  * @author saas-cloud
  * @since 2026-05-18

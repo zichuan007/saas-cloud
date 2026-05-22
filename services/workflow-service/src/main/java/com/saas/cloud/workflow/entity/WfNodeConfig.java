@@ -8,9 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
  * 流程节点审批人配置表
- * </p>
  *
  * @author saas-cloud
  * @since 2026-05-18

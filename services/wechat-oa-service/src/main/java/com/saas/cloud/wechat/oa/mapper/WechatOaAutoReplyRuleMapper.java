@@ -6,9 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.saas.cloud.wechat.oa.entity.WechatOaAutoReplyRule;
 
 /**
- * <p>
- * è‡ªåŠ¨å›žå¤è§„åˆ™è¡¨ Mapper 接口
- * </p>
+ * 自动回复规则表 Mapper 接口
  *
  * @author saas-cloud
  * @since 2026-05-18

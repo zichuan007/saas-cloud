@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 操作日志 AOP 切面
- * <p>
  * 采集请求详细信息，通过 Kafka 异步发送操作日志事件。
  * 当 Kafka 不可用时降级为仅打印日志。
  *

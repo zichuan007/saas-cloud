@@ -34,7 +34,6 @@ import com.saas.cloud.common.data.base.TenantBaseEntity;
 
 /**
  * MyBatis Plus 多库批量代码生成器
- * <p>
  * 自动扫描数据库所有表，一键生成完整 CRUD：
  * Entity/Mapper/XML/Service/Controller → -service 模块
  * CreateDTO/UpdateDTO/QueryDTO/VO → -api 模块

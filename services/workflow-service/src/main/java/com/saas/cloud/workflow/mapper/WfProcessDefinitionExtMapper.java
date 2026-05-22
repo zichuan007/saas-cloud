@@ -6,9 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.saas.cloud.workflow.entity.WfProcessDefinitionExt;
 
 /**
- * <p>
- * æµç¨‹å®šä¹‰æ‰©å±•è¡¨ Mapper 接口
- * </p>
+ * 流程定义扩展表 Mapper 接口
  *
  * @author saas-cloud
  * @since 2026-05-18

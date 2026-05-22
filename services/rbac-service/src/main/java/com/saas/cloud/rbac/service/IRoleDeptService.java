@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.saas.cloud.rbac.entity.RoleDept;
 
 /**
- * <p>
- * è§’è‰²éƒ¨é—¨å…³è”è¡¨ 服务类
- * </p>
+ * 角色部门关联表 服务类
  *
  * @author saas-cloud
  * @since 2026-05-18

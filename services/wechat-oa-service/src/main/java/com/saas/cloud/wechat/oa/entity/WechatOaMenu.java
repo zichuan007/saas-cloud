@@ -8,9 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
- * å…¬ä¼—å·èœå•è¡¨
- * </p>
+ * 公众号菜单表
  *
  * @author saas-cloud
  * @since 2026-05-18
@@ -23,49 +21,49 @@ public class WechatOaMenu extends TenantBaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * å…¬ä¼—å·ID
+     * 公众号ID
      */
     @TableField("account_id")
     private Long accountId;
 
     /**
-     * èœå•åç§°
+     * 菜单名称
      */
     @TableField("menu_name")
     private String menuName;
 
     /**
-     * çˆ¶èœå•ID 0-ä¸€çº§
+     * 父菜单ID 0-一级
      */
     @TableField("parent_id")
     private Long parentId;
 
     /**
-     * èœå•ç±»åž‹ click/view/miniprogramç­‰
+     * 菜单类型 click/view/miniprogram等
      */
     @TableField("menu_type")
     private String menuType;
 
     /**
-     * èœå•KEY(clickç±»åž‹)
+     * 菜单KEY(click类型)
      */
     @TableField("menu_key")
     private String menuKey;
 
     /**
-     * èœå•URL(viewç±»åž‹)
+     * 菜单URL(view类型)
      */
     @TableField("menu_url")
     private String menuUrl;
 
     /**
-     * ç´ æID
+     * 素材ID
      */
     @TableField("media_id")
     private String mediaId;
 
     /**
-     * æŽ’åº
+     * 排序
      */
     @TableField("sort_order")
     private Integer sortOrder;

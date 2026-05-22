@@ -10,9 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
  * 任务扩展表
- * </p>
  *
  * @author saas-cloud
  * @since 2026-05-18

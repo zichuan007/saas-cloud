@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 
 /**
  * 忽略租户过滤注解
- * <p>
  * 标注在 Service/Controller 方法上，该方法内的所有 SQL 将不自动追加 tenant_id 条件。
  * 适用于平台管理端查询、跨租户统计等场景。
  *

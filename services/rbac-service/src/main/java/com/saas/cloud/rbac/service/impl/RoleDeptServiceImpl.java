@@ -8,9 +8,7 @@ import com.saas.cloud.rbac.mapper.RoleDeptMapper;
 import com.saas.cloud.rbac.service.IRoleDeptService;
 
 /**
- * <p>
- * è§’è‰²éƒ¨é—¨å…³è”è¡¨ 服务实现类
- * </p>
+ * 角色部门关联表 服务实现类
  *
  * @author saas-cloud
  * @since 2026-05-18

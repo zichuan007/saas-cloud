@@ -6,9 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.saas.cloud.wechat.oa.entity.WechatOaArticle;
 
 /**
- * <p>
- * å›¾æ–‡è¡¨ Mapper 接口
- * </p>
+ * 图文表 Mapper 接口
  *
  * @author saas-cloud
  * @since 2026-05-18

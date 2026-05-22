@@ -20,7 +20,6 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 
 /**
  * Jackson 全局配置
- * <p>
  * 统一 LocalDateTime/LocalDate/LocalTime 的序列化格式，
  * 避免前端展示 ISO-8601 格式（如 2026-05-19T11:13:18）。
  * 反序列化同时兼容 ISO-8601（T分隔）和自定义（空格分隔）两种格式。

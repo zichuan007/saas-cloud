@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 操作日志 Kafka 消费者
- * <p>
  * 消费 Kafka 操作日志事件并写入 sys_operation_log 表
  *
  * @author saas-cloud

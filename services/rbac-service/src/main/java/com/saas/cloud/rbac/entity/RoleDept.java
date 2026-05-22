@@ -8,9 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * <p>
- * è§’è‰²éƒ¨é—¨å…³è”è¡¨
- * </p>
+ * 角色部门关联表
  *
  * @author saas-cloud
  * @since 2026-05-18
@@ -23,13 +21,13 @@ public class RoleDept extends TenantBaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
-     * è§’è‰²ID
+     * 角色ID
      */
     @TableField("role_id")
     private Long roleId;
 
     /**
-     * éƒ¨é—¨ID
+     * 部门ID
      */
     @TableField("dept_id")
     private Long deptId;

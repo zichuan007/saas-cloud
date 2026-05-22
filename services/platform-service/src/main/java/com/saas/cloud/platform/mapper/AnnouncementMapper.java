@@ -6,9 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.saas.cloud.platform.entity.Announcement;
 
 /**
- * <p>
- * ç³»ç»Ÿå…¬å‘Šè¡¨ Mapper 接口
- * </p>
+ * 系统公告表 Mapper 接口
  *
  * @author saas-cloud
  * @since 2026-05-18

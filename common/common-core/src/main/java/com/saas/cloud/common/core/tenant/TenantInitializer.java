@@ -2,10 +2,8 @@ package com.saas.cloud.common.core.tenant;
 
 /**
  * 租户初始化器接口
- * <p>
  * 定义租户注册时需要执行的初始化操作。每个实现类负责一个独立的初始化步骤，
  * 由 {@link TenantInitializerRegistry} 按 order 排序后依次执行。
- * <p>
  * 失败时会倒序调用已成功初始化器的 rollback 方法。
  *
  * @author saas-cloud
