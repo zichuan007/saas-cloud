@@ -14,9 +14,9 @@ import net.sf.jsqlparser.expression.operators.relational.InExpression;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.Statement;
+import net.sf.jsqlparser.statement.select.ParenthesedSelect;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
-import net.sf.jsqlparser.statement.select.SubSelect;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -74,18 +74,15 @@ public class DataScopeSqlInterceptor implements InnerInterceptor {
 
         try {
             Statement statement = CCJSqlParserUtil.parse(boundSql.getSql());
-            if (statement instanceof Select) {
-                Select select = (Select) statement;
-                if (select.getSelectBody() instanceof PlainSelect) {
-                    PlainSelect ps = (PlainSelect) select.getSelectBody();
-                    if (ps.getWhere() == null) {
-                        ps.setWhere(scopeCondition);
-                    } else {
-                        ps.setWhere(new AndExpression(ps.getWhere(), scopeCondition));
-                    }
-                    setSql(boundSql, select.toString());
-                    log.debug("数据范围拦截器注入 SQL 条件, dataScope={}, sql={}", dataScope, select);
+            if (statement instanceof PlainSelect) {
+                PlainSelect ps = (PlainSelect) statement;
+                if (ps.getWhere() == null) {
+                    ps.setWhere(scopeCondition);
+                } else {
+                    ps.setWhere(new AndExpression(ps.getWhere(), scopeCondition));
                 }
+                setSql(boundSql, ps.toString());
+                log.debug("数据范围拦截器注入 SQL 条件, dataScope={}, sql={}", dataScope, ps);
             }
         } catch (Exception e) {
             log.warn("数据范围拦截器解析 SQL 失败: {}", e.getMessage());
@@ -141,10 +138,7 @@ public class DataScopeSqlInterceptor implements InnerInterceptor {
             return null;
         }
         String deptColumn = buildColumnName(scopeParam.getDeptAlias(), "dept_id");
-        EqualsTo equalsTo = new EqualsTo();
-        equalsTo.setLeftExpression(new Column(deptColumn));
-        equalsTo.setRightExpression(new LongValue(deptId));
-        return equalsTo;
+        return new EqualsTo(new Column(deptColumn), new LongValue(deptId));
     }
 
     /**
@@ -157,10 +151,7 @@ public class DataScopeSqlInterceptor implements InnerInterceptor {
             return null;
         }
         String userColumn = buildColumnName(scopeParam.getUserAlias(), "create_user_id");
-        EqualsTo equalsTo = new EqualsTo();
-        equalsTo.setLeftExpression(new Column(userColumn));
-        equalsTo.setRightExpression(new LongValue(userId));
-        return equalsTo;
+        return new EqualsTo(new Column(userColumn), new LongValue(userId));
     }
 
     /**
@@ -191,15 +182,14 @@ public class DataScopeSqlInterceptor implements InnerInterceptor {
      */
     private Expression buildInSubSelect(String columnName, String subQuery) {
         try {
-            InExpression inExpression = new InExpression();
-            inExpression.setLeftExpression(new Column(columnName));
             Statement subStatement = CCJSqlParserUtil.parse(subQuery);
             if (subStatement instanceof Select) {
-                SubSelect subSelect = new SubSelect();
-                subSelect.setSelectBody(((Select) subStatement).getSelectBody());
-                inExpression.setRightExpression(subSelect);
+                ParenthesedSelect parenthesedSelect = new ParenthesedSelect();
+                parenthesedSelect.setSelect((Select) subStatement);
+                InExpression inExpression = new InExpression(new Column(columnName), parenthesedSelect);
+                return inExpression;
             }
-            return inExpression;
+            return null;
         } catch (Exception e) {
             log.error("构建 IN 子查询失败: {}", e.getMessage());
             return null;

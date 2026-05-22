@@ -70,6 +70,7 @@ public class WfProcessInstanceExtServiceImpl
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @com.saas.cloud.common.redis.lock.DistributedLock(key = "'wf:start:' + #dto.processDefinitionExtId", waitTime = 5, leaseTime = 30)
     public WfProcessInstanceExt startProcess(ProcessStartDTO dto) {
         WfProcessDefinitionExt defExt = processDefinitionExtService.getById(dto.getProcessDefinitionExtId());
         if (defExt == null) {

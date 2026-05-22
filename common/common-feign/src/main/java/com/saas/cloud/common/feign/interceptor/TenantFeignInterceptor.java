@@ -19,6 +19,9 @@ public class TenantFeignInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate template) {
+        // 注入内部调用标识，配合 @InnerApi 切面校验
+        template.header(SecurityConstants.HEADER_INTERNAL_SOURCE, "true");
+
         TenantContext.TenantInfo tenant = TenantContext.get();
         if (tenant != null && tenant.getTenantId() != null) {
             template.header(SecurityConstants.HEADER_TENANT_ID, String.valueOf(tenant.getTenantId()));

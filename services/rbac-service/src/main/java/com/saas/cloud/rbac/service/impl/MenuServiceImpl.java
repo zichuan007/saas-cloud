@@ -2,7 +2,12 @@ package com.saas.cloud.rbac.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saas.cloud.common.core.exception.BusinessException;
+import com.saas.cloud.common.core.result.ApiResult;
+import com.saas.cloud.platform.api.feign.PlatformFeignClient;
+import com.saas.cloud.platform.api.vo.TenantVO;
 import com.saas.cloud.rbac.api.dto.MenuCreateDTO;
 import com.saas.cloud.rbac.api.dto.MenuUpdateDTO;
 import com.saas.cloud.rbac.api.vo.MenuTreeVO;
@@ -17,10 +22,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
@@ -36,6 +45,8 @@ import java.util.stream.Collectors;
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IMenuService {
 
     private final UserMapper userMapper;
+    private final PlatformFeignClient platformFeignClient;
+    private final ObjectMapper objectMapper;
 
     /**
      * 根节点的 parentId
@@ -45,12 +56,17 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
     @Override
     public List<MenuTreeVO> buildMenuTree(Long tenantId) {
         log.info("构建菜单树, tenantId={}", tenantId);
-        // 菜单是平台级，查询所有启用状态的菜单，按排序字段排序
         LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Menu::getStatus, (byte) 1)
                 .orderByAsc(Menu::getSortOrder);
+
+        // 按套餐过滤可见菜单
+        Set<Long> allowedMenuIds = loadPackageMenuIds(tenantId);
+        if (allowedMenuIds != null) {
+            queryWrapper.in(Menu::getId, allowedMenuIds);
+        }
+
         List<Menu> menuList = this.list(queryWrapper);
-        // 转换为 VO 并构建树
         List<MenuTreeVO> voList = menuList.stream()
                 .map(this::convertToMenuTreeVO)
                 .collect(Collectors.toList());
@@ -74,8 +90,12 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
             menuList = baseMapper.selectMenusByUserId(userId);
         }
 
+        // 按套餐过滤可见菜单（超管也受套餐限制）
+        Set<Long> allowedMenuIds = (user != null) ? loadPackageMenuIds(user.getTenantId()) : null;
+
         List<MenuTreeVO> voList = menuList.stream()
                 .filter(menu -> menu.getMenuType() == null || menu.getMenuType() != 2)
+                .filter(menu -> allowedMenuIds == null || allowedMenuIds.contains(menu.getId()))
                 .map(this::convertToMenuTreeVO)
                 .collect(Collectors.toList());
         return buildTree(voList);
@@ -190,6 +210,36 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
         vo.setSortOrder(menu.getSortOrder());
         vo.setVisible(menu.getVisible() != null && menu.getVisible() == 1);
         return vo;
+    }
+
+    /**
+     * 加载租户套餐的可见菜单ID集合
+     *
+     * @param tenantId 租户ID
+     * @return 可见菜单ID集合，null 表示不限制（旗舰版或未配置套餐）
+     */
+    private Set<Long> loadPackageMenuIds(Long tenantId) {
+        if (tenantId == null) {
+            return null;
+        }
+        try {
+            ApiResult<TenantVO> result = platformFeignClient.getTenantInfo(tenantId);
+            if (result == null || result.getData() == null) {
+                return null;
+            }
+            String menuIdsJson = result.getData().getMenuIds();
+            if (!StringUtils.hasText(menuIdsJson)) {
+                return null;
+            }
+            List<Long> menuIdList = objectMapper.readValue(menuIdsJson, new TypeReference<List<Long>>() {});
+            if (CollectionUtils.isEmpty(menuIdList)) {
+                return null;
+            }
+            return new HashSet<>(menuIdList);
+        } catch (Exception e) {
+            log.warn("加载套餐菜单失败, 降级返回全部菜单, tenantId={}, error={}", tenantId, e.getMessage());
+            return null;
+        }
     }
 
     /**

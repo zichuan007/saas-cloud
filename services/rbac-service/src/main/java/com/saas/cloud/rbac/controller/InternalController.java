@@ -2,6 +2,7 @@ package com.saas.cloud.rbac.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.saas.cloud.common.core.result.ApiResult;
+import com.saas.cloud.common.security.annotation.InnerApi;
 import com.saas.cloud.rbac.api.vo.UserInfoVO;
 import com.saas.cloud.rbac.entity.Dept;
 import com.saas.cloud.rbac.entity.User;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 2026-05-18
  */
 @Slf4j
+@InnerApi
 @RestController
 @RequestMapping("/internal")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})

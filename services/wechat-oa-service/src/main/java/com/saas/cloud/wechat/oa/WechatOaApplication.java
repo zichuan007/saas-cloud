@@ -5,8 +5,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.scheduling.annotation.EnableScheduling;
-
 /**
  * 微信公众号服务启动类
  *
@@ -14,7 +12,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @version V1.0
  * @since 2026-05-18
  */
-@EnableScheduling
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = "com.saas.cloud")
 @SpringBootApplication(scanBasePackages = "com.saas.cloud")

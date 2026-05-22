@@ -2,11 +2,14 @@ package com.saas.cloud.rbac.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saas.cloud.common.core.exception.BusinessException;
 import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.core.result.ResultCode;
 import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.platform.api.feign.PlatformFeignClient;
+import com.saas.cloud.platform.api.vo.TenantVO;
 import com.saas.cloud.rbac.api.dto.RoleCreateDTO;
 import com.saas.cloud.rbac.api.dto.RoleUpdateDTO;
 import com.saas.cloud.rbac.api.vo.RoleVO;
@@ -25,9 +28,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -46,6 +52,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     private final RoleDeptMapper roleDeptMapper;
     private final UserRoleMapper userRoleMapper;
     private final PlatformFeignClient platformFeignClient;
+    private final ObjectMapper objectMapper;
 
     /** 自定义数据范围 */
     private static final byte DATA_SCOPE_CUSTOM = 5;
@@ -118,7 +125,8 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         this.save(role);
         log.info("角色创建成功, id={}", role.getId());
 
-        // 创建角色菜单关联
+        // 校验并创建角色菜单关联
+        validateMenuIdsInPackage(dto.getMenuIds());
         saveRoleMenus(role.getId(), dto.getMenuIds());
 
         // 如果是自定义数据范围，维护RoleDept
@@ -199,6 +207,9 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
             throw new BusinessException("角色不存在");
         }
 
+        // 校验菜单是否在套餐范围内
+        validateMenuIdsInPackage(menuIds);
+
         // 先删后增
         roleMenuMapper.delete(new LambdaQueryWrapper<RoleMenu>()
                 .eq(RoleMenu::getRoleId, roleId));
@@ -244,6 +255,43 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
             roleMenu.setRoleId(roleId);
             roleMenu.setMenuId(menuId);
             roleMenuMapper.insert(roleMenu);
+        }
+    }
+
+    /**
+     * 校验菜单ID是否在租户套餐可见范围内
+     *
+     * @param menuIds 待分配的菜单ID列表
+     */
+    private void validateMenuIdsInPackage(List<Long> menuIds) {
+        if (CollectionUtils.isEmpty(menuIds)) {
+            return;
+        }
+        Long tenantId = TenantContext.getTenantId();
+        if (tenantId == null) {
+            return;
+        }
+        try {
+            ApiResult<TenantVO> result = platformFeignClient.getTenantInfo(tenantId);
+            if (result == null || result.getData() == null) {
+                return;
+            }
+            String packageMenuIds = result.getData().getMenuIds();
+            if (!StringUtils.hasText(packageMenuIds)) {
+                return;
+            }
+            List<Long> allowedList = objectMapper.readValue(packageMenuIds, new TypeReference<List<Long>>() {});
+            Set<Long> allowedSet = new HashSet<>(allowedList);
+            List<Long> illegal = menuIds.stream()
+                    .filter(id -> !allowedSet.contains(id))
+                    .collect(Collectors.toList());
+            if (!illegal.isEmpty()) {
+                throw new BusinessException("菜单超出套餐范围: " + illegal);
+            }
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            log.warn("校验套餐菜单范围异常, 降级放行, tenantId={}, error={}", tenantId, e.getMessage());
         }
     }
 

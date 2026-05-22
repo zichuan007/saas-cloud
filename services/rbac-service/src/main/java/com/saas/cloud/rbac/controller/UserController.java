@@ -2,20 +2,27 @@ package com.saas.cloud.rbac.controller;
 
 import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.core.result.PageResult;
+import com.saas.cloud.common.excel.ExcelUtils;
 import com.saas.cloud.common.log.annotation.OperationLog;
 import com.saas.cloud.common.security.context.UserContext;
 import com.saas.cloud.rbac.api.dto.UserCreateDTO;
 import com.saas.cloud.rbac.api.dto.UserUpdateDTO;
+import com.saas.cloud.rbac.api.vo.UserExportVO;
 import com.saas.cloud.rbac.api.vo.UserInfoVO;
 import com.saas.cloud.rbac.api.vo.UserPageVO;
+import com.saas.cloud.rbac.entity.User;
 import com.saas.cloud.rbac.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 用户管理 前端控制器
@@ -157,5 +164,29 @@ public class UserController {
         Long userId = UserContext.getUserId();
         userService.changePassword(userId, params.get("oldPassword"), params.get("newPassword"));
         return ApiResult.ok();
+    }
+
+    /**
+     * 导出用户列表
+     *
+     * @param response HTTP 响应
+     * @param keyword  搜索关键字（可选）
+     */
+    @OperationLog(module = "用户管理", operation = "导出用户")
+    @GetMapping("/export")
+    public void export(HttpServletResponse response,
+                       @RequestParam(required = false) String keyword) throws IOException {
+        List<User> users = userService.listForExport(keyword);
+        List<UserExportVO> voList = users.stream().map(user -> {
+            UserExportVO vo = new UserExportVO();
+            vo.setUsername(user.getUsername());
+            vo.setRealName(user.getRealName());
+            vo.setPhone(user.getPhone());
+            vo.setEmail(user.getEmail());
+            vo.setStatusDesc(user.getStatus() != null && user.getStatus() == 1 ? "启用" : "禁用");
+            vo.setCreateTime(user.getCreateTime());
+            return vo;
+        }).collect(Collectors.toList());
+        ExcelUtils.write(response, "用户列表", "用户", UserExportVO.class, voList);
     }
 }

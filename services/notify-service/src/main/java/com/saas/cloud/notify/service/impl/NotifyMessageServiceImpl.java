@@ -110,6 +110,7 @@ public class NotifyMessageServiceImpl extends ServiceImpl<NotifyMessageMapper, N
     }
 
     @Override
+    @com.saas.cloud.common.redis.idempotent.Idempotent(key = "'notify:' + #event.receiverId + ':' + #event.bizType + ':' + #event.bizId", timeout = 10)
     public void createMessage(NotifyEvent event) {
         NotifyMessage message = new NotifyMessage();
         message.setReceiverId(event.getReceiverId());

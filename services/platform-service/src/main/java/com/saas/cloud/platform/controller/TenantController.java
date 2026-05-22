@@ -1,10 +1,13 @@
 package com.saas.cloud.platform.controller;
 
+import com.saas.cloud.common.core.enums.TenantStatusEnum;
 import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.core.result.PageResult;
+import com.saas.cloud.common.excel.ExcelUtils;
 import com.saas.cloud.common.log.annotation.OperationLog;
 import com.saas.cloud.platform.api.dto.TenantCreateDTO;
 import com.saas.cloud.platform.api.dto.TenantQueryDTO;
+import com.saas.cloud.platform.api.vo.TenantExportVO;
 import com.saas.cloud.platform.api.vo.TenantVO;
 import com.saas.cloud.platform.entity.Tenant;
 import com.saas.cloud.platform.service.ITenantService;
@@ -12,6 +15,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 租户管理控制器
@@ -57,6 +65,7 @@ public class TenantController {
      */
     @OperationLog(module = "租户管理", operation = "创建租户")
     @PostMapping
+    @com.saas.cloud.common.redis.idempotent.Idempotent(key = "'tenant:create:' + #dto.tenantName", timeout = 10)
     public ApiResult<Void> createTenant(@Validated @RequestBody TenantCreateDTO dto) {
         tenantService.createTenant(dto);
         return ApiResult.ok();
@@ -86,5 +95,28 @@ public class TenantController {
     public ApiResult<Void> unfreezeTenant(@PathVariable("id") Long id) {
         tenantService.unfreezeTenant(id);
         return ApiResult.ok();
+    }
+
+    /**
+     * 导出租户列表
+     *
+     * @param response HTTP 响应
+     */
+    @OperationLog(module = "租户管理", operation = "导出租户")
+    @GetMapping("/export")
+    public void export(HttpServletResponse response) throws IOException {
+        List<Tenant> tenants = tenantService.list();
+        List<TenantExportVO> voList = tenants.stream().map(tenant -> {
+            TenantExportVO vo = new TenantExportVO();
+            vo.setTenantCode(tenant.getTenantCode());
+            vo.setTenantName(tenant.getTenantName());
+            vo.setContactPerson(tenant.getContactPerson());
+            vo.setContactPhone(tenant.getContactPhone());
+            vo.setContactEmail(tenant.getContactEmail());
+            vo.setStatusDesc(TenantStatusEnum.of(tenant.getStatus()).getDesc());
+            vo.setCreateTime(tenant.getCreateTime());
+            return vo;
+        }).collect(Collectors.toList());
+        ExcelUtils.write(response, "租户列表", "租户", TenantExportVO.class, voList);
     }
 }

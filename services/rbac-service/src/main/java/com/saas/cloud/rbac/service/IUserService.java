@@ -8,6 +8,8 @@ import com.saas.cloud.rbac.api.vo.UserPageVO;
 import com.saas.cloud.rbac.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * 用户表 服务类
  *
@@ -89,4 +91,12 @@ public interface IUserService extends IService<User> {
      * @param newPassword 新密码
      */
     void changePassword(Long userId, String oldPassword, String newPassword);
+
+    /**
+     * 查询用户列表（导出用）
+     *
+     * @param keyword 搜索关键字（可选）
+     * @return 用户列表
+     */
+    List<User> listForExport(String keyword);
 }

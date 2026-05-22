@@ -48,6 +48,7 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
     private final IGlobalConfigService globalConfigService;
     private final IPackageService packageService;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final TenantCacheService tenantCacheService;
 
     /** 全局配置键：试用天数 */
     private static final String CONFIG_KEY_TRIAL_DAYS = "trial_days";
@@ -70,6 +71,7 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @com.saas.cloud.common.redis.lock.DistributedLock(key = "'tenant:create:' + #dto.tenantName", waitTime = 5, leaseTime = 30)
     public Tenant createTenantAndReturn(TenantCreateDTO dto) {
         // 读取全局配置
         int trialDays = getConfigIntValue(CONFIG_KEY_TRIAL_DAYS, DEFAULT_TRIAL_DAYS);
@@ -92,6 +94,8 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
         this.save(tenant);
         log.info("创建租户成功, tenantId={}, tenantCode={}, tenantName={}, trialDays={}",
                 tenant.getId(), tenant.getTenantCode(), tenant.getTenantName(), trialDays);
+
+        tenantCacheService.refreshAll();
         return tenant;
     }
 
@@ -116,6 +120,8 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
         // 发布租户冻结事件到 Redis
         String redisKey = REDIS_FROZEN_KEY_PREFIX + tenantId;
         redisTemplate.opsForValue().set(redisKey, "1");
+
+        tenantCacheService.evictTenant(tenantId);
         log.info("冻结租户成功, tenantId={}", tenantId);
     }
 
@@ -137,6 +143,8 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
         // 删除 Redis 中的冻结标记
         String redisKey = REDIS_FROZEN_KEY_PREFIX + tenantId;
         redisTemplate.delete(redisKey);
+
+        tenantCacheService.evictTenant(tenantId);
         log.info("解冻租户成功, tenantId={}", tenantId);
     }
 
@@ -224,10 +232,12 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
         }
 
         // 套餐信息
+        vo.setPackageId(tenant.getPackageId());
         if (tenant.getPackageId() != null && packageMap.containsKey(tenant.getPackageId())) {
             Package pkg = packageMap.get(tenant.getPackageId());
             vo.setPackageName(pkg.getPackageName());
             vo.setMaxUsers(pkg.getMaxUsers());
+            vo.setMenuIds(pkg.getMenuIds());
         }
 
         // TODO 当前用户数需从 rbac-service 获取

@@ -55,4 +55,10 @@ public class NotifyEvent implements Serializable {
 
     /** 跳转链接 */
     private String jumpUrl;
+
+    /** 接收人手机号（短信通道使用） */
+    private String phone;
+
+    /** 是否同步发送短信 */
+    private Boolean sendSms;
 }

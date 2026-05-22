@@ -1,18 +1,21 @@
 package com.saas.cloud.rbac.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.saas.cloud.common.core.enums.TenantStatusEnum;
 import com.saas.cloud.common.core.exception.BusinessException;
 import com.saas.cloud.common.core.exception.ForbiddenException;
 import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.core.result.ResultCode;
 import com.saas.cloud.common.security.context.TenantContext;
+import cn.dev33.satoken.stp.StpUtil;
 import com.saas.cloud.common.security.context.UserContext;
-import com.saas.cloud.common.security.util.JwtUtils;
 import com.saas.cloud.platform.api.dto.TenantCreateDTO;
 import com.saas.cloud.platform.api.feign.PlatformFeignClient;
 import com.saas.cloud.platform.api.vo.TenantVO;
 import com.saas.cloud.rbac.api.dto.RegisterDTO;
 import com.saas.cloud.rbac.api.vo.RegisterVO;
+import com.saas.cloud.common.core.tenant.TenantInitContext;
+import com.saas.cloud.common.core.tenant.TenantInitializerRegistry;
 import com.saas.cloud.rbac.entity.Dept;
 import com.saas.cloud.rbac.entity.Menu;
 import com.saas.cloud.rbac.entity.Role;
@@ -57,12 +60,11 @@ public class AuthServiceImpl implements IAuthService {
     private final MenuMapper menuMapper;
     private final DeptMapper deptMapper;
     private final RoleMapper roleMapper;
-    private final JwtUtils jwtUtils;
     private final RedisTemplate<String, Object> redisTemplate;
     private final PlatformFeignClient platformFeignClient;
+    private final TenantInitializerRegistry tenantInitializerRegistry;
 
     private static final BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
-    private static final String REDIS_TOKEN_BLACKLIST = "auth:blacklist:";
     private static final String REDIS_LOGIN_FAIL = "auth:login_fail:";
     private static final int MAX_LOGIN_ATTEMPTS = 5;
     private static final int LOCK_MINUTES = 30;
@@ -73,7 +75,12 @@ public class AuthServiceImpl implements IAuthService {
         if (tenantResult == null || tenantResult.getData() == null) {
             throw new BusinessException(ResultCode.NOT_FOUND.getCode(), "租户编码不存在: " + tenantCode);
         }
-        Long tenantId = tenantResult.getData().getId();
+        TenantVO tenant = tenantResult.getData();
+
+        // 校验租户状态
+        validateTenantForLogin(tenant);
+
+        Long tenantId = tenant.getId();
 
         checkLoginAttempts(username, tenantId);
 
@@ -101,8 +108,9 @@ public class AuthServiceImpl implements IAuthService {
         userInfo.setDataScope(resolveDataScope(user.getId()));
         userInfo.setPermissions(permissions);
 
-        String accessToken = jwtUtils.generateAccessToken(userInfo);
-        String refreshToken = jwtUtils.generateRefreshToken(userInfo);
+        StpUtil.login(user.getId());
+        storeUserInfoToSession(userInfo);
+        String tokenValue = StpUtil.getTokenValue();
 
         user.setLastLoginTime(LocalDateTime.now());
         userMapper.updateById(user);
@@ -110,9 +118,9 @@ public class AuthServiceImpl implements IAuthService {
         clearLoginFailures(username, tenantId);
 
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("accessToken", accessToken);
-        result.put("refreshToken", refreshToken);
-        result.put("expiresIn", 7200L);
+        result.put("accessToken", tokenValue);
+        result.put("refreshToken", tokenValue);
+        result.put("expiresIn", StpUtil.getTokenTimeout());
         result.put("userId", user.getId());
         result.put("username", user.getUsername());
         result.put("realName", user.getRealName());
@@ -124,47 +132,44 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public Map<String, Object> refreshToken(String refreshToken) {
-        if (!jwtUtils.validateToken(refreshToken)) {
-            throw new BusinessException(ResultCode.UNAUTHORIZED.getCode(), "刷新令牌无效或已过期");
-        }
-        if (!jwtUtils.isRefreshToken(refreshToken)) {
-            throw new BusinessException(ResultCode.UNAUTHORIZED.getCode(), "不是有效的刷新令牌");
+        Object loginId = StpUtil.getLoginIdByToken(refreshToken);
+        if (loginId == null) {
+            throw new BusinessException(ResultCode.UNAUTHORIZED.getCode(), "令牌无效或已过期");
         }
 
-        String tokenId = jwtUtils.getTokenId(refreshToken);
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(REDIS_TOKEN_BLACKLIST + tokenId))) {
-            throw new BusinessException(ResultCode.UNAUTHORIZED.getCode(), "令牌已失效");
+        cn.dev33.satoken.session.SaSession session = StpUtil.getSessionByLoginId(loginId);
+        Long userId = session.get("userId", null);
+        if (userId == null) {
+            throw new BusinessException(ResultCode.UNAUTHORIZED.getCode(), "会话信息已失效");
         }
 
-        UserContext.UserInfo userInfo = jwtUtils.extractUserInfo(refreshToken);
+        Set<String> latestPermissions = loadPermissions(userId);
+        session.set("permissions", String.join(",", latestPermissions));
 
-        Set<String> latestPermissions = loadPermissions(userInfo.getUserId());
-        userInfo.setPermissions(latestPermissions);
-
-        String newAccessToken = jwtUtils.generateAccessToken(userInfo);
-        String newRefreshToken = jwtUtils.generateRefreshToken(userInfo);
-
-        redisTemplate.opsForValue().set(REDIS_TOKEN_BLACKLIST + tokenId, "1", 7, TimeUnit.DAYS);
+        StpUtil.renewTimeout(StpUtil.getTokenTimeout());
 
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("accessToken", newAccessToken);
-        result.put("refreshToken", newRefreshToken);
-        result.put("expiresIn", 7200L);
+        result.put("accessToken", refreshToken);
+        result.put("refreshToken", refreshToken);
+        result.put("expiresIn", StpUtil.getTokenTimeout());
         return result;
     }
 
     @Override
     public void logout(String token) {
         try {
-            String tokenId = jwtUtils.getTokenId(token);
-            redisTemplate.opsForValue().set(REDIS_TOKEN_BLACKLIST + tokenId, "1", 7, TimeUnit.DAYS);
+            Object loginId = StpUtil.getLoginIdByToken(token);
+            if (loginId != null) {
+                StpUtil.logout(loginId);
+            }
         } catch (Exception e) {
-            log.warn("登出时解析 token 失败: {}", e.getMessage());
+            log.warn("登出时处理失败: {}", e.getMessage());
         }
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @com.saas.cloud.common.redis.lock.DistributedLock(key = "'tenant:register:' + #dto.phone", waitTime = 5, leaseTime = 30)
     public RegisterVO register(RegisterDTO dto) {
         log.info("租户注册开始, tenantName={}, phone={}", dto.getTenantName(), dto.getPhone());
 
@@ -183,84 +188,51 @@ public class AuthServiceImpl implements IAuthService {
         String tenantCode = tenantVO.getTenantCode();
         log.info("远程创建租户成功, tenantId={}, tenantCode={}", tenantId, tenantCode);
 
-        // 设置租户上下文，确保后续本地数据的 tenant_id 自动填充
+        // 2. 设置租户上下文，确保后续本地数据的 tenant_id 自动填充
         TenantContext.TenantInfo tenantInfo = new TenantContext.TenantInfo();
         tenantInfo.setTenantId(tenantId);
         tenantInfo.setTenantName(dto.getTenantName());
         TenantContext.set(tenantInfo);
 
         try {
-            // 2. 创建根部门
-            Dept rootDept = new Dept();
-            rootDept.setDeptName("总公司");
-            rootDept.setParentId(0L);
-            rootDept.setAncestors("0");
-            rootDept.setLeader(dto.getContactPerson());
-            rootDept.setPhone(dto.getPhone());
-            rootDept.setSortOrder(0);
-            rootDept.setStatus((byte) 1);
-            rootDept.setTenantId(tenantId);
-            deptMapper.insert(rootDept);
-            log.info("创建根部门成功, deptId={}", rootDept.getId());
+            // 3. 通过初始化器链路完成租户初始化（创建部门/角色/用户/角色关联）
+            TenantInitContext initContext = TenantInitContext.builder()
+                    .tenantId(tenantId)
+                    .tenantName(dto.getTenantName())
+                    .contactPerson(dto.getContactPerson())
+                    .contactPhone(dto.getPhone())
+                    .password(PASSWORD_ENCODER.encode(dto.getPassword()))
+                    .build();
 
-            // 3. 创建默认角色：租户超管
-            Role adminRole = new Role();
-            adminRole.setRoleName("租户超管");
-            adminRole.setRoleCode("tenant_admin");
-            adminRole.setRoleLevel((byte) 0);
-            adminRole.setDataScope((byte) 1);
-            adminRole.setSortOrder(0);
-            adminRole.setStatus((byte) 1);
-            adminRole.setIsSystem((byte) 1);
-            adminRole.setTenantId(tenantId);
-            roleMapper.insert(adminRole);
-            log.info("创建默认角色成功, roleId={}", adminRole.getId());
+            tenantInitializerRegistry.initialize(initContext);
 
-            // 4. 创建管理员用户
-            User adminUser = new User();
-            adminUser.setUsername(dto.getPhone());
-            adminUser.setPassword(PASSWORD_ENCODER.encode(dto.getPassword()));
-            adminUser.setRealName(dto.getContactPerson());
-            adminUser.setPhone(dto.getPhone());
-            adminUser.setDeptId(rootDept.getId());
-            adminUser.setStatus((byte) 1);
-            adminUser.setRoleLevel((byte) 0);
-            adminUser.setPasswordUpdateTime(LocalDateTime.now());
-            adminUser.setTenantId(tenantId);
-            userMapper.insert(adminUser);
-            log.info("创建管理员用户成功, userId={}", adminUser.getId());
+            // 4. Sa-Token 登录
+            Long adminUserId = initContext.get("adminUserId");
+            Long rootDeptId = initContext.get("rootDeptId");
 
-            // 5. 关联用户角色
-            UserRole userRole = new UserRole();
-            userRole.setUserId(adminUser.getId());
-            userRole.setRoleId(adminRole.getId());
-            userRole.setTenantId(tenantId);
-            userRoleMapper.insert(userRole);
-            log.info("关联用户角色成功, userId={}, roleId={}", adminUser.getId(), adminRole.getId());
-
-            // 6. 生成 Token（同登录逻辑）
             UserContext.UserInfo userInfo = new UserContext.UserInfo();
-            userInfo.setUserId(adminUser.getId());
-            userInfo.setUsername(adminUser.getUsername());
+            userInfo.setUserId(adminUserId);
+            userInfo.setUsername(dto.getPhone());
             userInfo.setTenantId(tenantId);
-            userInfo.setDeptId(rootDept.getId());
+            userInfo.setDeptId(rootDeptId);
             userInfo.setRoleLevel(0);
             userInfo.setDataScope(1);
             userInfo.setPermissions(Collections.emptySet());
 
-            String accessToken = jwtUtils.generateAccessToken(userInfo);
-            String refreshToken = jwtUtils.generateRefreshToken(userInfo);
+            StpUtil.login(adminUserId);
+            storeUserInfoToSession(userInfo);
+            String tokenValue = StpUtil.getTokenValue();
 
-            // 7. 组装返回结果
+            // 5. 组装返回结果
             RegisterVO vo = new RegisterVO();
             vo.setTenantId(tenantId);
             vo.setTenantCode(tenantCode);
-            vo.setUserId(adminUser.getId());
-            vo.setAccessToken(accessToken);
-            vo.setRefreshToken(refreshToken);
-            vo.setExpiresIn(7200L);
+            vo.setUserId(adminUserId);
+            vo.setAccessToken(tokenValue);
+            vo.setRefreshToken(tokenValue);
+            vo.setExpiresIn(StpUtil.getTokenTimeout());
 
-            log.info("租户注册完成, tenantId={}, tenantCode={}, userId={}", tenantId, tenantCode, adminUser.getId());
+            log.info("租户注册完成, tenantId={}, tenantCode={}, userId={}", tenantId, tenantCode, adminUserId);
             return vo;
         } catch (Exception e) {
             log.error("租户注册本地操作失败, tenantId={}, 租户已创建但本地数据回滚", tenantId, e);
@@ -379,5 +351,34 @@ public class AuthServiceImpl implements IAuthService {
 
     private void clearLoginFailures(String username, Long tenantId) {
         redisTemplate.delete(REDIS_LOGIN_FAIL + tenantId + ":" + username);
+    }
+
+    /**
+     * 将用户信息存入 Sa-Token Session（使用独立 key，避免跨服务反序列化耦合）
+     */
+    private void storeUserInfoToSession(UserContext.UserInfo userInfo) {
+        cn.dev33.satoken.session.SaSession session = StpUtil.getSession();
+        session.set("userId", userInfo.getUserId());
+        session.set("username", userInfo.getUsername());
+        session.set("tenantId", userInfo.getTenantId());
+        session.set("deptId", userInfo.getDeptId());
+        session.set("roleLevel", userInfo.getRoleLevel());
+        session.set("dataScope", userInfo.getDataScope());
+        session.set("permissions", userInfo.getPermissions() != null ? String.join(",", userInfo.getPermissions()) : "");
+    }
+
+    /**
+     * 校验租户状态是否允许登录
+     */
+    private void validateTenantForLogin(TenantVO tenant) {
+        if (Objects.equals(tenant.getStatus(), TenantStatusEnum.FROZEN.getCode())) {
+            throw new ForbiddenException("企业已被冻结，请联系管理员");
+        }
+        if (Objects.equals(tenant.getStatus(), TenantStatusEnum.DEACTIVATED.getCode())) {
+            throw new ForbiddenException("企业已注销");
+        }
+        if (tenant.getExpireTime() != null && tenant.getExpireTime().isBefore(LocalDateTime.now())) {
+            throw new ForbiddenException("企业已过期，请联系管理员续费");
+        }
     }
 }

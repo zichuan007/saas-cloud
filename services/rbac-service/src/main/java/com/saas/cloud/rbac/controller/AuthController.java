@@ -10,8 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +38,7 @@ public class AuthController {
      * @return 注册结果（含Token）
      */
     @PostMapping("/register")
+    @com.saas.cloud.common.redis.idempotent.Idempotent(key = "'register:' + #dto.phone", timeout = 10)
     public ApiResult<RegisterVO> register(@Valid @RequestBody RegisterDTO dto) {
         return ApiResult.ok(authService.register(dto));
     }

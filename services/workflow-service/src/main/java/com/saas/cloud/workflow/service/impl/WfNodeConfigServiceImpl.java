@@ -1,15 +1,17 @@
 package com.saas.cloud.workflow.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.saas.cloud.workflow.api.dto.NodeConfigDTO;
 import com.saas.cloud.workflow.api.vo.NodeConfigVO;
+import com.saas.cloud.workflow.convert.WfNodeConfigConvert;
 import com.saas.cloud.workflow.entity.WfNodeConfig;
 import com.saas.cloud.workflow.mapper.WfNodeConfigMapper;
 import com.saas.cloud.workflow.service.IWfNodeConfigService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,9 +28,12 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class WfNodeConfigServiceImpl
         extends ServiceImpl<WfNodeConfigMapper, WfNodeConfig>
         implements IWfNodeConfigService {
+
+    private final WfNodeConfigConvert nodeConfigConvert;
 
     /** 审批人类型：指定用户 */
     private static final byte ASSIGNEE_TYPE_USER = 1;
@@ -58,8 +63,7 @@ public class WfNodeConfigServiceImpl
         if (CollUtil.isNotEmpty(configs)) {
             List<WfNodeConfig> entityList = configs.stream()
                     .map(dto -> {
-                        WfNodeConfig entity = new WfNodeConfig();
-                        BeanUtil.copyProperties(dto, entity);
+                        WfNodeConfig entity = nodeConfigConvert.toEntity(dto);
                         entity.setProcessDefinitionId(processDefinitionId);
                         return entity;
                     })
@@ -91,8 +95,7 @@ public class WfNodeConfigServiceImpl
      * @return VO
      */
     private NodeConfigVO convertToVO(WfNodeConfig entity) {
-        NodeConfigVO vo = new NodeConfigVO();
-        BeanUtil.copyProperties(entity, vo);
+        NodeConfigVO vo = nodeConfigConvert.toVO(entity);
         vo.setAssigneeTypeDesc(getAssigneeTypeDesc(entity.getAssigneeType()));
         vo.setApprovalModeDesc(getApprovalModeDesc(entity.getApprovalMode()));
         return vo;

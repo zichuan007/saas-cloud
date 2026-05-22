@@ -30,7 +30,6 @@ CREATE TABLE `notify_message` (
 
 CREATE TABLE `notify_template` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '模板ID',
-  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
   `template_code` varchar(64) NOT NULL COMMENT '模板编码',
   `template_name` varchar(128) NOT NULL COMMENT '模板名称',
   `type` tinyint(4) NOT NULL COMMENT '渠道 0-站内信 1-邮件 2-IM Webhook',

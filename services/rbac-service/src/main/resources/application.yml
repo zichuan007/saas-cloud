@@ -12,10 +12,11 @@ spring:
     username: ${MYSQL_USER:root}
     password: ${MYSQL_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
-  redis:
-    host: ${REDIS_HOST:localhost}
-    port: ${REDIS_PORT:6379}
-    password: ${REDIS_PASSWORD:123456}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:123456}
   kafka:
     bootstrap-servers: ${KAFKA_ADDR:localhost:9092}
     producer:
@@ -31,6 +32,16 @@ spring:
         namespace: ${NACOS_NAMESPACE:e96d2e6b-7bf3-4a42-973a-e020a213cde2}
         file-extension: yml
 
+sa-token:
+  token-name: Authorization
+  token-prefix: Bearer
+  timeout: 604800
+  active-timeout: 7200
+  is-concurrent: true
+  is-share: true
+  token-style: uuid
+  is-log: false
+
 mybatis-plus:
   mapper-locations: classpath*:mapper/**/*.xml
   configuration:
@@ -41,3 +52,9 @@ mybatis-plus:
       logic-delete-field: deleteFlag
       logic-delete-value: 1
       logic-not-delete-value: 0
+
+xxl:
+  job:
+    admin-addresses: http://127.0.0.1:8088/xxl-job-admin
+    executor-appname: rbac-service
+    executor-port: 0

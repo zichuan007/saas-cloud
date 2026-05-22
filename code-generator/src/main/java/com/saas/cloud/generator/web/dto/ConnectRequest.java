@@ -2,7 +2,7 @@ package com.saas.cloud.generator.web.dto;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * 数据库连接请求

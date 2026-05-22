@@ -254,7 +254,6 @@ CREATE TABLE `sys_dept` (
 
 CREATE TABLE `sys_menu` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '菜单ID',
-  `tenant_id` bigint(20) DEFAULT NULL COMMENT '租户ID（平台级菜单为空）',
   `menu_name` varchar(64) NOT NULL COMMENT '菜单名称',
   `parent_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '父菜单ID 0-顶级',
   `menu_type` tinyint(4) NOT NULL COMMENT '类型 0-目录 1-菜单 2-按钮',
@@ -626,7 +625,6 @@ CREATE TABLE `notify_message` (
 
 CREATE TABLE `notify_template` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '模板ID',
-  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
   `template_code` varchar(64) NOT NULL COMMENT '模板编码',
   `template_name` varchar(128) NOT NULL COMMENT '模板名称',
   `type` tinyint(4) NOT NULL COMMENT '渠道 0-站内信 1-邮件 2-IM Webhook',
@@ -828,9 +826,15 @@ USE `platform`;
 
 -- 7.1 套餐
 INSERT INTO `sys_package` (`id`, `package_name`, `package_code`, `price_monthly`, `price_yearly`, `max_users`, `max_roles`, `max_depts`, `max_process_definitions`, `max_wechat_accounts`, `max_storage_mb`, `menu_ids`, `sort_order`, `status`, `remark`) VALUES
-(1, '免费版',   'FREE',       0.00,    0.00,    10,  5,   10,  5,   1,  1024,   NULL, 1, 1, '免费体验套餐'),
-(2, '基础版',   'BASIC',      299.00,  2990.00, 50,  20,  50,  20,  3,  10240,  NULL, 2, 1, '适合小型团队'),
-(3, '专业版',   'PRO',        999.00,  9990.00, 200, 50,  200, 0,   10, 102400, NULL, 3, 1, '适合中型企业'),
+(1, '免费版',   'FREE',       0.00,    0.00,    10,  5,   10,  5,   1,  1024,
+ '[1,101,102,2,201,202,203,204,205,2011,2012,2013,2014,2015,2016,2021,2022,2023,2024,2025,2031,2032,2033,2034,2051,2052,2053]',
+ 1, 1, '免费体验套餐：仪表盘+系统管理'),
+(2, '基础版',   'BASIC',      299.00,  2990.00, 50,  20,  50,  20,  3,  10240,
+ '[1,101,102,2,201,202,203,204,205,2011,2012,2013,2014,2015,2016,2021,2022,2023,2024,2025,2031,2032,2033,2034,2051,2052,2053,5,501,502,503,5011,5012,5021,5022,5023,5024,5031,5032]',
+ 2, 1, '适合小型团队：含通知管理'),
+(3, '专业版',   'PRO',        999.00,  9990.00, 200, 50,  200, 0,   10, 102400,
+ '[1,101,102,2,201,202,203,204,205,2011,2012,2013,2014,2015,2016,2021,2022,2023,2024,2025,2031,2032,2033,2034,2051,2052,2053,3,301,302,303,304,305,306,3011,3012,3013,3014,3015,3061,3062,4,401,402,403,404,405,406,407,408,4011,4012,4013,4014,4021,4022,4023,4031,4032,4033,4034,4035,4041,4042,4043,4051,4052,4053,4061,4062,4063,4064,4071,4072,4073,5,501,502,503,5011,5012,5021,5022,5023,5024,5031,5032]',
+ 3, 1, '适合中型企业：含流程+公众号+通知'),
 (4, '旗舰版',   'ENTERPRISE', 0.00,    0.00,    0,   0,   0,   0,   0,  0,      NULL, 4, 1, '按需定制，所有配额不限');
 
 -- 7.2 默认租户

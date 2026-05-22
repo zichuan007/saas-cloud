@@ -310,10 +310,12 @@ public class CodeGenerator {
                 if (comment == null || comment.isEmpty()) {
                     comment = columnName;
                 }
+                boolean nullable = "YES".equalsIgnoreCase(rs.getString("IS_NULLABLE"));
+                int columnSize = rs.getInt("COLUMN_SIZE");
                 String javaType = TYPE_MAP.getOrDefault(typeName, "String");
                 String propertyName = columnToProperty(columnName);
                 String simpleType = javaType.contains(".") ? javaType.substring(javaType.lastIndexOf(".") + 1) : javaType;
-                fields.add(new FieldInfo(columnName, propertyName, javaType, simpleType, comment));
+                fields.add(new FieldInfo(columnName, propertyName, javaType, simpleType, comment, nullable, columnSize));
             }
         } catch (Exception e) {
             System.err.println("  [错误] 读取表字段失败: " + tableName + " -> " + e.getMessage());
@@ -468,13 +470,18 @@ public class CodeGenerator {
         final String fullType;
         final String propertyType;
         final String comment;
+        final boolean nullable;
+        final int length;
 
-        FieldInfo(String columnName, String propertyName, String fullType, String propertyType, String comment) {
+        FieldInfo(String columnName, String propertyName, String fullType, String propertyType,
+                  String comment, boolean nullable, int length) {
             this.columnName = columnName;
             this.propertyName = propertyName;
             this.fullType = fullType;
             this.propertyType = propertyType;
             this.comment = comment;
+            this.nullable = nullable;
+            this.length = length;
         }
 
         public String getColumnName() { return columnName; }
@@ -482,6 +489,8 @@ public class CodeGenerator {
         public String getFullType() { return fullType; }
         public String getPropertyType() { return propertyType; }
         public String getComment() { return comment; }
+        public boolean isNullable() { return nullable; }
+        public int getLength() { return length; }
 
         public String getCapitalizedName() {
             return Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1);

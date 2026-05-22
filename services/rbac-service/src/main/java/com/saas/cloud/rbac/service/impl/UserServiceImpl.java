@@ -327,4 +327,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         log.info("保存用户角色关联, userId={}, roleIds={}", userId, roleIds);
     }
+
+    @Override
+    public List<User> listForExport(String keyword) {
+        return this.lambdaQuery()
+                .like(org.springframework.util.StringUtils.hasText(keyword), User::getUsername, keyword)
+                .or(org.springframework.util.StringUtils.hasText(keyword),
+                        w -> w.like(User::getRealName, keyword))
+                .orderByDesc(User::getCreateTime)
+                .list();
+    }
 }

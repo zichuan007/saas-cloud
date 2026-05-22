@@ -2,7 +2,7 @@ package com.saas.cloud.rbac.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.saas.cloud.common.data.base.TenantBaseEntity;
+import com.saas.cloud.common.data.base.BaseEntity;
 import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @TableName("sys_menu")
-public class Menu extends TenantBaseEntity {
+public class Menu extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 

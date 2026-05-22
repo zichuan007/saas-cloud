@@ -1,19 +1,25 @@
 package com.saas.cloud.rbac.controller;
 
 import com.saas.cloud.common.core.result.ApiResult;
+import com.saas.cloud.common.excel.ExcelUtils;
 import com.saas.cloud.common.log.annotation.OperationLog;
 import com.saas.cloud.rbac.api.dto.RoleCreateDTO;
 import com.saas.cloud.rbac.api.dto.RoleUpdateDTO;
+import com.saas.cloud.rbac.api.vo.RoleExportVO;
 import com.saas.cloud.rbac.api.vo.RoleVO;
+import com.saas.cloud.rbac.entity.Role;
 import com.saas.cloud.rbac.service.IRoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 角色管理 前端控制器
@@ -112,5 +118,49 @@ public class RoleController {
         List<Long> deptIds = (List<Long>) params.get("deptIds");
         roleService.updateDataScope(id, dataScope, deptIds);
         return ApiResult.ok();
+    }
+
+    /**
+     * 导出角色列表
+     *
+     * @param response HTTP 响应
+     */
+    @OperationLog(module = "角色管理", operation = "导出角色")
+    @GetMapping("/export")
+    public void export(HttpServletResponse response) throws IOException {
+        List<Role> roles = roleService.list();
+        List<RoleExportVO> voList = roles.stream().map(role -> {
+            RoleExportVO vo = new RoleExportVO();
+            vo.setRoleName(role.getRoleName());
+            vo.setRoleCode(role.getRoleCode());
+            vo.setRoleLevelDesc(roleLevelDesc(role.getRoleLevel()));
+            vo.setDataScopeDesc(dataScopeDesc(role.getDataScope()));
+            vo.setStatusDesc(role.getStatus() != null && role.getStatus() == 1 ? "启用" : "禁用");
+            vo.setCreateTime(role.getCreateTime());
+            return vo;
+        }).collect(Collectors.toList());
+        ExcelUtils.write(response, "角色列表", "角色", RoleExportVO.class, voList);
+    }
+
+    private String roleLevelDesc(Byte level) {
+        if (level == null) return "未知";
+        switch (level) {
+            case 0: return "超管";
+            case 1: return "管理员";
+            case 2: return "普通";
+            default: return "未知";
+        }
+    }
+
+    private String dataScopeDesc(Byte scope) {
+        if (scope == null) return "未知";
+        switch (scope) {
+            case 1: return "全部";
+            case 2: return "本部门及下级";
+            case 3: return "本部门";
+            case 4: return "仅本人";
+            case 5: return "自定义";
+            default: return "未知";
+        }
     }
 }

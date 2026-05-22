@@ -41,8 +41,14 @@ public class TenantVO implements Serializable {
     /** 状态描述 */
     private String statusDesc;
 
+    /** 套餐ID */
+    private Long packageId;
+
     /** 套餐名称 */
     private String packageName;
+
+    /** 套餐可见菜单ID列表(JSON数组) */
+    private String menuIds;
 
     /** 最大用户数 */
     private Integer maxUsers;

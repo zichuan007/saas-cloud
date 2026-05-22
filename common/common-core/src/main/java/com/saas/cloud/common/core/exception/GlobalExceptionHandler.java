@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.stream.Collectors;
 
 /**
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RestControllerAdvice
-@ConditionalOnClass(name = "javax.servlet.http.HttpServletRequest")
+@ConditionalOnClass(name = "jakarta.servlet.http.HttpServletRequest")
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)

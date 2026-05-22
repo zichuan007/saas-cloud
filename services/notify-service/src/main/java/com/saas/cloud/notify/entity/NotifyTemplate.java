@@ -2,7 +2,7 @@ package com.saas.cloud.notify.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.saas.cloud.common.data.base.TenantBaseEntity;
+import com.saas.cloud.common.data.base.BaseEntity;
 import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @TableName("notify_template")
-public class NotifyTemplate extends TenantBaseEntity {
+public class NotifyTemplate extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
 

@@ -14,6 +14,18 @@
     <packaging>pom</packaging>
     <name>Service Modules</name>
 
+    <!-- 所有服务公共依赖：Actuator + Prometheus -->
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+    </dependencies>
+
     <modules>
         <module>gateway</module>
         <module>platform-api</module>

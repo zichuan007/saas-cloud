@@ -9,10 +9,11 @@ spring:
   config:
     import:
       - optional:nacos:gateway.yml
-  redis:
-    host: ${REDIS_HOST:localhost}
-    port: ${REDIS_PORT:6379}
-    password: ${REDIS_PASSWORD:123456}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:123456}
   cloud:
     nacos:
       discovery:
@@ -82,6 +83,12 @@ spring:
           filters:
             - StripPrefix=2
 
-saas:
-  jwt:
-    secret: saas-cloud-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256
+sa-token:
+  token-name: Authorization
+  token-prefix: Bearer
+  timeout: 604800
+  active-timeout: 7200
+  is-concurrent: true
+  is-share: true
+  token-style: uuid
+  is-log: false

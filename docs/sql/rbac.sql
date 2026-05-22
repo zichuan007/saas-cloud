@@ -85,7 +85,6 @@ CREATE TABLE `sys_dept` (
 
 CREATE TABLE `sys_menu` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '菜单ID',
-  `tenant_id` bigint(20) DEFAULT NULL COMMENT '租户ID（平台级菜单为空）',
   `menu_name` varchar(64) NOT NULL COMMENT '菜单名称',
   `parent_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '父菜单ID 0-顶级',
   `menu_type` tinyint(4) NOT NULL COMMENT '类型 0-目录 1-菜单 2-按钮',

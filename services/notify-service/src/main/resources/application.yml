@@ -12,10 +12,11 @@ spring:
     username: ${MYSQL_USER:root}
     password: ${MYSQL_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
-  redis:
-    host: ${REDIS_HOST:localhost}
-    port: ${REDIS_PORT:6379}
-    password: ${REDIS_PASSWORD:123456}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:123456}
   kafka:
     bootstrap-servers: ${KAFKA_ADDR:localhost:9092}
     consumer:
@@ -41,3 +42,18 @@ mybatis-plus:
       logic-delete-field: deleteFlag
       logic-delete-value: 1
       logic-not-delete-value: 0
+
+xxl:
+  job:
+    admin-addresses: http://127.0.0.1:8088/xxl-job-admin
+    executor-appname: notify-service
+    executor-port: 0
+
+sms:
+  config-type: yaml
+  blends:
+    alibaba:
+      access-key-id: ${SMS_ACCESS_KEY:}
+      access-key-secret: ${SMS_ACCESS_SECRET:}
+      signature: ${SMS_SIGNATURE:}
+      template-id: ${SMS_TEMPLATE_ID:}

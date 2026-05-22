@@ -4,12 +4,14 @@ import com.saas.cloud.common.core.enums.TenantStatusEnum;
 import com.saas.cloud.common.core.exception.BusinessException;
 import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.core.result.ResultCode;
+import com.saas.cloud.common.security.annotation.InnerApi;
 import com.saas.cloud.platform.api.dto.TenantCreateDTO;
 import com.saas.cloud.platform.api.vo.TenantVO;
 import com.saas.cloud.platform.entity.Package;
 import com.saas.cloud.platform.entity.Tenant;
 import com.saas.cloud.platform.service.IPackageService;
 import com.saas.cloud.platform.service.ITenantService;
+import com.saas.cloud.platform.service.impl.TenantCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
  * @since 2026-05-18
  */
 @Slf4j
+@InnerApi
 @RestController
 @RequestMapping("/internal")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -30,6 +33,7 @@ public class InternalController {
 
     private final ITenantService tenantService;
     private final IPackageService packageService;
+    private final TenantCacheService tenantCacheService;
 
     /**
      * 配额校验
@@ -128,30 +132,11 @@ public class InternalController {
      */
     @GetMapping("/tenant/by-code")
     public ApiResult<TenantVO> getTenantByCode(@RequestParam("tenantCode") String tenantCode) {
-        Tenant tenant = tenantService.getByTenantCode(tenantCode);
-        if (tenant == null) {
+        // 优先从 Redis 缓存获取
+        TenantVO vo = tenantCacheService.getTenantByCode(tenantCode);
+        if (vo == null) {
             throw new BusinessException(ResultCode.NOT_FOUND, "租户不存在, tenantCode=" + tenantCode);
         }
-
-        TenantVO vo = new TenantVO();
-        vo.setId(tenant.getId());
-        vo.setTenantCode(tenant.getTenantCode());
-        vo.setTenantName(tenant.getTenantName());
-        vo.setContactName(tenant.getContactPerson());
-        vo.setContactPhone(tenant.getContactPhone());
-        vo.setContactEmail(tenant.getContactEmail());
-        vo.setStatus(tenant.getStatus().intValue());
-        vo.setStatusDesc(TenantStatusEnum.of(tenant.getStatus()).getDesc());
-        vo.setCreateTime(tenant.getCreateTime());
-
-        if (tenant.getPackageId() != null) {
-            Package pkg = packageService.getById(tenant.getPackageId());
-            if (pkg != null) {
-                vo.setPackageName(pkg.getPackageName());
-                vo.setMaxUsers(pkg.getMaxUsers());
-            }
-        }
-
         return ApiResult.ok(vo);
     }
 
@@ -177,11 +162,13 @@ public class InternalController {
         vo.setCreateTime(tenant.getCreateTime());
 
         // 套餐信息
+        vo.setPackageId(tenant.getPackageId());
         if (tenant.getPackageId() != null) {
             Package pkg = packageService.getById(tenant.getPackageId());
             if (pkg != null) {
                 vo.setPackageName(pkg.getPackageName());
                 vo.setMaxUsers(pkg.getMaxUsers());
+                vo.setMenuIds(pkg.getMenuIds());
             }
         }
 
@@ -220,11 +207,13 @@ public class InternalController {
         }
 
         // 套餐信息
+        vo.setPackageId(tenant.getPackageId());
         if (tenant.getPackageId() != null) {
             Package pkg = packageService.getById(tenant.getPackageId());
             if (pkg != null) {
                 vo.setPackageName(pkg.getPackageName());
                 vo.setMaxUsers(pkg.getMaxUsers());
+                vo.setMenuIds(pkg.getMenuIds());
             }
         }
 

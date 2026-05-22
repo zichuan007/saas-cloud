@@ -3,8 +3,8 @@ package com.saas.cloud.platform.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.saas.cloud.common.core.exception.BusinessException;
 import com.saas.cloud.common.core.result.ResultCode;
+import cn.dev33.satoken.stp.StpUtil;
 import com.saas.cloud.common.security.context.UserContext;
-import com.saas.cloud.common.security.util.JwtUtils;
 import com.saas.cloud.platform.api.vo.PlatformUserVO;
 import com.saas.cloud.platform.entity.PlatformUser;
 import com.saas.cloud.platform.mapper.PlatformUserMapper;
@@ -32,8 +32,6 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class PlatformUserServiceImpl extends ServiceImpl<PlatformUserMapper, PlatformUser> implements IPlatformUserService {
-
-    private final JwtUtils jwtUtils;
 
     /** 平台管理员的租户ID固定为0 */
     private static final long PLATFORM_TENANT_ID = 0L;
@@ -82,20 +80,26 @@ public class PlatformUserServiceImpl extends ServiceImpl<PlatformUserMapper, Pla
         userInfo.setDataScope(0);
         userInfo.setPermissions(permissions);
 
-        // 生成 JWT Token
-        String accessToken = jwtUtils.generateAccessToken(userInfo);
-        String refreshToken = jwtUtils.generateRefreshToken(userInfo);
+        StpUtil.login(user.getId());
+        cn.dev33.satoken.session.SaSession session = StpUtil.getSession();
+        session.set("userId", userInfo.getUserId());
+        session.set("username", userInfo.getUsername());
+        session.set("tenantId", userInfo.getTenantId());
+        session.set("deptId", userInfo.getDeptId());
+        session.set("roleLevel", userInfo.getRoleLevel());
+        session.set("dataScope", userInfo.getDataScope());
+        session.set("permissions", userInfo.getPermissions() != null ? String.join(",", userInfo.getPermissions()) : "");
+        String tokenValue = StpUtil.getTokenValue();
 
-        // 更新最后登录时间
         user.setLastLoginTime(LocalDateTime.now());
         this.updateById(user);
 
         log.info("平台管理员登录成功, userId={}, username={}", user.getId(), user.getUsername());
 
         Map<String, Object> result = new HashMap<>(8);
-        result.put("accessToken", accessToken);
-        result.put("refreshToken", refreshToken);
-        result.put("expiresIn", 7200);
+        result.put("accessToken", tokenValue);
+        result.put("refreshToken", tokenValue);
+        result.put("expiresIn", StpUtil.getTokenTimeout());
         result.put("userId", user.getId());
         result.put("username", user.getUsername());
         result.put("realName", user.getRealName());

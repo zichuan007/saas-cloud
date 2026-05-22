@@ -18,6 +18,7 @@ import com.saas.cloud.workflow.api.vo.ProcessDefinitionDetailVO;
 import com.saas.cloud.workflow.api.vo.ProcessDefinitionVO;
 import com.saas.cloud.workflow.entity.WfProcessDefinitionExt;
 import com.saas.cloud.workflow.mapper.WfProcessDefinitionExtMapper;
+import com.saas.cloud.workflow.convert.WfProcessDefinitionConvert;
 import com.saas.cloud.workflow.service.IWfNodeConfigService;
 import com.saas.cloud.workflow.service.IWfProcessDefinitionExtService;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,7 @@ public class WfProcessDefinitionExtServiceImpl
     private final RepositoryService repositoryService;
     private final IWfNodeConfigService nodeConfigService;
     private final PlatformFeignClient platformFeignClient;
+    private final WfProcessDefinitionConvert processDefinitionConvert;
 
     /** 状态：挂起 */
     private static final byte STATUS_SUSPENDED = 0;
@@ -92,8 +94,7 @@ public class WfProcessDefinitionExtServiceImpl
             throw new BusinessException("流程定义不存在");
         }
 
-        ProcessDefinitionDetailVO detail = new ProcessDefinitionDetailVO();
-        BeanUtil.copyProperties(ext, detail);
+        ProcessDefinitionDetailVO detail = processDefinitionConvert.toDetailVO(ext);
         detail.setStatusDesc(getStatusDesc(ext.getStatus()));
 
         if (StrUtil.isNotBlank(ext.getProcessDefinitionId())) {
@@ -125,8 +126,7 @@ public class WfProcessDefinitionExtServiceImpl
             }
         }
 
-        WfProcessDefinitionExt ext = new WfProcessDefinitionExt();
-        BeanUtil.copyProperties(dto, ext);
+        WfProcessDefinitionExt ext = processDefinitionConvert.toEntity(dto);
         ext.setProcessDefinitionId("");
         ext.setVersion(1);
         ext.setStatus(STATUS_SUSPENDED);
@@ -159,7 +159,7 @@ public class WfProcessDefinitionExtServiceImpl
             checkProcessKeyUnique(dto.getProcessKey(), id);
         }
 
-        BeanUtil.copyProperties(dto, ext, "id");
+        processDefinitionConvert.updateEntity(dto, ext);
         updateById(ext);
 
         // 同步更新 Flowable Model 元数据
@@ -432,8 +432,7 @@ public class WfProcessDefinitionExtServiceImpl
     }
 
     private ProcessDefinitionVO convertToVO(WfProcessDefinitionExt ext) {
-        ProcessDefinitionVO vo = new ProcessDefinitionVO();
-        BeanUtil.copyProperties(ext, vo);
+        ProcessDefinitionVO vo = processDefinitionConvert.toVO(ext);
         vo.setStatusDesc(getStatusDesc(ext.getStatus()));
         return vo;
     }

@@ -19,8 +19,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
         excludeName = {
                 "com.saas.cloud.common.data.config.MybatisPlusConfig",
                 "com.saas.cloud.common.data.handler.AuditFieldHandler",
-                "com.saas.cloud.common.security.config.JwtProperties",
-                "com.saas.cloud.common.security.util.JwtUtils",
                 "com.saas.cloud.common.security.filter.TenantContextFilter",
                 "com.saas.cloud.common.security.interceptor.PermissionAspect"
         }
