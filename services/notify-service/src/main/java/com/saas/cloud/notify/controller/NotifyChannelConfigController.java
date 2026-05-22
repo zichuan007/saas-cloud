@@ -1,16 +1,23 @@
 package com.saas.cloud.notify.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.notify.api.dto.ChannelConfigUpdateDTO;
 import com.saas.cloud.notify.api.vo.ChannelConfigVO;
 import com.saas.cloud.notify.service.INotifyChannelConfigService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 通知渠道配置 前端控制器

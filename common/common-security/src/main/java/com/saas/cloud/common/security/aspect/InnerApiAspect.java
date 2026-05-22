@@ -1,8 +1,5 @@
 package com.saas.cloud.common.security.aspect;
 
-import com.saas.cloud.common.core.constant.SecurityConstants;
-import com.saas.cloud.common.core.exception.ForbiddenException;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -10,7 +7,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.saas.cloud.common.core.constant.SecurityConstants;
+import com.saas.cloud.common.core.exception.ForbiddenException;
+
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 内部接口访问控制切面

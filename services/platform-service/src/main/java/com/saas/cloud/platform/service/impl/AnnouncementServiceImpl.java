@@ -1,6 +1,9 @@
 package com.saas.cloud.platform.service.impl;
 
-import cn.hutool.core.util.StrUtil;
+import java.time.LocalDateTime;
+
+import org.springframework.stereotype.Service;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,10 +14,9 @@ import com.saas.cloud.platform.api.dto.AnnouncementQueryDTO;
 import com.saas.cloud.platform.entity.Announcement;
 import com.saas.cloud.platform.mapper.AnnouncementMapper;
 import com.saas.cloud.platform.service.IAnnouncementService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 系统公告表 服务实现类
@@ -25,16 +27,18 @@ import java.time.LocalDateTime;
  */
 @Slf4j
 @Service
-public class AnnouncementServiceImpl
-        extends ServiceImpl<AnnouncementMapper, Announcement>
+public class AnnouncementServiceImpl extends ServiceImpl<AnnouncementMapper, Announcement>
         implements IAnnouncementService {
 
     private static final byte STATUS_DRAFT = 0;
+
     private static final byte STATUS_PUBLISHED = 1;
+
     private static final byte STATUS_OFFLINE = 2;
 
     @Override
     public PageResult<Announcement> pageAnnouncements(AnnouncementQueryDTO query) {
+
         LambdaQueryWrapper<Announcement> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(StrUtil.isNotBlank(query.getTitle()), Announcement::getTitle, query.getTitle())
                 .eq(query.getStatus() != null, Announcement::getStatus, query.getStatus())
@@ -48,6 +52,7 @@ public class AnnouncementServiceImpl
 
     @Override
     public void createAnnouncement(AnnouncementCreateDTO dto) {
+
         Announcement announcement = new Announcement();
         announcement.setTitle(dto.getTitle());
         announcement.setContent(dto.getContent());
@@ -62,6 +67,7 @@ public class AnnouncementServiceImpl
 
     @Override
     public void updateAnnouncement(Long id, AnnouncementCreateDTO dto) {
+
         Announcement announcement = getById(id);
         if (announcement == null) {
             throw new BusinessException("公告不存在");
@@ -82,6 +88,7 @@ public class AnnouncementServiceImpl
 
     @Override
     public void publishAnnouncement(Long id) {
+
         Announcement announcement = getById(id);
         if (announcement == null) {
             throw new BusinessException("公告不存在");
@@ -98,6 +105,7 @@ public class AnnouncementServiceImpl
 
     @Override
     public void offlineAnnouncement(Long id) {
+
         Announcement announcement = getById(id);
         if (announcement == null) {
             throw new BusinessException("公告不存在");
@@ -110,4 +118,5 @@ public class AnnouncementServiceImpl
         updateById(announcement);
         log.info("下线公告成功, id={}, title={}", id, announcement.getTitle());
     }
+
 }

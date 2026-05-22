@@ -1,24 +1,26 @@
 package com.saas.cloud.common.security.filter;
 
-import cn.hutool.core.util.StrUtil;
-import com.saas.cloud.common.core.constant.SecurityConstants;
-import com.saas.cloud.common.security.context.TenantContext;
-import com.saas.cloud.common.security.context.UserContext;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.saas.cloud.common.core.constant.SecurityConstants;
+import com.saas.cloud.common.security.context.TenantContext;
+import com.saas.cloud.common.security.context.UserContext;
+
+import cn.hutool.core.util.StrUtil;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 租户/用户上下文过滤器：从 Gateway 注入的 Header 中提取上下文

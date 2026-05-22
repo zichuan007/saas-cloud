@@ -1,10 +1,10 @@
 package com.saas.cloud.platform.service;
 
+import java.util.Map;
+
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.saas.cloud.platform.api.vo.PlatformUserVO;
 import com.saas.cloud.platform.entity.PlatformUser;
-import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.Map;
 
 /**
  * 平台用户服务接口

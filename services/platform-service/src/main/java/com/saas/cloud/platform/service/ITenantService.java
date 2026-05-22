@@ -1,11 +1,11 @@
 package com.saas.cloud.platform.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.saas.cloud.common.core.result.PageResult;
 import com.saas.cloud.platform.api.dto.TenantCreateDTO;
 import com.saas.cloud.platform.api.dto.TenantQueryDTO;
 import com.saas.cloud.platform.api.vo.TenantVO;
 import com.saas.cloud.platform.entity.Tenant;
-import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * 租户服务接口

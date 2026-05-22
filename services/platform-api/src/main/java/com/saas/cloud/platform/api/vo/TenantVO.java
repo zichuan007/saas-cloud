@@ -1,9 +1,9 @@
 package com.saas.cloud.platform.api.vo;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import lombok.Data;
 
 /**
  * 租户信息视图对象

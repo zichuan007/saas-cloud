@@ -1,6 +1,20 @@
 package com.saas.cloud.workflow.service.impl;
 
-import cn.hutool.core.util.StrUtil;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.flowable.engine.HistoryService;
+import org.flowable.engine.RuntimeService;
+import org.flowable.engine.TaskService;
+import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.task.api.DelegationState;
+import org.flowable.task.api.Task;
+import org.flowable.task.service.impl.persistence.entity.TaskEntityImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,30 +26,22 @@ import com.saas.cloud.common.kafka.producer.KafkaProducerService;
 import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.common.security.context.UserContext;
 import com.saas.cloud.notify.api.event.NotifyEvent;
-import com.saas.cloud.workflow.api.dto.*;
+import com.saas.cloud.workflow.api.dto.TaskAddSignDTO;
+import com.saas.cloud.workflow.api.dto.TaskApproveDTO;
+import com.saas.cloud.workflow.api.dto.TaskDelegateDTO;
+import com.saas.cloud.workflow.api.dto.TaskQueryDTO;
+import com.saas.cloud.workflow.api.dto.TaskRejectDTO;
+import com.saas.cloud.workflow.api.dto.TaskTransferDTO;
 import com.saas.cloud.workflow.entity.WfProcessInstanceExt;
 import com.saas.cloud.workflow.entity.WfTaskExt;
 import com.saas.cloud.workflow.mapper.WfProcessInstanceExtMapper;
 import com.saas.cloud.workflow.mapper.WfTaskExtMapper;
 import com.saas.cloud.workflow.service.IWfCopyService;
 import com.saas.cloud.workflow.service.IWfTaskExtService;
+
+import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.flowable.engine.HistoryService;
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.TaskService;
-import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.task.api.DelegationState;
-import org.flowable.task.api.Task;
-import org.flowable.task.api.history.HistoricTaskInstance;
-import org.flowable.task.service.impl.persistence.entity.TaskEntityImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 任务扩展表 服务实现类

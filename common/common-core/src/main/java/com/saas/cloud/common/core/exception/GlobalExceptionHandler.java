@@ -1,8 +1,7 @@
 package com.saas.cloud.common.core.exception;
 
-import com.saas.cloud.common.core.result.ApiResult;
-import com.saas.cloud.common.core.result.ResultCode;
-import lombok.extern.slf4j.Slf4j;
+import java.util.stream.Collectors;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
@@ -12,8 +11,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.saas.cloud.common.core.result.ApiResult;
+import com.saas.cloud.common.core.result.ResultCode;
+
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 全局异常处理器

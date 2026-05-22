@@ -1,10 +1,11 @@
 package com.saas.cloud.common.data.tenant;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import java.util.Arrays;
 import java.util.List;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import lombok.Data;
 
 /**
  * 多租户配置属性，支持 YAML 配置忽略表等参数

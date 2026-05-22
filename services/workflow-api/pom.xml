@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>workflow-api</artifactId>
-    <name>工作流服务 API</name>
+    <name>Workflow API</name>
     <description>工作流服务 API - 包含 DTO/VO、Feign Client 接口、常量枚举</description>
 
     <dependencies>

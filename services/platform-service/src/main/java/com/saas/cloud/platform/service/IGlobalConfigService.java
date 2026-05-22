@@ -1,9 +1,9 @@
 package com.saas.cloud.platform.service;
 
-import com.saas.cloud.platform.entity.GlobalConfig;
-import com.baomidou.mybatisplus.extension.service.IService;
-
 import java.util.List;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.saas.cloud.platform.entity.GlobalConfig;
 
 /**
  * 全局配置服务接口

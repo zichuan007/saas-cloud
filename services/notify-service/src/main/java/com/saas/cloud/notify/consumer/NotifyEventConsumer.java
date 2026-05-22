@@ -1,16 +1,18 @@
 package com.saas.cloud.notify.consumer;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saas.cloud.common.kafka.config.KafkaConfig;
 import com.saas.cloud.notify.api.event.NotifyEvent;
 import com.saas.cloud.notify.service.INotifyMessageService;
 import com.saas.cloud.notify.service.ISmsService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 /**
  * 通知事件 Kafka 消费者

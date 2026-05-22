@@ -1,10 +1,10 @@
 package com.saas.cloud.notify.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.saas.cloud.common.core.result.PageResult;
 import com.saas.cloud.notify.api.event.NotifyEvent;
 import com.saas.cloud.notify.api.vo.MessageVO;
 import com.saas.cloud.notify.entity.NotifyMessage;
-import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * 站内消息表 服务类

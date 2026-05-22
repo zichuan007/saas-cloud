@@ -1,25 +1,27 @@
 package com.saas.cloud.platform.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.saas.cloud.common.core.exception.BusinessException;
-import com.saas.cloud.common.core.result.ResultCode;
-import cn.dev33.satoken.stp.StpUtil;
-import com.saas.cloud.common.security.context.UserContext;
-import com.saas.cloud.platform.api.vo.PlatformUserVO;
-import com.saas.cloud.platform.entity.PlatformUser;
-import com.saas.cloud.platform.mapper.PlatformUserMapper;
-import com.saas.cloud.platform.service.IPlatformUserService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.saas.cloud.common.core.exception.BusinessException;
+import com.saas.cloud.common.core.result.ResultCode;
+import com.saas.cloud.common.security.context.UserContext;
+import com.saas.cloud.platform.api.vo.PlatformUserVO;
+import com.saas.cloud.platform.entity.PlatformUser;
+import com.saas.cloud.platform.mapper.PlatformUserMapper;
+import com.saas.cloud.platform.service.IPlatformUserService;
+
+import cn.dev33.satoken.stp.StpUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 平台用户服务实现类

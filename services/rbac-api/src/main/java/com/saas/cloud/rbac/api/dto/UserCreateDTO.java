@@ -1,10 +1,10 @@
 package com.saas.cloud.rbac.api.dto;
 
-import lombok.Data;
-
-import jakarta.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.List;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
 /**
  * 用户创建请求DTO

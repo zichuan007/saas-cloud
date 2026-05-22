@@ -1,9 +1,9 @@
 package com.saas.cloud.wechat.oa.service;
 
+import java.util.List;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.saas.cloud.wechat.oa.entity.WechatOaAccount;
-
-import java.util.List;
 
 /**
  * 公众号账号表 服务接口

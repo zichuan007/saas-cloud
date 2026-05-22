@@ -1,10 +1,10 @@
 package com.saas.cloud.rbac.service;
 
-import com.saas.cloud.rbac.api.dto.RegisterDTO;
-import com.saas.cloud.rbac.api.vo.RegisterVO;
-
 import java.util.List;
 import java.util.Map;
+
+import com.saas.cloud.rbac.api.dto.RegisterDTO;
+import com.saas.cloud.rbac.api.vo.RegisterVO;
 
 /**
  * 认证服务接口

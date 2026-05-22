@@ -1,8 +1,8 @@
 package com.saas.cloud.rbac.api.vo;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * 字典类型视图

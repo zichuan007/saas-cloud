@@ -2,6 +2,7 @@ package com.saas.cloud.common.data.base;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

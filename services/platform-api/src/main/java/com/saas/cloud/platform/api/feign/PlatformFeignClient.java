@@ -1,14 +1,15 @@
 package com.saas.cloud.platform.api.feign;
 
-import com.saas.cloud.common.core.result.ApiResult;
-import com.saas.cloud.platform.api.dto.TenantCreateDTO;
-import com.saas.cloud.platform.api.vo.TenantVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.saas.cloud.common.core.result.ApiResult;
+import com.saas.cloud.platform.api.dto.TenantCreateDTO;
+import com.saas.cloud.platform.api.vo.TenantVO;
 
 /**
  * 平台服务 Feign 客户端接口

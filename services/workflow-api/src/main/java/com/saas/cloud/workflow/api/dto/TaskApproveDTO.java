@@ -1,10 +1,10 @@
 package com.saas.cloud.workflow.api.dto;
 
-import lombok.Data;
-
-import jakarta.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.List;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
 /**
  * 任务审批通过请求DTO

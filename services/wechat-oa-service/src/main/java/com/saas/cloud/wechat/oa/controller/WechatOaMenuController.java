@@ -1,16 +1,23 @@
 package com.saas.cloud.wechat.oa.controller;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.log.annotation.OperationLog;
 import com.saas.cloud.wechat.oa.entity.WechatOaMenu;
 import com.saas.cloud.wechat.oa.service.IWechatOaMenuService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 /**
  * 公众号菜单控制器

@@ -1,8 +1,9 @@
 package com.saas.cloud.rbac.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.saas.cloud.rbac.entity.DictData;
-import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 字典数据 Mapper 接口

@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>workflow-service</artifactId>
-    <name>工作流服务</name>
+    <name>Workflow Service</name>
     <packaging>jar</packaging>
 
     <dependencies>

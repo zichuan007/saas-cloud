@@ -1,5 +1,12 @@
 package com.saas.cloud.rbac.tenant;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,14 +20,9 @@ import com.saas.cloud.rbac.entity.Menu;
 import com.saas.cloud.rbac.entity.RoleMenu;
 import com.saas.cloud.rbac.mapper.MenuMapper;
 import com.saas.cloud.rbac.mapper.RoleMenuMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 租户初始化 - 为超管角色分配套餐菜单权限

@@ -1,5 +1,16 @@
 package com.saas.cloud.wechat.oa.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.saas.cloud.wechat.oa.client.WechatApiClient;
@@ -7,18 +18,9 @@ import com.saas.cloud.wechat.oa.entity.WechatOaMenu;
 import com.saas.cloud.wechat.oa.mapper.WechatOaMenuMapper;
 import com.saas.cloud.wechat.oa.service.IWechatOaAccountService;
 import com.saas.cloud.wechat.oa.service.IWechatOaMenuService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 公众号菜单表 服务实现类

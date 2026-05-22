@@ -1,9 +1,9 @@
 package com.saas.cloud.notify.api.vo;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import lombok.Data;
 
 /**
  * 站内消息视图VO

@@ -1,9 +1,9 @@
 package com.saas.cloud.wechat.oa.service;
 
+import java.util.List;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.saas.cloud.wechat.oa.entity.WechatOaUserTag;
-
-import java.util.List;
 
 /**
  * 粉丝标签表 服务接口

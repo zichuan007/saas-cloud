@@ -1,7 +1,8 @@
 package com.saas.cloud.common.job;
 
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import lombok.Data;
 
 /**
  * XXL-Job 配置属性

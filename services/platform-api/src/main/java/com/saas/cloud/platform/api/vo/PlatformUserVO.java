@@ -1,8 +1,8 @@
 package com.saas.cloud.platform.api.vo;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * 平台用户视图对象

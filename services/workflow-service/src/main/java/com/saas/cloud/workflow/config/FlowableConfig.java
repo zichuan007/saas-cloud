@@ -1,10 +1,11 @@
 package com.saas.cloud.workflow.config;
 
-import lombok.extern.slf4j.Slf4j;
 import org.flowable.spring.SpringProcessEngineConfiguration;
 import org.flowable.spring.boot.EngineConfigurationConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Flowable 流程引擎配置

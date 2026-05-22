@@ -1,11 +1,11 @@
 package com.saas.cloud.notify.service;
 
+import java.util.List;
+
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.saas.cloud.notify.api.dto.ChannelConfigUpdateDTO;
 import com.saas.cloud.notify.api.vo.ChannelConfigVO;
 import com.saas.cloud.notify.entity.NotifyChannelConfig;
-import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.List;
 
 /**
  * 租户通知渠道配置表 服务类

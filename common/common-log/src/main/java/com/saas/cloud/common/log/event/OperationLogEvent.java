@@ -1,8 +1,8 @@
 package com.saas.cloud.common.log.event;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * 操作日志事件 DTO（Kafka 消息体）

@@ -1,8 +1,8 @@
 package com.saas.cloud.workflow.api.vo;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * 节点审批人配置视图对象

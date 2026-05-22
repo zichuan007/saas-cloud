@@ -1,9 +1,9 @@
 package com.saas.cloud.wechat.oa.service;
 
+import java.util.List;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.saas.cloud.wechat.oa.entity.WechatOaAutoReplyRule;
-
-import java.util.List;
 
 /**
  * 自动回复规则表 服务接口

@@ -1,14 +1,22 @@
 package com.saas.cloud.notify.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.core.result.PageResult;
 import com.saas.cloud.common.security.context.UserContext;
 import com.saas.cloud.notify.api.vo.MessageVO;
 import com.saas.cloud.notify.service.INotifyMessageService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * 站内消息 前端控制器

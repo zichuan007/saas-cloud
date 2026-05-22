@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>notify-service</artifactId>
-    <name>通知服务</name>
+    <name>Notify Service</name>
     <packaging>jar</packaging>
 
     <dependencies>

@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>wechat-oa-service</artifactId>
-    <name>微信公众号服务</name>
+    <name>WeChat OA Service</name>
     <packaging>jar</packaging>
 
     <dependencies>

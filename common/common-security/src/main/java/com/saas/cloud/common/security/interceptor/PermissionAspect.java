@@ -1,13 +1,15 @@
 package com.saas.cloud.common.security.interceptor;
 
-import com.saas.cloud.common.core.exception.ForbiddenException;
-import com.saas.cloud.common.security.annotation.RequirePermission;
-import com.saas.cloud.common.security.context.UserContext;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
+
+import com.saas.cloud.common.core.exception.ForbiddenException;
+import com.saas.cloud.common.security.annotation.RequirePermission;
+import com.saas.cloud.common.security.context.UserContext;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 权限校验 AOP

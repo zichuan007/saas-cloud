@@ -1,10 +1,10 @@
 package com.saas.cloud.notify.service;
 
+import java.util.List;
+
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.saas.cloud.notify.api.dto.TemplateCreateDTO;
 import com.saas.cloud.notify.entity.NotifyTemplate;
-import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.List;
 
 /**
  * 通知模板表 服务类

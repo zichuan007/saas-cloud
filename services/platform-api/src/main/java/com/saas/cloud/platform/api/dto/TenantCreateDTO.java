@@ -1,9 +1,9 @@
 package com.saas.cloud.platform.api.dto;
 
-import lombok.Data;
+import java.io.Serializable;
 
 import jakarta.validation.constraints.NotBlank;
-import java.io.Serializable;
+import lombok.Data;
 
 /**
  * 租户创建请求DTO

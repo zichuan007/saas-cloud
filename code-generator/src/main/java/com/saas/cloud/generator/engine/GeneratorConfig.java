@@ -1,9 +1,9 @@
 package com.saas.cloud.generator.engine;
 
-import lombok.Data;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.Data;
 
 /**
  * 通用代码生成器配置

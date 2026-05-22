@@ -1,12 +1,13 @@
 package com.saas.cloud.rbac.captcha;
 
-import com.anji.captcha.service.CaptchaCacheService;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.anji.captcha.service.CaptchaCacheService;
 
 /**
  * AJ-Captcha 配置：指定 Redis 缓存策略

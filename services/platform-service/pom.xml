@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>platform-service</artifactId>
-    <name>平台管理服务</name>
+    <name>Platform Service</name>
     <packaging>jar</packaging>
 
     <dependencies>

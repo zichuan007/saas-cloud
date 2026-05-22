@@ -2,7 +2,12 @@ package com.saas.cloud.workflow.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.saas.cloud.common.core.result.PageResult;
-import com.saas.cloud.workflow.api.dto.*;
+import com.saas.cloud.workflow.api.dto.TaskAddSignDTO;
+import com.saas.cloud.workflow.api.dto.TaskApproveDTO;
+import com.saas.cloud.workflow.api.dto.TaskDelegateDTO;
+import com.saas.cloud.workflow.api.dto.TaskQueryDTO;
+import com.saas.cloud.workflow.api.dto.TaskRejectDTO;
+import com.saas.cloud.workflow.api.dto.TaskTransferDTO;
 import com.saas.cloud.workflow.entity.WfTaskExt;
 
 /**

@@ -1,9 +1,10 @@
 package com.saas.cloud.rbac.mapper;
 
-import com.saas.cloud.rbac.entity.Dept;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.saas.cloud.rbac.entity.Dept;
 
 /**
  * 部门表 Mapper 接口

@@ -1,10 +1,11 @@
 package com.saas.cloud.common.storage.config;
 
-import io.minio.MinioClient;
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import io.minio.MinioClient;
+import lombok.Data;
 
 /**
  * MinIO 配置

@@ -1,11 +1,11 @@
 package com.saas.cloud.platform.api.dto;
 
-import lombok.Data;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import lombok.Data;
 
 /**
  * 系统公告创建/更新请求DTO

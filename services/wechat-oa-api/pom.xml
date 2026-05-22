@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>wechat-oa-api</artifactId>
-    <name>微信公众号服务 API</name>
+    <name>WeChat OA API</name>
     <description>微信公众号服务 API - 包含 DTO/VO、Feign Client 接口、常量枚举</description>
 
     <dependencies>

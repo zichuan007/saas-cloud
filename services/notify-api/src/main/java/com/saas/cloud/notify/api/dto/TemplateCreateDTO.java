@@ -1,10 +1,10 @@
 package com.saas.cloud.notify.api.dto;
 
-import lombok.Data;
+import java.io.Serializable;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.io.Serializable;
+import lombok.Data;
 
 /**
  * 通知模板创建/更新请求DTO

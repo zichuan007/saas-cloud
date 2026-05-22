@@ -1,12 +1,13 @@
 package com.saas.cloud.notify.entity;
 
+import java.time.LocalDateTime;
+
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.saas.cloud.common.data.base.TenantBaseEntity;
+
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 /**
  * 短信发送日志表

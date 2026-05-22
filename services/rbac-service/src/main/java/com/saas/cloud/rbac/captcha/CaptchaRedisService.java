@@ -1,12 +1,14 @@
 package com.saas.cloud.rbac.captcha;
 
-import com.anji.captcha.service.CaptchaCacheService;
-import lombok.RequiredArgsConstructor;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.TimeUnit;
+import com.anji.captcha.service.CaptchaCacheService;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * AJ-Captcha Redis 缓存实现

@@ -1,8 +1,8 @@
 package com.saas.cloud.platform.api.dto;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * 租户分页查询请求DTO

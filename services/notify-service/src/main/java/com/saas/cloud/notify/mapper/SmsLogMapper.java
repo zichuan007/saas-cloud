@@ -1,8 +1,9 @@
 package com.saas.cloud.notify.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.saas.cloud.notify.entity.SmsLog;
-import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 短信发送日志 Mapper 接口

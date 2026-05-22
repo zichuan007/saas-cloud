@@ -1,13 +1,15 @@
 package com.saas.cloud.common.data.aspect;
 
-import com.saas.cloud.common.data.annotation.DataScope;
-import com.saas.cloud.common.data.interceptor.DataScopeContextHolder;
-import com.saas.cloud.common.data.interceptor.DataScopeContextHolder.DataScopeParam;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
+
+import com.saas.cloud.common.data.annotation.DataScope;
+import com.saas.cloud.common.data.interceptor.DataScopeContextHolder;
+import com.saas.cloud.common.data.interceptor.DataScopeContextHolder.DataScopeParam;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 数据范围 AOP 切面，拦截 @DataScope 注解方法，

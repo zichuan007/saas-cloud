@@ -1,12 +1,8 @@
 package com.saas.cloud.common.log.aspect;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.saas.cloud.common.kafka.config.KafkaConfig;
-import com.saas.cloud.common.kafka.producer.KafkaProducerService;
-import com.saas.cloud.common.log.annotation.OperationLog;
-import com.saas.cloud.common.log.event.OperationLogEvent;
-import com.saas.cloud.common.security.context.UserContext;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -18,11 +14,17 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.saas.cloud.common.kafka.config.KafkaConfig;
+import com.saas.cloud.common.kafka.producer.KafkaProducerService;
+import com.saas.cloud.common.log.annotation.OperationLog;
+import com.saas.cloud.common.log.event.OperationLogEvent;
+import com.saas.cloud.common.security.context.UserContext;
+
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 操作日志 AOP 切面

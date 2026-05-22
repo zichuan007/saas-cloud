@@ -1,9 +1,10 @@
 package com.saas.cloud.common.security.context;
 
-import com.alibaba.ttl.TransmittableThreadLocal;
-import lombok.Data;
-
 import java.util.Set;
+
+import com.alibaba.ttl.TransmittableThreadLocal;
+
+import lombok.Data;
 
 /**
  * 用户上下文，基于 TransmittableThreadLocal 支持异步传播

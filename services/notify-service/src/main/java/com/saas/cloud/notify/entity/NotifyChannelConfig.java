@@ -3,7 +3,7 @@ package com.saas.cloud.notify.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.saas.cloud.common.data.base.TenantBaseEntity;
-import java.io.Serializable;
+
 import lombok.Getter;
 import lombok.Setter;
 

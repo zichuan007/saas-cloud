@@ -1,8 +1,9 @@
 package com.saas.cloud.platform.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.saas.cloud.platform.entity.SysFile;
-import org.apache.ibatis.annotations.Mapper;
 
 /**
  * 文件管理 Mapper 接口

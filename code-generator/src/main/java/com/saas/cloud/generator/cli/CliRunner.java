@@ -1,12 +1,12 @@
 package com.saas.cloud.generator.cli;
 
-import com.saas.cloud.generator.engine.GeneratorConfig;
-import com.saas.cloud.generator.engine.GeneratorEngine;
-import com.saas.cloud.generator.engine.TableMeta;
-
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+
+import com.saas.cloud.generator.engine.GeneratorConfig;
+import com.saas.cloud.generator.engine.GeneratorEngine;
+import com.saas.cloud.generator.engine.TableMeta;
 
 /**
  * 代码生成器命令行入口

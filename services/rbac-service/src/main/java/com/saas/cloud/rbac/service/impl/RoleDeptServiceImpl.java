@@ -1,10 +1,11 @@
 package com.saas.cloud.rbac.service.impl;
 
+import org.springframework.stereotype.Service;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.saas.cloud.rbac.entity.RoleDept;
 import com.saas.cloud.rbac.mapper.RoleDeptMapper;
 import com.saas.cloud.rbac.service.IRoleDeptService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 
 /**
  * <p>

@@ -1,5 +1,12 @@
 package com.saas.cloud.rbac.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.security.annotation.InnerApi;
@@ -8,10 +15,9 @@ import com.saas.cloud.rbac.entity.Dept;
 import com.saas.cloud.rbac.entity.User;
 import com.saas.cloud.rbac.service.IDeptService;
 import com.saas.cloud.rbac.service.IUserService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * RBAC 内部接口控制器（供其他微服务通过 Feign 调用）

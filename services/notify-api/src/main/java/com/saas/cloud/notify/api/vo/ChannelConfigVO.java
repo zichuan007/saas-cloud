@@ -1,8 +1,8 @@
 package com.saas.cloud.notify.api.vo;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * 通知渠道配置视图VO

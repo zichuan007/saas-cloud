@@ -1,11 +1,12 @@
 package com.saas.cloud.platform.service;
 
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.saas.cloud.platform.api.vo.SysFileVO;
 import com.saas.cloud.platform.entity.SysFile;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 /**
  * 文件管理服务接口

@@ -1,16 +1,18 @@
 package com.saas.cloud.wechat.oa.service.impl;
 
-import cn.hutool.core.util.StrUtil;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.saas.cloud.common.core.exception.BusinessException;
 import com.saas.cloud.wechat.oa.entity.WechatOaAutoReplyRule;
 import com.saas.cloud.wechat.oa.mapper.WechatOaAutoReplyRuleMapper;
 import com.saas.cloud.wechat.oa.service.IWechatOaAutoReplyRuleService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
+import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 自动回复规则表 服务实现类

@@ -1,10 +1,11 @@
 package com.saas.cloud.rbac.entity;
 
+import java.time.LocalDateTime;
+
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.saas.cloud.common.data.base.TenantBaseEntity;
-import java.io.Serializable;
-import java.time.LocalDateTime;
+
 import lombok.Getter;
 import lombok.Setter;
 

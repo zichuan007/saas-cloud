@@ -1,18 +1,20 @@
 package com.saas.cloud.wechat.oa.task;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.saas.cloud.wechat.oa.client.WechatApiClient;
 import com.saas.cloud.wechat.oa.entity.WechatOaAccount;
 import com.saas.cloud.wechat.oa.service.IWechatOaAccountService;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 
 /**
  * AccessToken 定时刷新任务

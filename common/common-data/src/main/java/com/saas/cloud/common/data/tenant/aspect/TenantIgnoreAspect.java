@@ -1,11 +1,12 @@
 package com.saas.cloud.common.data.tenant.aspect;
 
-import com.saas.cloud.common.data.tenant.annotation.TenantIgnore;
-import com.saas.cloud.common.security.context.TenantContext;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
+
+import com.saas.cloud.common.data.tenant.annotation.TenantIgnore;
+import com.saas.cloud.common.security.context.TenantContext;
 
 /**
  * {@link TenantIgnore} 注解的 AOP 切面

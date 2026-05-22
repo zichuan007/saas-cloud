@@ -1,15 +1,5 @@
 package com.saas.cloud.wechat.oa.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.saas.cloud.common.core.result.ApiResult;
-import com.saas.cloud.wechat.oa.entity.WechatOaArticle;
-import com.saas.cloud.wechat.oa.entity.WechatOaFanUser;
-import com.saas.cloud.wechat.oa.service.IWechatOaArticleService;
-import com.saas.cloud.wechat.oa.service.IWechatOaFanUserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -17,6 +7,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.saas.cloud.common.core.result.ApiResult;
+import com.saas.cloud.wechat.oa.entity.WechatOaArticle;
+import com.saas.cloud.wechat.oa.entity.WechatOaFanUser;
+import com.saas.cloud.wechat.oa.service.IWechatOaArticleService;
+import com.saas.cloud.wechat.oa.service.IWechatOaFanUserService;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * 公众号数据看板控制器

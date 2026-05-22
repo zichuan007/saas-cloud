@@ -1,11 +1,13 @@
 package com.saas.cloud.common.feign.interceptor;
 
+import org.springframework.stereotype.Component;
+
 import com.saas.cloud.common.core.constant.SecurityConstants;
 import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.common.security.context.UserContext;
+
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
-import org.springframework.stereotype.Component;
 
 /**
  * Feign 租户/用户上下文传播拦截器

@@ -1,8 +1,8 @@
 package com.saas.cloud.common.core.result;
 
-import lombok.Data;
-
 import java.io.Serializable;
+
+import lombok.Data;
 
 /**
  * 统一响应体

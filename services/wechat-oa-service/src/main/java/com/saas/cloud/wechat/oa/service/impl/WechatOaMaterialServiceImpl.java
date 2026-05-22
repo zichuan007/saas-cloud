@@ -1,5 +1,10 @@
 package com.saas.cloud.wechat.oa.service.impl;
 
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,12 +15,9 @@ import com.saas.cloud.wechat.oa.entity.WechatOaMaterial;
 import com.saas.cloud.wechat.oa.mapper.WechatOaMaterialMapper;
 import com.saas.cloud.wechat.oa.service.IWechatOaAccountService;
 import com.saas.cloud.wechat.oa.service.IWechatOaMaterialService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 /**
  * 素材表 服务实现类

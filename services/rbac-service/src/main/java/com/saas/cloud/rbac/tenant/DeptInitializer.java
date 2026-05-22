@@ -1,13 +1,15 @@
 package com.saas.cloud.rbac.tenant;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.saas.cloud.common.core.tenant.TenantInitContext;
 import com.saas.cloud.common.core.tenant.TenantInitializer;
 import com.saas.cloud.rbac.entity.Dept;
 import com.saas.cloud.rbac.mapper.DeptMapper;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * 租户初始化 - 创建根部门

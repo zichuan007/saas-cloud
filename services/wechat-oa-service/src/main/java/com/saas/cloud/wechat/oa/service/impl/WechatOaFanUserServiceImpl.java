@@ -1,6 +1,14 @@
 package com.saas.cloud.wechat.oa.service.impl;
 
-import cn.hutool.core.util.StrUtil;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,17 +20,10 @@ import com.saas.cloud.wechat.oa.entity.WechatOaFanUser;
 import com.saas.cloud.wechat.oa.mapper.WechatOaFanUserMapper;
 import com.saas.cloud.wechat.oa.service.IWechatOaAccountService;
 import com.saas.cloud.wechat.oa.service.IWechatOaFanUserService;
+
+import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 粉丝表 服务实现类

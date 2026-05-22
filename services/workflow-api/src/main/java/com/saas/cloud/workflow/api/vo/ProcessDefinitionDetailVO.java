@@ -1,10 +1,10 @@
 package com.saas.cloud.workflow.api.vo;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import lombok.Data;
 
 /**
  * 流程定义详情视图对象

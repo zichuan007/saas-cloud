@@ -1,6 +1,5 @@
 package com.saas.cloud.common.data.interceptor;
 
-import com.saas.cloud.common.data.annotation.DataScope;
 import lombok.Data;
 
 /**

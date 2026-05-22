@@ -1,7 +1,7 @@
 package com.saas.cloud.rbac.service;
 
-import com.saas.cloud.rbac.entity.PasswordHistory;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.saas.cloud.rbac.entity.PasswordHistory;
 
 /**
  * <p>

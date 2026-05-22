@@ -1,9 +1,9 @@
 package com.saas.cloud.common.core.result;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.List;
+
+import lombok.Data;
 
 /**
  * 分页结果包装

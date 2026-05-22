@@ -1,9 +1,9 @@
 package com.saas.cloud.rbac.api.vo;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import lombok.Data;
 
 /**
  * 用户列表分页视图VO

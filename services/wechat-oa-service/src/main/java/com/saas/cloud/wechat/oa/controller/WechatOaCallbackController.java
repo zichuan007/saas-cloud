@@ -1,20 +1,28 @@
 package com.saas.cloud.wechat.oa.controller;
 
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.digest.DigestUtil;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.saas.cloud.wechat.oa.entity.WechatOaAccount;
 import com.saas.cloud.wechat.oa.entity.WechatOaAutoReplyRule;
 import com.saas.cloud.wechat.oa.entity.WechatOaFanUser;
 import com.saas.cloud.wechat.oa.service.IWechatOaAccountService;
 import com.saas.cloud.wechat.oa.service.IWechatOaAutoReplyRuleService;
 import com.saas.cloud.wechat.oa.service.IWechatOaFanUserService;
+
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.DigestUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
 
 /**
  * 微信回调控制器（免认证）

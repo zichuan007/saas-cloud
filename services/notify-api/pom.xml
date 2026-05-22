@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>notify-api</artifactId>
-    <name>通知服务 API</name>
+    <name>Notify API</name>
     <description>通知服务 API - 包含 DTO/VO、Feign Client 接口、常量枚举</description>
 
     <dependencies>

@@ -1,9 +1,9 @@
 package com.saas.cloud.notify.api.event;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.Map;
+
+import lombok.Data;
 
 /**
  * 通知事件（跨服务共享的事件协议）

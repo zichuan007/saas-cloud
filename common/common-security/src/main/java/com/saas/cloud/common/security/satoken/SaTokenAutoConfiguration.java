@@ -1,11 +1,12 @@
 package com.saas.cloud.common.security.satoken;
 
-import cn.dev33.satoken.interceptor.SaInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import cn.dev33.satoken.interceptor.SaInterceptor;
 
 /**
  * Sa-Token 自动配置（Servlet 服务端）

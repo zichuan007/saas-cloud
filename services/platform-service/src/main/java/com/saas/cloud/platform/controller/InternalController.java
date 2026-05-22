@@ -1,5 +1,14 @@
 package com.saas.cloud.platform.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.saas.cloud.common.core.enums.TenantStatusEnum;
 import com.saas.cloud.common.core.exception.BusinessException;
 import com.saas.cloud.common.core.result.ApiResult;
@@ -12,10 +21,9 @@ import com.saas.cloud.platform.entity.Tenant;
 import com.saas.cloud.platform.service.IPackageService;
 import com.saas.cloud.platform.service.ITenantService;
 import com.saas.cloud.platform.service.impl.TenantCacheService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * 内部接口控制器（供其他微服务通过 Feign 调用）

@@ -1,5 +1,9 @@
 package com.saas.cloud.common.data.config;
 
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
@@ -8,10 +12,8 @@ import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerIntercept
 import com.saas.cloud.common.data.interceptor.DataScopeSqlInterceptor;
 import com.saas.cloud.common.data.tenant.TenantLineHandlerImpl;
 import com.saas.cloud.common.data.tenant.TenantProperties;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * MyBatis-Plus 配置

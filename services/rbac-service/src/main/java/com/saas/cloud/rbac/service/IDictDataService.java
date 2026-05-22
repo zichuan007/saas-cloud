@@ -1,9 +1,9 @@
 package com.saas.cloud.rbac.service;
 
+import java.util.List;
+
 import com.saas.cloud.rbac.api.dto.DictDataCreateDTO;
 import com.saas.cloud.rbac.api.vo.DictDataVO;
-
-import java.util.List;
 
 /**
  * 字典数据 Service 接口

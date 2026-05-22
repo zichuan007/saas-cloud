@@ -1,9 +1,9 @@
 package com.saas.cloud.rbac.service;
 
+import java.util.List;
+
 import com.saas.cloud.rbac.api.dto.DictTypeCreateDTO;
 import com.saas.cloud.rbac.api.vo.DictTypeVO;
-
-import java.util.List;
 
 /**
  * 字典类型 Service 接口
@@ -42,4 +42,5 @@ public interface IDictTypeService {
      * @param id 字典类型ID
      */
     void deleteDictType(Long id);
+
 }

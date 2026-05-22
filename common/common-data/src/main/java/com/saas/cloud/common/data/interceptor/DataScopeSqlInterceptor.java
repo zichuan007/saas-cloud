@@ -1,10 +1,20 @@
 package com.saas.cloud.common.data.interceptor;
 
+import java.lang.reflect.Field;
+import java.sql.SQLException;
+
+import org.apache.ibatis.executor.Executor;
+import org.apache.ibatis.mapping.BoundSql;
+import org.apache.ibatis.mapping.MappedStatement;
+import org.apache.ibatis.session.ResultHandler;
+import org.apache.ibatis.session.RowBounds;
+
 import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
 import com.saas.cloud.common.core.enums.DataScopeEnum;
 import com.saas.cloud.common.data.interceptor.DataScopeContextHolder.DataScopeParam;
 import com.saas.cloud.common.security.context.UserContext;
 import com.saas.cloud.common.security.context.UserContext.UserInfo;
+
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
@@ -17,14 +27,6 @@ import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.ParenthesedSelect;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
-import org.apache.ibatis.executor.Executor;
-import org.apache.ibatis.mapping.BoundSql;
-import org.apache.ibatis.mapping.MappedStatement;
-import org.apache.ibatis.session.ResultHandler;
-import org.apache.ibatis.session.RowBounds;
-
-import java.lang.reflect.Field;
-import java.sql.SQLException;
 
 /**
  * 数据范围 SQL 拦截器：根据 UserContext 中的数据范围配置，

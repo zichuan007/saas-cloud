@@ -1,8 +1,9 @@
 package com.saas.cloud.wechat.oa.mapper;
 
-import com.saas.cloud.wechat.oa.entity.WechatOaArticle;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.saas.cloud.wechat.oa.entity.WechatOaArticle;
 
 /**
  * <p>

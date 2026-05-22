@@ -1,11 +1,12 @@
 package com.saas.cloud.rbac.mapper;
 
-import com.saas.cloud.rbac.entity.Menu;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.saas.cloud.rbac.entity.Menu;
 
 /**
  * 菜单表 Mapper 接口

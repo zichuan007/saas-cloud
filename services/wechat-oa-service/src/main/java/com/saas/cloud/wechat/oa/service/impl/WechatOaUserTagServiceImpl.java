@@ -1,5 +1,11 @@
 package com.saas.cloud.wechat.oa.service.impl;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.saas.cloud.common.core.exception.BusinessException;
@@ -8,13 +14,9 @@ import com.saas.cloud.wechat.oa.entity.WechatOaUserTag;
 import com.saas.cloud.wechat.oa.mapper.WechatOaUserTagMapper;
 import com.saas.cloud.wechat.oa.service.IWechatOaAccountService;
 import com.saas.cloud.wechat.oa.service.IWechatOaUserTagService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 粉丝标签表 服务实现类

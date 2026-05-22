@@ -1,13 +1,15 @@
 package com.saas.cloud.common.security.satoken;
 
-import cn.dev33.satoken.stp.StpInterface;
-import com.saas.cloud.common.security.context.UserContext;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import org.springframework.stereotype.Component;
+
+import com.saas.cloud.common.security.context.UserContext;
+
+import cn.dev33.satoken.stp.StpInterface;
 
 /**
  * Sa-Token 权限/角色认证接口实现，从 UserContext 中读取

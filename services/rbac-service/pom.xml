@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>rbac-service</artifactId>
-    <name>权限管理服务</name>
+    <name>RBAC Service</name>
     <packaging>jar</packaging>
 
     <dependencies>
