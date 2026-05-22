@@ -49,10 +49,6 @@
             <artifactId>common-sentinel</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.saas.cloud</groupId>
             <artifactId>common-feign</artifactId>
         </dependency>

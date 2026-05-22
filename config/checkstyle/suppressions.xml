@@ -20,8 +20,7 @@
     <suppress files=".*[/\\]generated[/\\].*\.java$" checks=".*"/>
     <suppress files=".*[/\\]generated-sources[/\\].*\.java$" checks=".*"/>
 
-    <!-- MapStruct 生成的 Impl 类 -->
-    <suppress files=".*ConvertImpl\.java$" checks=".*"/>
+    <!-- Converter 实现类 -->
     <suppress files=".*MapperImpl\.java$" checks=".*"/>
 
     <!-- Configuration 类: 允许方法名灵活（@Bean 方法命名） -->

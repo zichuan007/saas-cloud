@@ -37,7 +37,7 @@ import com.saas.cloud.common.data.base.TenantBaseEntity;
  * 自动扫描数据库所有表，一键生成完整 CRUD：
  * Entity/Mapper/XML/Service/Controller → -service 模块
  * CreateDTO/UpdateDTO/QueryDTO/VO → -api 模块
- * MapStruct Converter → -service 模块
+ * Converter → -service 模块
  *
  * @author saas-cloud
  * @version V1.0

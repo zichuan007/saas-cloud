@@ -26,7 +26,6 @@ import com.saas.cloud.workflow.api.dto.ProcessDefinitionQueryDTO;
 import com.saas.cloud.workflow.api.vo.NodeConfigVO;
 import com.saas.cloud.workflow.api.vo.ProcessDefinitionDetailVO;
 import com.saas.cloud.workflow.api.vo.ProcessDefinitionVO;
-import com.saas.cloud.workflow.convert.WfProcessDefinitionConvert;
 import com.saas.cloud.workflow.entity.WfProcessDefinitionExt;
 import com.saas.cloud.workflow.mapper.WfProcessDefinitionExtMapper;
 import com.saas.cloud.workflow.service.IWfNodeConfigService;
@@ -55,7 +54,6 @@ public class WfProcessDefinitionExtServiceImpl
     private final RepositoryService repositoryService;
     private final IWfNodeConfigService nodeConfigService;
     private final PlatformFeignClient platformFeignClient;
-    private final WfProcessDefinitionConvert processDefinitionConvert;
 
     /** 状态：挂起 */
     private static final byte STATUS_SUSPENDED = 0;
@@ -96,7 +94,21 @@ public class WfProcessDefinitionExtServiceImpl
             throw new BusinessException("流程定义不存在");
         }
 
-        ProcessDefinitionDetailVO detail = processDefinitionConvert.toDetailVO(ext);
+        ProcessDefinitionDetailVO detail = new ProcessDefinitionDetailVO();
+        detail.setId(ext.getId());
+        detail.setProcessKey(ext.getProcessKey());
+        detail.setProcessName(ext.getProcessName());
+        detail.setCategory(ext.getCategory());
+        detail.setIcon(ext.getIcon());
+        detail.setDescription(ext.getDescription());
+        detail.setFormType(ext.getFormType());
+        detail.setFormUrl(ext.getFormUrl());
+        detail.setFormConfig(ext.getFormConfig());
+        detail.setProcessDefinitionId(ext.getProcessDefinitionId());
+        detail.setVersion(ext.getVersion());
+        detail.setStatus(ext.getStatus());
+        detail.setSortOrder(ext.getSortOrder());
+        detail.setCreateTime(ext.getCreateTime());
         detail.setStatusDesc(getStatusDesc(ext.getStatus()));
 
         if (StrUtil.isNotBlank(ext.getProcessDefinitionId())) {
@@ -128,7 +140,16 @@ public class WfProcessDefinitionExtServiceImpl
             }
         }
 
-        WfProcessDefinitionExt ext = processDefinitionConvert.toEntity(dto);
+        WfProcessDefinitionExt ext = new WfProcessDefinitionExt();
+        ext.setProcessKey(dto.getProcessKey());
+        ext.setProcessName(dto.getProcessName());
+        ext.setCategory(dto.getCategory());
+        ext.setIcon(dto.getIcon());
+        ext.setDescription(dto.getDescription());
+        ext.setFormType(dto.getFormType());
+        ext.setFormUrl(dto.getFormUrl());
+        ext.setFormConfig(dto.getFormConfig());
+        ext.setSortOrder(dto.getSortOrder());
         ext.setProcessDefinitionId("");
         ext.setVersion(1);
         ext.setStatus(STATUS_SUSPENDED);
@@ -161,7 +182,15 @@ public class WfProcessDefinitionExtServiceImpl
             checkProcessKeyUnique(dto.getProcessKey(), id);
         }
 
-        processDefinitionConvert.updateEntity(dto, ext);
+        ext.setProcessKey(dto.getProcessKey());
+        ext.setProcessName(dto.getProcessName());
+        ext.setCategory(dto.getCategory());
+        ext.setIcon(dto.getIcon());
+        ext.setDescription(dto.getDescription());
+        ext.setFormType(dto.getFormType());
+        ext.setFormUrl(dto.getFormUrl());
+        ext.setFormConfig(dto.getFormConfig());
+        ext.setSortOrder(dto.getSortOrder());
         updateById(ext);
 
         // 同步更新 Flowable Model 元数据
@@ -434,7 +463,18 @@ public class WfProcessDefinitionExtServiceImpl
     }
 
     private ProcessDefinitionVO convertToVO(WfProcessDefinitionExt ext) {
-        ProcessDefinitionVO vo = processDefinitionConvert.toVO(ext);
+        ProcessDefinitionVO vo = new ProcessDefinitionVO();
+        vo.setId(ext.getId());
+        vo.setProcessKey(ext.getProcessKey());
+        vo.setProcessName(ext.getProcessName());
+        vo.setCategory(ext.getCategory());
+        vo.setIcon(ext.getIcon());
+        vo.setDescription(ext.getDescription());
+        vo.setFormType(ext.getFormType());
+        vo.setVersion(ext.getVersion());
+        vo.setStatus(ext.getStatus());
+        vo.setSortOrder(ext.getSortOrder());
+        vo.setCreateTime(ext.getCreateTime());
         vo.setStatusDesc(getStatusDesc(ext.getStatus()));
         return vo;
     }

@@ -4,10 +4,10 @@ import ${cfg.servicePackage}.entity.${entity};
 import ${cfg.apiPackage}.dto.${entity}CreateDTO;
 import ${cfg.apiPackage}.dto.${entity}UpdateDTO;
 import ${cfg.apiPackage}.vo.${entity}VO;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * ${table.comment!} 对象转换器
@@ -16,26 +16,70 @@ import java.util.List;
  * @version V1.0
  * @since ${date}
  */
-@Mapper(componentModel = "spring")
-public interface ${entity}Converter {
+@Component
+public class ${entity}Converter {
 
     /**
      * CreateDTO -> Entity
      */
-    ${entity} toEntity(${entity}CreateDTO createDTO);
+    public ${entity} toEntity(${entity}CreateDTO createDTO) {
+        if (createDTO == null) {
+            return null;
+        }
+        ${entity} entity = new ${entity}();
+#foreach($field in $fields)
+#if($field.propertyName != "id"
+    && $field.propertyName != "createTime" && $field.propertyName != "updateTime"
+    && $field.propertyName != "createUserId" && $field.propertyName != "createUserName"
+    && $field.propertyName != "updateUserId" && $field.propertyName != "updateUserName"
+    && $field.propertyName != "deleteFlag" && $field.propertyName != "dataVersion"
+    && $field.propertyName != "tenantId")
+        entity.set${field.capitalName}(createDTO.get${field.capitalName}());
+#end
+#end
+        return entity;
+    }
 
     /**
      * Entity -> VO
      */
-    ${entity}VO toVO(${entity} entity);
+    public ${entity}VO toVO(${entity} entity) {
+        if (entity == null) {
+            return null;
+        }
+        ${entity}VO vo = new ${entity}VO();
+#foreach($field in $fields)
+        vo.set${field.capitalName}(entity.get${field.capitalName}());
+#end
+        return vo;
+    }
 
     /**
      * Entity 列表 -> VO 列表
      */
-    List<${entity}VO> toVOList(List<${entity}> list);
+    public List<${entity}VO> toVOList(List<${entity}> list) {
+        if (list == null) {
+            return null;
+        }
+        return list.stream().map(this::toVO).collect(Collectors.toList());
+    }
 
     /**
      * UpdateDTO 更新到已有 Entity
      */
-    void updateEntity(${entity}UpdateDTO updateDTO, @MappingTarget ${entity} entity);
+    public void updateEntity(${entity}UpdateDTO updateDTO, ${entity} entity) {
+        if (updateDTO == null) {
+            return;
+        }
+#foreach($field in $fields)
+#if($field.propertyName != "id"
+    && $field.propertyName != "createTime" && $field.propertyName != "updateTime"
+    && $field.propertyName != "createUserId" && $field.propertyName != "createUserName"
+    && $field.propertyName != "updateUserId" && $field.propertyName != "updateUserName"
+    && $field.propertyName != "deleteFlag" && $field.propertyName != "dataVersion"
+    && $field.propertyName != "tenantId")
+        entity.set${field.capitalName}(updateDTO.get${field.capitalName}());
+#end
+#end
+    }
 }

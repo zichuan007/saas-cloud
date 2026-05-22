@@ -12,7 +12,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.saas.cloud.workflow.api.dto.NodeConfigDTO;
 import com.saas.cloud.workflow.api.vo.NodeConfigVO;
-import com.saas.cloud.workflow.convert.WfNodeConfigConvert;
 import com.saas.cloud.workflow.entity.WfNodeConfig;
 import com.saas.cloud.workflow.mapper.WfNodeConfigMapper;
 import com.saas.cloud.workflow.service.IWfNodeConfigService;
@@ -34,8 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 public class WfNodeConfigServiceImpl
         extends ServiceImpl<WfNodeConfigMapper, WfNodeConfig>
         implements IWfNodeConfigService {
-
-    private final WfNodeConfigConvert nodeConfigConvert;
 
     /** 审批人类型：指定用户 */
     private static final byte ASSIGNEE_TYPE_USER = 1;
@@ -65,7 +62,12 @@ public class WfNodeConfigServiceImpl
         if (CollUtil.isNotEmpty(configs)) {
             List<WfNodeConfig> entityList = configs.stream()
                     .map(dto -> {
-                        WfNodeConfig entity = nodeConfigConvert.toEntity(dto);
+                        WfNodeConfig entity = new WfNodeConfig();
+                        entity.setNodeId(dto.getNodeId());
+                        entity.setNodeName(dto.getNodeName());
+                        entity.setAssigneeType(dto.getAssigneeType());
+                        entity.setAssigneeIds(dto.getAssigneeIds());
+                        entity.setApprovalMode(dto.getApprovalMode());
                         entity.setProcessDefinitionId(processDefinitionId);
                         return entity;
                     })
@@ -97,7 +99,12 @@ public class WfNodeConfigServiceImpl
      * @return VO
      */
     private NodeConfigVO convertToVO(WfNodeConfig entity) {
-        NodeConfigVO vo = nodeConfigConvert.toVO(entity);
+        NodeConfigVO vo = new NodeConfigVO();
+        vo.setNodeId(entity.getNodeId());
+        vo.setNodeName(entity.getNodeName());
+        vo.setAssigneeType(entity.getAssigneeType());
+        vo.setAssigneeIds(entity.getAssigneeIds());
+        vo.setApprovalMode(entity.getApprovalMode());
         vo.setAssigneeTypeDesc(getAssigneeTypeDesc(entity.getAssigneeType()));
         vo.setApprovalModeDesc(getApprovalModeDesc(entity.getApprovalMode()));
         return vo;
