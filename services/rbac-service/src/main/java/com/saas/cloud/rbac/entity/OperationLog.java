@@ -87,6 +87,12 @@ public class OperationLog extends TenantBaseEntity {
     private String ip;
 
     /**
+     * IP归属地
+     */
+    @TableField("location")
+    private String location;
+
+    /**
      * 用户代理
      */
     @TableField("user_agent")

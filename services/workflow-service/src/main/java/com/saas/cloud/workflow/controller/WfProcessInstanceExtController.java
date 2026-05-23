@@ -23,6 +23,8 @@ import com.saas.cloud.workflow.entity.WfProcessInstanceExt;
 import com.saas.cloud.workflow.service.IWfProcessDefinitionExtService;
 import com.saas.cloud.workflow.service.IWfProcessInstanceExtService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -32,6 +34,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "流程实例管理")
 @RestController
 @RequestMapping("/process")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -45,6 +48,7 @@ public class WfProcessInstanceExtController {
      *
      * @return 已激活的流程定义列表
      */
+    @Operation(summary = "查询可发起的流程定义列表")
     @GetMapping("/startable-list")
     public ApiResult<List<WfProcessDefinitionExt>> startableList() {
         List<WfProcessDefinitionExt> list = processDefinitionExtService.list(
@@ -60,6 +64,7 @@ public class WfProcessInstanceExtController {
      * @param dto 发起请求
      * @return 流程实例信息
      */
+    @Operation(summary = "发起流程")
     @OperationLog(module = "流程审批", operation = "发起流程")
     @PostMapping("/start")
     public ApiResult<WfProcessInstanceExt> start(@Validated @RequestBody ProcessStartDTO dto) {
@@ -72,6 +77,7 @@ public class WfProcessInstanceExtController {
      * @param query 查询条件
      * @return 分页结果
      */
+    @Operation(summary = "分页查询我发起的流程")
     @GetMapping("/my-initiated")
     public ApiResult<PageResult<WfProcessInstanceExt>> myInitiated(ProcessQueryDTO query) {
         return ApiResult.ok(processInstanceExtService.pageMyInitiated(query));
@@ -83,6 +89,7 @@ public class WfProcessInstanceExtController {
      * @param id 扩展表主键ID
      * @return 流程详情
      */
+    @Operation(summary = "获取流程详情")
     @GetMapping("/{id}")
     public ApiResult<Map<String, Object>> detail(@PathVariable("id") Long id) {
         return ApiResult.ok(processInstanceExtService.getProcessDetail(id));
@@ -94,6 +101,7 @@ public class WfProcessInstanceExtController {
      * @param id 扩展表主键ID
      * @return 高亮节点信息
      */
+    @Operation(summary = "获取流程图高亮信息")
     @GetMapping("/{id}/diagram")
     public ApiResult<Map<String, Object>> diagram(@PathVariable("id") Long id) {
         return ApiResult.ok(processInstanceExtService.getProcessDiagram(id));
@@ -105,6 +113,7 @@ public class WfProcessInstanceExtController {
      * @param id 扩展表主键ID
      * @return 操作结果
      */
+    @Operation(summary = "撤回流程")
     @OperationLog(module = "流程审批", operation = "撤回流程")
     @PostMapping("/{id}/cancel")
     public ApiResult<Void> cancel(@PathVariable("id") Long id) {

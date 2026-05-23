@@ -60,12 +60,10 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
 
     @Override
     public List<RoleVO> listRoles() {
-        Long tenantId = TenantContext.getTenantId();
-        log.info("查询角色列表, tenantId={}", tenantId);
+        log.info("查询角色列表");
 
         LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(tenantId != null, Role::getTenantId, tenantId)
-                .orderByAsc(Role::getSortOrder);
+        queryWrapper.orderByAsc(Role::getSortOrder);
         List<Role> roleList = this.list(queryWrapper);
 
         return roleList.stream()
@@ -101,8 +99,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         Long tenantId = TenantContext.getTenantId();
         if (tenantId != null) {
             try {
-                long currentRoleCount = this.count(new LambdaQueryWrapper<Role>()
-                        .eq(Role::getTenantId, tenantId));
+                long currentRoleCount = this.count();
                 ApiResult<Boolean> quotaResult = platformFeignClient.checkQuota(
                         tenantId, "ROLE", (int) currentRoleCount);
                 if (quotaResult.isSuccess() && Boolean.FALSE.equals(quotaResult.getData())) {

@@ -1,4 +1,4 @@
-import { requestClient } from '#/api/request';
+import {requestClient} from '#/api/request';
 
 export interface UserRecord {
   avatar?: string;
@@ -57,4 +57,11 @@ export function updateProfile(data: Partial<UserRecord>) {
 
 export function updatePassword(oldPassword: string, newPassword: string) {
   return requestClient.put('/rbac/user/password', { newPassword, oldPassword });
+}
+
+export function exportUsers(keyword?: string) {
+  return requestClient.download('/rbac/user/export', {
+    params: { keyword },
+    responseReturn: 'raw',
+  });
 }

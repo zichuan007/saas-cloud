@@ -1,6 +1,6 @@
-import type { CAC } from 'cac';
+import type {CAC} from 'cac';
 
-import { join, relative } from 'node:path';
+import {join, relative} from 'node:path';
 
 import {
   colors,

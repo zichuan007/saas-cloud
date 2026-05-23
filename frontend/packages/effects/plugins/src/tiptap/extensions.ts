@@ -1,21 +1,21 @@
-import type { Editor as CoreEditor } from '@tiptap/core';
-import type { Node as ProseMirrorNode } from '@tiptap/pm/model';
-import type { EditorView } from '@tiptap/pm/view';
-import type { Extensions } from '@tiptap/vue-3';
+import type {Editor as CoreEditor} from '@tiptap/core';
+import type {Node as ProseMirrorNode} from '@tiptap/pm/model';
+import type {EditorView} from '@tiptap/pm/view';
+import type {Extensions} from '@tiptap/vue-3';
 
-import type { ImageUploadOptions, VbenTiptapExtensionOptions } from './types';
+import type {ImageUploadOptions, VbenTiptapExtensionOptions} from './types';
 
-import { $t } from '@vben/locales';
+import {$t} from '@vben/locales';
 
-import { alert } from '@vben-core/popup-ui';
+import {alert} from '@vben-core/popup-ui';
 
 import Highlight from '@tiptap/extension-highlight';
 import Image from '@tiptap/extension-image';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import TextAlign from '@tiptap/extension-text-align';
-import { Color, TextStyle } from '@tiptap/extension-text-style';
-import { Plugin, PluginKey } from '@tiptap/pm/state';
+import {Color, TextStyle} from '@tiptap/extension-text-style';
+import {Plugin, PluginKey} from '@tiptap/pm/state';
 import StarterKit from '@tiptap/starter-kit';
 
 const DEFAULT_ACCEPT = 'image/*';

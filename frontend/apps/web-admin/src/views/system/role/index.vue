@@ -1,28 +1,20 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { Page, useVbenModal } from '@vben/common-ui';
+import {Page, useVbenModal} from '@vben/common-ui';
 
-import {
-  Button,
-  message,
-  Modal,
-  Popconfirm,
-  Space,
-  Switch,
-  Table,
-  Tree,
-} from 'ant-design-vue';
+import {Button, message, Modal, Popconfirm, Space, Switch, Table, Tree,} from 'ant-design-vue';
 
 import {
   assignRoleMenus,
   deleteRole,
+  exportRoles,
   getRoleDetail,
   getRoleList,
   type RoleRecord,
   updateRoleStatus,
 } from '#/api/system/role';
-import { getMenuTree } from '#/api/system/menu';
+import {getMenuTree} from '#/api/system/menu';
 
 import RoleFormModal from './role-form-modal.vue';
 
@@ -76,7 +68,7 @@ function convertMenuTree(menus: any[]): any[] {
   return menus.map((m) => ({
     children: m.children ? convertMenuTree(m.children) : [],
     key: m.id,
-    title: m.menuName,
+    title: m.name ?? m.menuName,
   }));
 }
 
@@ -96,6 +88,24 @@ async function handleSaveMenus() {
   message.success('菜单分配成功');
   menuTreeVisible.value = false;
 }
+
+async function handleExport() {
+  try {
+    const res = await exportRoles();
+    const blob = new Blob([res as any], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = '角色列表.xlsx';
+    link.click();
+    window.URL.revokeObjectURL(url);
+    message.success('导出成功');
+  } catch {
+    message.error('导出失败');
+  }
+}
 </script>
 
 <template>
@@ -105,6 +115,7 @@ async function handleSaveMenus() {
       <div class="mb-4 flex justify-between">
         <h3 class="text-lg font-medium">角色管理</h3>
         <Button type="primary" @click="handleAdd">新增角色</Button>
+        <Button class="ml-2" @click="handleExport">导出</Button>
       </div>
       <Table
         :columns="[

@@ -1,6 +1,6 @@
-import type { ComputedRef, Directive } from 'vue';
+import type {ComputedRef, Directive} from 'vue';
 
-import { useTippy } from 'vue-tippy';
+import {useTippy} from 'vue-tippy';
 
 export default function useTippyDirective(isDark: ComputedRef<boolean>) {
   const directive: Directive = {

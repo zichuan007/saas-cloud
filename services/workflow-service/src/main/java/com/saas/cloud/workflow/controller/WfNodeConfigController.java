@@ -18,6 +18,8 @@ import com.saas.cloud.workflow.api.dto.NodeConfigDTO;
 import com.saas.cloud.workflow.api.vo.NodeConfigVO;
 import com.saas.cloud.workflow.service.IWfNodeConfigService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +30,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "节点配置管理")
 @RestController
 @RequestMapping("/node-config")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -43,6 +46,7 @@ public class WfNodeConfigController {
      * @param configs             节点配置列表
      * @return 操作结果
      */
+    @Operation(summary = "保存节点配置")
     @OperationLog(module = "流程管理", operation = "保存节点配置")
     @PostMapping
     public ApiResult<Void> saveNodeConfigs(
@@ -58,6 +62,7 @@ public class WfNodeConfigController {
      * @param processDefinitionId Flowable流程定义ID
      * @return 节点配置列表
      */
+    @Operation(summary = "查询节点配置列表")
     @GetMapping("/{processDefinitionId}")
     public ApiResult<List<NodeConfigVO>> getNodeConfigs(
             @PathVariable("processDefinitionId") String processDefinitionId) {

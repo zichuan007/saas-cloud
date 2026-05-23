@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import {onBeforeUnmount, onMounted, ref} from 'vue';
 
-import { useRoute, useRouter } from 'vue-router';
+import {useRoute, useRouter} from 'vue-router';
 
-import { Button, message, Space, Spin, Upload } from 'ant-design-vue';
+import {Button, message, Space, Spin, Upload} from 'ant-design-vue';
 
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 

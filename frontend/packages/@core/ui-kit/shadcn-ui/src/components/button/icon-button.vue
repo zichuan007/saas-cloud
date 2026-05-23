@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { ButtonVariants } from '../../ui';
-import type { VbenButtonProps } from './button';
+import type {ButtonVariants} from '../../ui';
+import type {VbenButtonProps} from './button';
 
-import { computed, useSlots } from 'vue';
+import {computed, useSlots} from 'vue';
 
-import { cn } from '@vben-core/shared/utils';
+import {cn} from '@vben-core/shared/utils';
 
-import { VbenTooltip } from '../tooltip';
+import {VbenTooltip} from '../tooltip';
 import VbenButton from './button.vue';
 
 interface Props extends VbenButtonProps {

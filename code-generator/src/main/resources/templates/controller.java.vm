@@ -16,7 +16,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 
 /**
- * ${table.comment!} 接口
+ * $!{table.comment} 接口
  *
  * @author ${author}
  * @version V1.0

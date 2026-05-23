@@ -1,7 +1,4 @@
-import {
-  defineOverridesPreferences,
-  definePreferencesExtension,
-} from '@vben/preferences';
+import {defineOverridesPreferences, definePreferencesExtension,} from '@vben/preferences';
 
 /**
  * AI Cloud Plus 项目配置

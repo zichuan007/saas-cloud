@@ -18,6 +18,8 @@ import com.saas.cloud.common.log.annotation.OperationLog;
 import com.saas.cloud.wechat.oa.entity.WechatOaAutoReplyRule;
 import com.saas.cloud.wechat.oa.service.IWechatOaAutoReplyRuleService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "公众号自动回复管理")
 @RestController
 @RequestMapping("/auto-reply")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -40,6 +43,7 @@ public class WechatOaAutoReplyRuleController {
      * @param accountId 公众号ID
      * @return 规则列表
      */
+    @Operation(summary = "自动回复规则列表")
     @GetMapping("/list")
     public ApiResult<List<WechatOaAutoReplyRule>> list(@RequestParam(required = false) Long accountId) {
         return ApiResult.ok(autoReplyRuleService.listRules(accountId));
@@ -51,6 +55,7 @@ public class WechatOaAutoReplyRuleController {
      * @param rule 规则信息
      * @return 操作结果
      */
+    @Operation(summary = "创建规则")
     @OperationLog(module = "自动回复", operation = "创建规则")
     @PostMapping
     public ApiResult<Void> create(@RequestBody WechatOaAutoReplyRule rule) {
@@ -65,6 +70,7 @@ public class WechatOaAutoReplyRuleController {
      * @param rule 规则信息
      * @return 操作结果
      */
+    @Operation(summary = "编辑规则")
     @OperationLog(module = "自动回复", operation = "编辑规则")
     @PutMapping("/{id}")
     public ApiResult<Void> update(@PathVariable("id") Long id,
@@ -79,6 +85,7 @@ public class WechatOaAutoReplyRuleController {
      * @param id 规则ID
      * @return 操作结果
      */
+    @Operation(summary = "删除规则")
     @OperationLog(module = "自动回复", operation = "删除规则")
     @DeleteMapping("/{id}")
     public ApiResult<Void> delete(@PathVariable("id") Long id) {
@@ -93,6 +100,7 @@ public class WechatOaAutoReplyRuleController {
      * @param status 状态（0-禁用 1-启用）
      * @return 操作结果
      */
+    @Operation(summary = "启用/禁用规则")
     @OperationLog(module = "自动回复", operation = "更新规则状态")
     @PutMapping("/{id}/status")
     public ApiResult<Void> updateStatus(@PathVariable("id") Long id,

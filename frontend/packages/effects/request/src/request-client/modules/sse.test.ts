@@ -1,8 +1,8 @@
-import type { RequestClient } from '../request-client';
+import type {RequestClient} from '../request-client';
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-import { SSE } from './sse';
+import {SSE} from './sse';
 
 // 模拟 TextDecoder
 const OriginalTextDecoder = globalThis.TextDecoder;

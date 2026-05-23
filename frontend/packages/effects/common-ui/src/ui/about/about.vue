@@ -1,17 +1,13 @@
 <script setup lang="ts">
-import type { AboutProps, DescriptionItem } from './about';
+import type {AboutProps, DescriptionItem} from './about';
 
-import { h } from 'vue';
+import {h} from 'vue';
 
-import {
-  VBEN_DOC_URL,
-  VBEN_GITHUB_URL,
-  VBEN_PREVIEW_URL,
-} from '@vben/constants';
+import {VBEN_DOC_URL, VBEN_GITHUB_URL, VBEN_PREVIEW_URL,} from '@vben/constants';
 
-import { VbenRenderContent } from '@vben-core/shadcn-ui';
+import {VbenRenderContent} from '@vben-core/shadcn-ui';
 
-import { Page } from '../../components';
+import {Page} from '../../components';
 
 interface Props extends AboutProps {}
 

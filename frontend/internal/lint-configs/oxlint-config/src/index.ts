@@ -1,8 +1,7 @@
-import type { OxlintConfig } from 'oxlint';
+import type {OxlintConfig} from 'oxlint';
+import {defineConfig as defineOxlintConfig} from 'oxlint';
 
-import { defineConfig as defineOxlintConfig } from 'oxlint';
-
-import { mergeOxlintConfigs, oxlintConfig } from './configs';
+import {mergeOxlintConfigs, oxlintConfig} from './configs';
 
 type VbenOxlintConfig = Omit<OxlintConfig, 'extends'> & {
   extends?: OxlintConfig[];

@@ -1,17 +1,12 @@
 <script lang="ts" setup>
-import type { NotificationItem } from './types';
+import type {NotificationItem} from './types';
 
-import { Bell, CircleCheckBig, CircleX, MailCheck } from '@vben/icons';
-import { $t } from '@vben/locales';
+import {Bell, CircleCheckBig, CircleX, MailCheck} from '@vben/icons';
+import {$t} from '@vben/locales';
 
-import {
-  VbenButton,
-  VbenIconButton,
-  VbenPopover,
-  VbenScrollbar,
-} from '@vben-core/shadcn-ui';
+import {VbenButton, VbenIconButton, VbenPopover, VbenScrollbar,} from '@vben-core/shadcn-ui';
 
-import { useToggle } from '@vueuse/core';
+import {useToggle} from '@vueuse/core';
 
 defineOptions({ name: 'NotificationPopup' });
 

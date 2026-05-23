@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { CollapsibleParamSchema } from './type';
+import type {CollapsibleParamSchema} from './type';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { globalShareState } from '@vben-core/shared/global-state';
+import {globalShareState} from '@vben-core/shared/global-state';
 
 interface Props {
   data: CollapsibleParamSchema;

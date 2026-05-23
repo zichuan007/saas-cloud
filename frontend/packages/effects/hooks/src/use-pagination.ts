@@ -1,6 +1,5 @@
-import type { Ref } from 'vue';
-
-import { computed, ref, unref, watch } from 'vue';
+import type {Ref} from 'vue';
+import {computed, ref, unref, watch} from 'vue';
 
 /**
  * Paginates an array of items

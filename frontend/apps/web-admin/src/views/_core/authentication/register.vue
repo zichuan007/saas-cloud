@@ -1,16 +1,15 @@
 <script lang="ts" setup>
-import type { VbenFormSchema } from '@vben/common-ui';
-import type { Recordable } from '@vben/types';
+import type {VbenFormSchema} from '@vben/common-ui';
+import {AuthenticationRegister, z} from '@vben/common-ui';
+import type {Recordable} from '@vben/types';
 
-import { computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import {computed, ref} from 'vue';
+import {useRouter} from 'vue-router';
+import {useAccessStore} from '@vben/stores';
 
-import { AuthenticationRegister, z } from '@vben/common-ui';
-import { useAccessStore } from '@vben/stores';
+import {notification} from 'ant-design-vue';
 
-import { notification } from 'ant-design-vue';
-
-import { registerApi } from '#/api';
+import {registerApi} from '#/api';
 
 defineOptions({ name: 'Register' });
 

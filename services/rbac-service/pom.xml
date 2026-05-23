@@ -36,10 +36,6 @@
         </dependency>
         <dependency>
             <groupId>com.saas.cloud</groupId>
-            <artifactId>common-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
             <artifactId>common-redis</artifactId>
         </dependency>
         <dependency>
@@ -48,23 +44,22 @@
         </dependency>
         <dependency>
             <groupId>com.saas.cloud</groupId>
-            <artifactId>common-sentinel</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>common-job</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
             <artifactId>common-excel</artifactId>
         </dependency>
         <dependency>
             <groupId>com.saas.cloud</groupId>
-            <artifactId>common-feign</artifactId>
+            <artifactId>common-storage</artifactId>
         </dependency>
+
+        <!-- Sentinel 限流熔断 -->
         <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>common-kafka</artifactId>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+        <!-- XXL-Job 分布式任务 -->
+        <dependency>
+            <groupId>com.xuxueli</groupId>
+            <artifactId>xxl-job-core</artifactId>
         </dependency>
 
         <!-- Nacos -->
@@ -100,6 +95,24 @@
         <dependency>
             <groupId>com.anji-plus</groupId>
             <artifactId>spring-boot-starter-captcha</artifactId>
+        </dependency>
+
+        <!-- 系统硬件信息（服务器监控） -->
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+        </dependency>
+
+        <!-- 社交登录 -->
+        <dependency>
+            <groupId>me.zhyd.oauth</groupId>
+            <artifactId>JustAuth</artifactId>
+        </dependency>
+
+        <!-- WebSocket -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
     </dependencies>
 

@@ -1,16 +1,15 @@
-import type { AxiosInstance, AxiosResponse } from 'axios';
-
-import type { RequestClientConfig, RequestClientOptions } from './types';
-
-import { bindMethods, isString, merge } from '@vben/utils';
-
+import type {AxiosInstance, AxiosResponse} from 'axios';
 import axios from 'axios';
+
+import type {RequestClientConfig, RequestClientOptions} from './types';
+
+import {bindMethods, isString, merge} from '@vben/utils';
 import qs from 'qs';
 
-import { FileDownloader } from './modules/downloader';
-import { InterceptorManager } from './modules/interceptor';
-import { SSE } from './modules/sse';
-import { FileUploader } from './modules/uploader';
+import {FileDownloader} from './modules/downloader';
+import {InterceptorManager} from './modules/interceptor';
+import {SSE} from './modules/sse';
+import {FileUploader} from './modules/uploader';
 
 function getParamsSerializer(
   paramsSerializer: RequestClientOptions['paramsSerializer'],

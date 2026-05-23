@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import type { Component } from 'vue';
+import type {Component} from 'vue';
+import {watch} from 'vue';
 
-import type { ThemeModeType } from '@vben/types';
+import type {ThemeModeType} from '@vben/types';
 
-import { watch } from 'vue';
-
-import { MoonStar, Sun, SunMoon } from '@vben/icons';
-import { $t } from '@vben/locales';
-import { usePreferences } from '@vben/preferences';
+import {MoonStar, Sun, SunMoon} from '@vben/icons';
+import {$t} from '@vben/locales';
+import {usePreferences} from '@vben/preferences';
 
 import SwitchItem from '../switch-item.vue';
 

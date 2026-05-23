@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import type { BreadcrumbProps } from './types';
+import type {BreadcrumbProps} from './types';
 
-import { VbenIcon } from '../icon';
+import {VbenIcon} from '../icon';
 
 interface Props extends BreadcrumbProps {}
 

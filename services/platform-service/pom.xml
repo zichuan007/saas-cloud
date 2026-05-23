@@ -29,23 +29,11 @@
         </dependency>
         <dependency>
             <groupId>com.saas.cloud</groupId>
-            <artifactId>common-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
             <artifactId>common-redis</artifactId>
         </dependency>
         <dependency>
             <groupId>com.saas.cloud</groupId>
             <artifactId>common-log</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>common-sentinel</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>common-job</artifactId>
         </dependency>
         <dependency>
             <groupId>com.saas.cloud</groupId>
@@ -56,18 +44,21 @@
             <artifactId>common-storage</artifactId>
         </dependency>
 
+        <!-- Sentinel 限流熔断 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+        <!-- XXL-Job 分布式任务 -->
+        <dependency>
+            <groupId>com.xuxueli</groupId>
+            <artifactId>xxl-job-core</artifactId>
+        </dependency>
+
         <!-- Spring Security Crypto（BCryptPasswordEncoder） -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>common-feign</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>common-kafka</artifactId>
         </dependency>
 
         <!-- Nacos -->

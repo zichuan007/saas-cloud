@@ -6,17 +6,9 @@ import type {
   SliderTranslateCaptchaProps,
 } from '../types';
 
-import {
-  computed,
-  onMounted,
-  reactive,
-  ref,
-  unref,
-  useTemplateRef,
-  watch,
-} from 'vue';
+import {computed, onMounted, reactive, ref, unref, useTemplateRef, watch,} from 'vue';
 
-import { $t } from '@vben/locales';
+import {$t} from '@vben/locales';
 
 import SliderCaptcha from '../slider-captcha/index.vue';
 

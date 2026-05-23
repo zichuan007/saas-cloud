@@ -16,6 +16,8 @@ import com.saas.cloud.rbac.api.dto.RegisterDTO;
 import com.saas.cloud.rbac.api.vo.RegisterVO;
 import com.saas.cloud.rbac.service.IAuthService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2026-05-18
  */
 @Slf4j
+@Tag(name = "认证管理")
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -43,6 +46,7 @@ public class AuthController {
      * @param dto 注册请求
      * @return 注册结果（含Token）
      */
+    @Operation(summary = "租户注册")
     @PostMapping("/register")
     @com.saas.cloud.common.redis.idempotent.Idempotent(key = "'register:' + #dto.phone", timeout = 10)
     public ApiResult<RegisterVO> register(@Valid @RequestBody RegisterDTO dto) {
@@ -55,6 +59,7 @@ public class AuthController {
      * @param params 包含 username, password, tenantCode
      * @return 登录结果（token + 用户信息）
      */
+    @Operation(summary = "用户登录")
     @PostMapping("/login")
     public ApiResult<Map<String, Object>> login(@RequestBody Map<String, Object> params) {
         String username = (String) params.get("username");
@@ -69,6 +74,7 @@ public class AuthController {
      * @param params 包含 refreshToken
      * @return 新的 token 对
      */
+    @Operation(summary = "刷新令牌")
     @PostMapping("/refresh")
     public ApiResult<Map<String, Object>> refresh(@RequestBody Map<String, Object> params) {
         String refreshToken = (String) params.get("refreshToken");
@@ -81,6 +87,7 @@ public class AuthController {
      * @param request HttpServletRequest
      * @return 操作结果
      */
+    @Operation(summary = "登出")
     @PostMapping("/logout")
     public ApiResult<Void> logout(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
@@ -95,6 +102,7 @@ public class AuthController {
      *
      * @return 用户信息
      */
+    @Operation(summary = "获取当前登录用户信息")
     @GetMapping("/user-info")
     public ApiResult<Map<String, Object>> getUserInfo() {
         Long userId = UserContext.getUserId();
@@ -106,6 +114,7 @@ public class AuthController {
      *
      * @return 权限码
      */
+    @Operation(summary = "获取当前用户权限码列表")
     @GetMapping("/codes")
     public ApiResult<List<String>> getCodes() {
         Long userId = UserContext.getUserId();

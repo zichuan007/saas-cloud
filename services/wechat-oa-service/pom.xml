@@ -15,12 +15,6 @@
     <packaging>jar</packaging>
 
     <dependencies>
-        <!-- 对应 API 模块 -->
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>wechat-oa-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.saas.cloud</groupId>
             <artifactId>platform-api</artifactId>
@@ -34,10 +28,6 @@
         </dependency>
         <dependency>
             <groupId>com.saas.cloud</groupId>
-            <artifactId>common-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
             <artifactId>common-redis</artifactId>
         </dependency>
         <dependency>
@@ -46,19 +36,13 @@
         </dependency>
         <dependency>
             <groupId>com.saas.cloud</groupId>
-            <artifactId>common-job</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>common-feign</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
             <artifactId>common-storage</artifactId>
         </dependency>
+
+        <!-- XXL-Job 分布式任务 -->
         <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>common-kafka</artifactId>
+            <groupId>com.xuxueli</groupId>
+            <artifactId>xxl-job-core</artifactId>
         </dependency>
 
         <!-- Nacos -->

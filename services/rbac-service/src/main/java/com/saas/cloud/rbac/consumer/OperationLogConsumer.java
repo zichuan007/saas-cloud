@@ -68,6 +68,7 @@ public class OperationLogConsumer {
         entity.setResponseCode(event.getResponseCode());
         entity.setErrorMsg(event.getErrorMsg());
         entity.setIp(event.getIp());
+        entity.setLocation(event.getLocation());
         entity.setUserAgent(event.getUserAgent());
         entity.setDuration(event.getDuration());
         return entity;

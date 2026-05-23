@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import {computed, ref} from 'vue';
 
-import { useVbenModal } from '@vben/common-ui';
+import {useVbenModal} from '@vben/common-ui';
 
-import { Form, FormItem, Input, message, Select } from 'ant-design-vue';
+import {Form, FormItem, Input, message, Select} from 'ant-design-vue';
 
-import { createUser, getUserDetail, updateUser } from '#/api/system';
-import { getDeptTree } from '#/api/system/dept';
-import { getRoleList } from '#/api/system/role';
+import {createUser, getUserDetail, updateUser} from '#/api/system';
+import {getDeptTree} from '#/api/system/dept';
+import {getRoleList} from '#/api/system/role';
 
 defineOptions({ name: 'UserFormModal' });
 

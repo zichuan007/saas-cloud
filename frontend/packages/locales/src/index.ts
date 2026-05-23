@@ -1,10 +1,4 @@
-import {
-  i18n,
-  loadLocaleMessages,
-  loadLocalesMap,
-  loadLocalesMapFromDir,
-  setupI18n,
-} from './i18n';
+import {i18n, loadLocaleMessages, loadLocalesMap, loadLocalesMapFromDir, setupI18n,} from './i18n';
 
 const $t = i18n.global.t;
 const $te = i18n.global.te;

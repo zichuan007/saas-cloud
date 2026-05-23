@@ -1,8 +1,8 @@
-import type { ModalState } from '../modal';
+import type {ModalState} from '../modal';
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-import { ModalApi } from '../modal-api';
+import {ModalApi} from '../modal-api';
 
 vi.mock('@vben-core/shared/store', () => {
   return {

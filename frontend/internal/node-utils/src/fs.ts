@@ -1,5 +1,5 @@
-import { promises as fs } from 'node:fs';
-import { dirname } from 'node:path';
+import {promises as fs} from 'node:fs';
+import {dirname} from 'node:path';
 
 export async function outputJSON(
   filePath: string,

@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import type { TooltipContentProps } from 'reka-ui';
+import type {TooltipContentProps} from 'reka-ui';
 
-import type { StyleValue } from 'vue';
+import type {StyleValue} from 'vue';
 
-import type { ClassType } from '@vben-core/typings';
+import type {ClassType} from '@vben-core/typings';
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '../../ui';
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,} from '../../ui';
 
 interface Props {
   contentClass?: ClassType;

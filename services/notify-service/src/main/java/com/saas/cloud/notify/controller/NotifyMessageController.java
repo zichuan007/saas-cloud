@@ -15,6 +15,8 @@ import com.saas.cloud.common.security.context.UserContext;
 import com.saas.cloud.notify.api.vo.MessageVO;
 import com.saas.cloud.notify.service.INotifyMessageService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "通知消息管理")
 @Slf4j
 @RestController
 @RequestMapping("/message")
@@ -42,6 +45,7 @@ public class NotifyMessageController {
      * @param pageSize 每页大小
      * @return 分页结果
      */
+    @Operation(summary = "分页查询消息列表")
     @GetMapping("/list")
     public ApiResult<PageResult<MessageVO>> list(
             @RequestParam(required = false) Byte type,
@@ -57,6 +61,7 @@ public class NotifyMessageController {
      *
      * @return 未读数量
      */
+    @Operation(summary = "获取未读消息数")
     @GetMapping("/unread-count")
     public ApiResult<Long> unreadCount() {
         Long receiverId = UserContext.getUserId();
@@ -69,6 +74,7 @@ public class NotifyMessageController {
      * @param id 消息ID
      * @return 操作结果
      */
+    @Operation(summary = "标记消息为已读")
     @PutMapping("/{id}/read")
     public ApiResult<Void> markAsRead(@PathVariable("id") Long id) {
         messageService.markAsRead(id);
@@ -80,6 +86,7 @@ public class NotifyMessageController {
      *
      * @return 操作结果
      */
+    @Operation(summary = "全部标记已读")
     @PutMapping("/read-all")
     public ApiResult<Void> markAllAsRead() {
         Long receiverId = UserContext.getUserId();
@@ -93,6 +100,7 @@ public class NotifyMessageController {
      * @param id 消息ID
      * @return 操作结果
      */
+    @Operation(summary = "删除消息")
     @DeleteMapping("/{id}")
     public ApiResult<Void> delete(@PathVariable("id") Long id) {
         messageService.deleteMessage(id);

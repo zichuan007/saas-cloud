@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { watch } from 'vue';
+import {watch} from 'vue';
 
-import { $t } from '@vben/locales';
+import {$t} from '@vben/locales';
 
 import {
   NumberField,

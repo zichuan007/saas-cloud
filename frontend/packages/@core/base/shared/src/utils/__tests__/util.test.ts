@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import {describe, expect, it} from 'vitest';
 
-import { bindMethods, getNestedValue } from '../util';
+import {bindMethods, getNestedValue} from '../util';
 
 class TestClass {
   public value: string;

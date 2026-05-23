@@ -1,9 +1,9 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import {createRouter, createWebHistory} from 'vue-router';
 
-import { createPinia, setActivePinia } from 'pinia';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {createPinia, setActivePinia} from 'pinia';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-import { useTabbarStore } from './tabbar';
+import {useTabbarStore} from './tabbar';
 
 describe('useAccessStore', () => {
   const router = createRouter({

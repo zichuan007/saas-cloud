@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import type { DialogContentEmits, DialogContentProps } from 'reka-ui';
-
-import { computed } from 'vue';
-
-import { cn } from '@vben-core/shared/utils';
-
-import { X } from 'lucide-vue-next';
+import type {DialogContentEmits, DialogContentProps} from 'reka-ui';
 import {
   DialogClose,
   DialogContent,
@@ -13,6 +7,12 @@ import {
   DialogPortal,
   useForwardPropsEmits,
 } from 'reka-ui';
+
+import {computed} from 'vue';
+
+import {cn} from '@vben-core/shared/utils';
+
+import {X} from 'lucide-vue-next';
 
 const props = withDefaults(
   defineProps<DialogContentProps & { class?: any; zIndex?: number }>(),

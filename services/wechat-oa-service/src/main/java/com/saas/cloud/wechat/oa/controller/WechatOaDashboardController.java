@@ -21,6 +21,8 @@ import com.saas.cloud.wechat.oa.entity.WechatOaFanUser;
 import com.saas.cloud.wechat.oa.service.IWechatOaArticleService;
 import com.saas.cloud.wechat.oa.service.IWechatOaFanUserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -30,6 +32,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "公众号数据看板")
 @RestController
 @RequestMapping("/dashboard")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -45,6 +48,7 @@ public class WechatOaDashboardController {
      * @param days      统计天数（默认7天）
      * @return 趋势数据
      */
+    @Operation(summary = "粉丝趋势")
     @GetMapping("/fan-trend")
     public ApiResult<List<Map<String, Object>>> fanTrend(
             @RequestParam Long accountId,
@@ -87,6 +91,7 @@ public class WechatOaDashboardController {
      * @param limit     返回条数（默认10）
      * @return 图文排行数据
      */
+    @Operation(summary = "图文排行")
     @GetMapping("/article-rank")
     public ApiResult<List<Map<String, Object>>> articleRank(
             @RequestParam Long accountId,

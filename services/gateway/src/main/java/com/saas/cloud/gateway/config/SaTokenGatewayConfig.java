@@ -40,6 +40,7 @@ public class SaTokenGatewayConfig {
                         "/api/rbac/auth/refresh",
                         "/api/rbac/auth/register",
                         "/api/rbac/captcha/**",
+                        "/api/rbac/auth/social/**",
                         "/api/platform/auth/login",
                         "/api/generator/**",
                         "/doc.html",
@@ -47,6 +48,7 @@ public class SaTokenGatewayConfig {
                         "/swagger-resources/**",
                         "/v3/api-docs/**",
                         "/actuator/**",
+                        "/api/rbac/ws/**",
                         "/favicon.ico"
                 )
                 .setAuth(obj -> {

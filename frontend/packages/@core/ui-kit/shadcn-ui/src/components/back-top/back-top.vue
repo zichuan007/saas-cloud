@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import type { BacktopProps } from './backtop';
+import type {BacktopProps} from './backtop';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { ArrowUpToLine } from '@vben-core/icons';
+import {ArrowUpToLine} from '@vben-core/icons';
 
-import { VbenButton } from '../button';
-import { useBackTop } from './use-backtop';
+import {VbenButton} from '../button';
+import {useBackTop} from './use-backtop';
 
 interface Props extends BacktopProps {}
 

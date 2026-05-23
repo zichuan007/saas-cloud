@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import type { CSSProperties } from 'vue';
+import type {CSSProperties} from 'vue';
+import {computed, onUnmounted, shallowRef, useSlots, watchEffect} from 'vue';
 
-import { computed, onUnmounted, shallowRef, useSlots, watchEffect } from 'vue';
+import {VbenScrollbar} from '@vben-core/shadcn-ui';
 
-import { VbenScrollbar } from '@vben-core/shadcn-ui';
+import {useScrollLock} from '@vueuse/core';
 
-import { useScrollLock } from '@vueuse/core';
-
-import { useSidebarDrag } from '../hooks/use-sidebar-drag';
-import { SidebarCollapseButton, SidebarFixedButton } from './widgets';
+import {useSidebarDrag} from '../hooks/use-sidebar-drag';
+import {SidebarCollapseButton, SidebarFixedButton} from './widgets';
 
 interface Props {
   /**

@@ -1,20 +1,19 @@
 <script setup lang="ts">
-import type { CSSProperties } from 'vue';
+import type {CSSProperties} from 'vue';
+import {computed, ref, watch} from 'vue';
 
-import type { VbenLayoutProps } from './vben-layout';
-
-import { computed, ref, watch } from 'vue';
+import type {VbenLayoutProps} from './vben-layout';
 
 import {
   SCROLL_FIXED_CLASS,
   useLayoutFooterStyle,
   useLayoutHeaderStyle,
 } from '@vben-core/composables';
-import { IconifyIcon } from '@vben-core/icons';
-import { VbenIconButton } from '@vben-core/shadcn-ui';
-import { ELEMENT_ID_MAIN_CONTENT } from '@vben-core/shared/constants';
+import {IconifyIcon} from '@vben-core/icons';
+import {VbenIconButton} from '@vben-core/shadcn-ui';
+import {ELEMENT_ID_MAIN_CONTENT} from '@vben-core/shared/constants';
 
-import { useMouse, useScroll, useThrottleFn } from '@vueuse/core';
+import {useMouse, useScroll, useThrottleFn} from '@vueuse/core';
 
 import {
   LayoutContent,
@@ -23,7 +22,7 @@ import {
   LayoutSidebar,
   LayoutTabbar,
 } from './components';
-import { useLayout } from './hooks/use-layout';
+import {useLayout} from './hooks/use-layout';
 
 interface Props extends VbenLayoutProps {}
 

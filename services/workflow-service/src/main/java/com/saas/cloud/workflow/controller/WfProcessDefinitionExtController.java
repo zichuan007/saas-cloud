@@ -30,6 +30,8 @@ import com.saas.cloud.workflow.api.vo.ProcessDefinitionVO;
 import com.saas.cloud.workflow.service.IWfProcessDefinitionExtService;
 
 import cn.hutool.core.util.StrUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -39,6 +41,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "流程定义管理")
 @RestController
 @RequestMapping("/definition")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -52,6 +55,7 @@ public class WfProcessDefinitionExtController {
      * @param query 查询条件
      * @return 分页结果
      */
+    @Operation(summary = "分页查询流程定义列表")
     @GetMapping("/list")
     public ApiResult<PageResult<ProcessDefinitionVO>> list(ProcessDefinitionQueryDTO query) {
         return ApiResult.ok(processDefinitionExtService.pageDefinitions(query));
@@ -63,6 +67,7 @@ public class WfProcessDefinitionExtController {
      * @param id 主键ID
      * @return 详情
      */
+    @Operation(summary = "获取流程定义详情")
     @GetMapping("/{id}")
     public ApiResult<ProcessDefinitionDetailVO> detail(@PathVariable("id") Long id) {
         return ApiResult.ok(processDefinitionExtService.getDefinitionDetail(id));
@@ -74,6 +79,7 @@ public class WfProcessDefinitionExtController {
      * @param dto 创建请求
      * @return 操作结果
      */
+    @Operation(summary = "创建流程定义")
     @OperationLog(module = "流程管理", operation = "创建流程定义")
     @PostMapping
     public ApiResult<Void> create(@Validated @RequestBody ProcessDefinitionCreateDTO dto) {
@@ -88,6 +94,7 @@ public class WfProcessDefinitionExtController {
      * @param dto 更新请求
      * @return 操作结果
      */
+    @Operation(summary = "更新流程定义")
     @OperationLog(module = "流程管理", operation = "更新流程定义")
     @PutMapping("/{id}")
     public ApiResult<Void> update(@PathVariable("id") Long id,
@@ -102,6 +109,7 @@ public class WfProcessDefinitionExtController {
      * @param id 主键ID
      * @return 操作结果
      */
+    @Operation(summary = "删除流程定义")
     @OperationLog(module = "流程管理", operation = "删除流程定义")
     @DeleteMapping("/{id}")
     public ApiResult<Void> delete(@PathVariable("id") Long id) {
@@ -116,6 +124,7 @@ public class WfProcessDefinitionExtController {
      * @param dto 部署请求（包含 BPMN XML）
      * @return 操作结果
      */
+    @Operation(summary = "部署流程定义")
     @OperationLog(module = "流程管理", operation = "部署流程定义")
     @PostMapping("/{id}/deploy")
     public ApiResult<Void> deploy(@PathVariable("id") Long id,
@@ -131,6 +140,7 @@ public class WfProcessDefinitionExtController {
      * @param status 状态 0-挂起 1-激活
      * @return 操作结果
      */
+    @Operation(summary = "挂起/激活流程定义")
     @OperationLog(module = "流程管理", operation = "更新流程状态")
     @PutMapping("/{id}/status")
     public ApiResult<Void> updateStatus(@PathVariable("id") Long id,
@@ -145,6 +155,7 @@ public class WfProcessDefinitionExtController {
      * @param id 主键ID
      * @return BPMN XML 字符串
      */
+    @Operation(summary = "获取流程定义的BPMN XML")
     @GetMapping("/{id}/bpmn-xml")
     public ApiResult<String> getBpmnXml(@PathVariable("id") Long id) {
         return ApiResult.ok(processDefinitionExtService.getBpmnXml(id));
@@ -155,6 +166,7 @@ public class WfProcessDefinitionExtController {
      *
      * @return 模板列表
      */
+    @Operation(summary = "查询平台模板列表")
     @GetMapping("/template/list")
     public ApiResult<List<ProcessDefinitionVO>> templateList() {
         return ApiResult.ok(processDefinitionExtService.listTemplates());
@@ -166,6 +178,7 @@ public class WfProcessDefinitionExtController {
      * @param id 模板ID
      * @return 操作结果
      */
+    @Operation(summary = "导入平台模板到当前租户")
     @OperationLog(module = "流程管理", operation = "导入流程模板")
     @PostMapping("/template/{id}/import")
     public ApiResult<Void> importTemplate(@PathVariable("id") Long id) {
@@ -180,6 +193,7 @@ public class WfProcessDefinitionExtController {
      * @param dto 包含 BPMN XML 的请求体
      * @return 操作结果
      */
+    @Operation(summary = "保存BPMN XML草稿")
     @OperationLog(module = "流程管理", operation = "保存流程设计草稿")
     @PutMapping("/{id}/bpmn-xml")
     public ApiResult<Void> saveBpmnDraft(@PathVariable("id") Long id,
@@ -194,6 +208,7 @@ public class WfProcessDefinitionExtController {
      * @param id 主键ID
      * @return XML 文件流
      */
+    @Operation(summary = "下载BPMN XML文件")
     @GetMapping("/{id}/download-xml")
     public ResponseEntity<byte[]> downloadXml(@PathVariable("id") Long id) {
         String xml = processDefinitionExtService.getBpmnXml(id);

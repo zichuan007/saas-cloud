@@ -1,4 +1,4 @@
-import { openWindow } from './window';
+import {openWindow} from './window';
 
 interface DownloadOptions<T = string> {
   fileName?: string;

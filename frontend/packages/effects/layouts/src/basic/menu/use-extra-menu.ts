@@ -1,15 +1,14 @@
-import type { ComputedRef } from 'vue';
+import type {ComputedRef} from 'vue';
+import {computed, ref, watch} from 'vue';
 
-import type { MenuRecordRaw } from '@vben/types';
+import type {MenuRecordRaw} from '@vben/types';
+import {useRoute} from 'vue-router';
 
-import { computed, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import {preferences} from '@vben/preferences';
+import {useAccessStore} from '@vben/stores';
+import {findRootMenuByPath} from '@vben/utils';
 
-import { preferences } from '@vben/preferences';
-import { useAccessStore } from '@vben/stores';
-import { findRootMenuByPath } from '@vben/utils';
-
-import { useNavigation } from './use-navigation';
+import {useNavigation} from './use-navigation';
 
 function useExtraMenu(useRootMenus?: ComputedRef<MenuRecordRaw[]>) {
   const accessStore = useAccessStore();

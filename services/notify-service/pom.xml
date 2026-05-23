@@ -29,31 +29,22 @@
         </dependency>
         <dependency>
             <groupId>com.saas.cloud</groupId>
-            <artifactId>common-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
             <artifactId>common-redis</artifactId>
         </dependency>
         <dependency>
             <groupId>com.saas.cloud</groupId>
             <artifactId>common-log</artifactId>
         </dependency>
+
+        <!-- Sentinel 限流熔断 -->
         <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>common-sentinel</artifactId>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
         </dependency>
+        <!-- XXL-Job 分布式任务 -->
         <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>common-job</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>common-feign</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>common-kafka</artifactId>
+            <groupId>com.xuxueli</groupId>
+            <artifactId>xxl-job-core</artifactId>
         </dependency>
 
         <!-- Nacos -->
@@ -83,6 +74,12 @@
         <dependency>
             <groupId>org.dromara.sms4j</groupId>
             <artifactId>sms4j-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- 邮件发送 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
     </dependencies>
 

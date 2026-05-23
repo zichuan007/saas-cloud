@@ -1,8 +1,8 @@
-import type { AxiosRequestConfig } from 'axios';
+import type {AxiosRequestConfig} from 'axios';
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-import { FileDownloader } from './downloader';
+import {FileDownloader} from './downloader';
 
 describe('fileDownloader', () => {
   let fileDownloader: FileDownloader;

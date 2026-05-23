@@ -1,12 +1,11 @@
 <script lang="ts" setup>
-import type { VbenFormSchema } from '@vben/common-ui';
+import type {VbenFormSchema} from '@vben/common-ui';
+import {AuthenticationLogin, z} from '@vben/common-ui';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
+import {$t} from '@vben/locales';
 
-import { AuthenticationLogin, z } from '@vben/common-ui';
-import { $t } from '@vben/locales';
-
-import { useAuthStore } from '#/store';
+import {useAuthStore} from '#/store';
 
 defineOptions({ name: 'Login' });
 

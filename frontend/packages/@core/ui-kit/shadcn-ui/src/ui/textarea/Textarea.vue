@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { cn } from '@vben-core/shared/utils';
+import {cn} from '@vben-core/shared/utils';
 
-import { useVModel } from '@vueuse/core';
+import {useVModel} from '@vueuse/core';
 
 const props = defineProps<{
   class?: any;

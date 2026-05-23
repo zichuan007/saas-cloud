@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { Button, message, Tabs, TabPane } from 'ant-design-vue';
+import {Button, message, TabPane, Tabs} from 'ant-design-vue';
 
 defineOptions({ name: 'CodePreview' });
 

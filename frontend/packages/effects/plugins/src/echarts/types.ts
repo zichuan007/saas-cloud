@@ -12,7 +12,7 @@ import type {
   ToolboxComponentOption,
   TooltipComponentOption,
 } from 'echarts/components';
-import type { ComposeOption } from 'echarts/core';
+import type {ComposeOption} from 'echarts/core';
 
 export type ECOption = ComposeOption<
   | BarSeriesOption

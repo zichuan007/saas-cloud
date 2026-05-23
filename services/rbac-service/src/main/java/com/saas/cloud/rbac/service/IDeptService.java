@@ -18,12 +18,11 @@ import com.saas.cloud.rbac.entity.Dept;
 public interface IDeptService extends IService<Dept> {
 
     /**
-     * 构建部门树形结构
+     * 构建部门树形结构（租户隔离由拦截器自动处理）
      *
-     * @param tenantId 租户ID
      * @return 部门树列表
      */
-    List<DeptTreeVO> buildDeptTree(Long tenantId);
+    List<DeptTreeVO> buildDeptTree();
 
     /**
      * 创建部门，自动维护 ancestors 祖先链

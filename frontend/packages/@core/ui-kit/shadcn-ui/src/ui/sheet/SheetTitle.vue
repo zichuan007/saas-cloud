@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import type { DialogTitleProps } from 'reka-ui';
+import type {DialogTitleProps} from 'reka-ui';
+import {DialogTitle} from 'reka-ui';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { cn } from '@vben-core/shared/utils';
-
-import { DialogTitle } from 'reka-ui';
+import {cn} from '@vben-core/shared/utils';
 
 const props = defineProps<DialogTitleProps & { class?: any }>();
 

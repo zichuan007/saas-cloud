@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * ${table.comment!} 对象转换器
+ * $!{table.comment} 对象转换器
  *
  * @author ${author}
  * @version V1.0

@@ -18,6 +18,8 @@ import com.saas.cloud.platform.api.dto.PackageCreateDTO;
 import com.saas.cloud.platform.entity.Package;
 import com.saas.cloud.platform.service.IPackageService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "套餐管理")
 @RestController
 @RequestMapping("/package")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -39,6 +42,7 @@ public class PackageController {
      *
      * @return 套餐列表
      */
+    @Operation(summary = "查询启用的套餐列表")
     @GetMapping("/list")
     public ApiResult<List<Package>> listPackages() {
         return ApiResult.ok(packageService.listPackages());
@@ -50,6 +54,7 @@ public class PackageController {
      * @param dto 套餐创建请求
      * @return 操作结果
      */
+    @Operation(summary = "创建套餐")
     @PostMapping
     public ApiResult<Void> createPackage(@Validated @RequestBody PackageCreateDTO dto) {
         packageService.createPackage(dto);
@@ -63,6 +68,7 @@ public class PackageController {
      * @param dto 套餐更新请求
      * @return 操作结果
      */
+    @Operation(summary = "更新套餐")
     @PutMapping("/{id}")
     public ApiResult<Void> updatePackage(@PathVariable("id") Long id,
                                          @Validated @RequestBody PackageCreateDTO dto) {
@@ -77,6 +83,7 @@ public class PackageController {
      * @param status 状态 0-禁用 1-启用
      * @return 操作结果
      */
+    @Operation(summary = "启用/禁用套餐")
     @PutMapping("/{id}/status")
     public ApiResult<Void> updateStatus(@PathVariable("id") Long id,
                                         @RequestParam("status") Byte status) {

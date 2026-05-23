@@ -11,7 +11,7 @@ import ${pkg};
 #end
 
 /**
- * ${table.comment!} 视图对象
+ * $!{table.comment} 视图对象
  *
  * @author ${author}
  * @version V1.0
@@ -27,8 +27,8 @@ public class ${entity}VO implements Serializable {
 #foreach($field in ${cfg.businessFields})
 
     /** ${field.comment} */
-#if(${field.propertyType} == "LocalDateTime" || ${field.propertyType} == "LocalDate")
-    @JsonFormat(pattern = #if(${field.propertyType} == "LocalDateTime")"yyyy-MM-dd HH:mm:ss"#else"yyyy-MM-dd"#end, timezone = "GMT+8")
+#if($field.propertyType == "LocalDateTime" || $field.propertyType == "LocalDate")
+    @JsonFormat(pattern = #if($field.propertyType == "LocalDateTime")"yyyy-MM-dd HH:mm:ss"#else"yyyy-MM-dd"#end, timezone = "GMT+8")
 #end
     private ${field.propertyType} ${field.propertyName};
 #end

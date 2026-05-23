@@ -1,4 +1,4 @@
-import { requestClient } from '#/api/request';
+import {requestClient} from '#/api/request';
 
 export function updateProfile(data: Record<string, any>) {
   return requestClient.put('/platform/auth/profile', data);

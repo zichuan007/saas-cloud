@@ -1,10 +1,10 @@
-import type { DefineConfig, VbenViteConfig } from '../typing';
+import type {DefineConfig, VbenViteConfig} from '../typing';
 
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import {existsSync} from 'node:fs';
+import {join} from 'node:path';
 
-import { defineApplicationConfig } from './application';
-import { defineLibraryConfig } from './library';
+import {defineApplicationConfig} from './application';
+import {defineLibraryConfig} from './library';
 
 export * from './application';
 export * from './library';

@@ -1,18 +1,10 @@
 <script setup lang="ts">
-import type { CSSProperties } from 'vue';
+import type {CSSProperties} from 'vue';
+import {computed, onBeforeUnmount, onMounted, onUpdated, ref, watchEffect,} from 'vue';
 
-import {
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  onUpdated,
-  ref,
-  watchEffect,
-} from 'vue';
+import {VbenTooltip} from '@vben-core/shadcn-ui';
 
-import { VbenTooltip } from '@vben-core/shadcn-ui';
-
-import { useElementSize } from '@vueuse/core';
+import {useElementSize} from '@vueuse/core';
 
 interface Props {
   /**

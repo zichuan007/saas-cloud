@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import type { ScrollAreaRootProps } from 'reka-ui';
+import type {ScrollAreaRootProps} from 'reka-ui';
+import {ScrollAreaCorner, ScrollAreaRoot, ScrollAreaViewport} from 'reka-ui';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { cn } from '@vben-core/shared/utils';
-
-import { ScrollAreaCorner, ScrollAreaRoot, ScrollAreaViewport } from 'reka-ui';
+import {cn} from '@vben-core/shared/utils';
 
 import ScrollBar from './ScrollBar.vue';
 

@@ -1,9 +1,8 @@
 <script lang="ts">
-import type { Component, PropType } from 'vue';
+import type {Component, PropType} from 'vue';
+import {defineComponent, h} from 'vue';
 
-import { defineComponent, h } from 'vue';
-
-import { isFunction, isObject, isString } from '@vben-core/shared/utils';
+import {isFunction, isObject, isString} from '@vben-core/shared/utils';
 
 export default defineComponent({
   name: 'RenderContent',

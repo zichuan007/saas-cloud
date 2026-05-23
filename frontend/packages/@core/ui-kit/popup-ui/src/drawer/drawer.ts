@@ -1,8 +1,8 @@
-import type { Component, Ref } from 'vue';
+import type {Component, Ref} from 'vue';
 
-import type { ClassType, MaybePromise } from '@vben-core/typings';
+import type {ClassType, MaybePromise} from '@vben-core/typings';
 
-import type { DrawerApi } from './drawer-api';
+import type {DrawerApi} from './drawer-api';
 
 export type DrawerPlacement = 'bottom' | 'left' | 'right' | 'top';
 

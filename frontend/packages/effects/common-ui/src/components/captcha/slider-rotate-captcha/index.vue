@@ -6,11 +6,11 @@ import type {
   SliderRotateVerifyPassingData,
 } from '../types';
 
-import { computed, reactive, unref, useTemplateRef, watch } from 'vue';
+import {computed, reactive, unref, useTemplateRef, watch} from 'vue';
 
-import { $t } from '@vben/locales';
+import {$t} from '@vben/locales';
 
-import { useTimeoutFn } from '@vueuse/core';
+import {useTimeoutFn} from '@vueuse/core';
 
 import SliderCaptcha from '../slider-captcha/index.vue';
 

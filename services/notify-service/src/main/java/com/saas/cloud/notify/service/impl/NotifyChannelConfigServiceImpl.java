@@ -1,8 +1,6 @@
 package com.saas.cloud.notify.service.impl;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -10,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.saas.cloud.notify.api.dto.ChannelConfigUpdateDTO;
+import com.saas.cloud.notify.api.enums.NotifyChannelType;
 import com.saas.cloud.notify.api.vo.ChannelConfigVO;
 import com.saas.cloud.notify.entity.NotifyChannelConfig;
 import com.saas.cloud.notify.mapper.NotifyChannelConfigMapper;
@@ -27,17 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class NotifyChannelConfigServiceImpl extends ServiceImpl<NotifyChannelConfigMapper, NotifyChannelConfig> implements INotifyChannelConfigService {
-
-    /** 渠道类型描述映射 */
-    private static final Map<Byte, String> CHANNEL_TYPE_DESC_MAP = new HashMap<>();
-
-    static {
-        CHANNEL_TYPE_DESC_MAP.put((byte) 0, "站内信");
-        CHANNEL_TYPE_DESC_MAP.put((byte) 1, "邮件");
-        CHANNEL_TYPE_DESC_MAP.put((byte) 2, "飞书");
-        CHANNEL_TYPE_DESC_MAP.put((byte) 3, "钉钉");
-        CHANNEL_TYPE_DESC_MAP.put((byte) 4, "企业微信");
-    }
 
     @Override
     public List<ChannelConfigVO> listConfigs() {
@@ -80,7 +68,8 @@ public class NotifyChannelConfigServiceImpl extends ServiceImpl<NotifyChannelCon
     private ChannelConfigVO convertToVO(NotifyChannelConfig config) {
         ChannelConfigVO vo = new ChannelConfigVO();
         vo.setChannelType(config.getChannelType());
-        vo.setChannelTypeDesc(CHANNEL_TYPE_DESC_MAP.getOrDefault(config.getChannelType(), "未知"));
+        NotifyChannelType type = NotifyChannelType.getByCode(config.getChannelType());
+        vo.setChannelTypeDesc(type != null ? type.getDesc() : "未知");
         vo.setEnabled(config.getEnabled());
         vo.setConfigJson(config.getConfigJson());
         return vo;

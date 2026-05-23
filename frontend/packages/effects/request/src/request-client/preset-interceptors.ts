@@ -1,8 +1,8 @@
-import type { RequestClient } from './request-client';
-import type { MakeErrorMessageFn, ResponseInterceptorConfig } from './types';
+import type {RequestClient} from './request-client';
+import type {MakeErrorMessageFn, ResponseInterceptorConfig} from './types';
 
-import { $t } from '@vben/locales';
-import { isFunction } from '@vben/utils';
+import {$t} from '@vben/locales';
+import {isFunction} from '@vben/utils';
 
 import axios from 'axios';
 
@@ -152,6 +152,14 @@ export const errorMessageResponseInterceptor = (
         }
         case 408: {
           errorMessage = $t('ui.fallback.http.requestTimeout');
+          break;
+        }
+        case 429: {
+          errorMessage = $t('ui.fallback.http.tooManyRequests');
+          break;
+        }
+        case 503: {
+          errorMessage = $t('ui.fallback.http.serviceUnavailable');
           break;
         }
         default: {

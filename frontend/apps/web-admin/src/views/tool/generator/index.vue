@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import type { GenerateRequest, TableInfo } from '#/api/tool';
+import type {GenerateRequest, TableInfo} from '#/api/tool';
+import {connectDatabase, downloadCode, previewCode} from '#/api/tool';
 
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { Page } from '@vben/common-ui';
+import {Page} from '@vben/common-ui';
 
 import {
   Button,
@@ -13,17 +14,12 @@ import {
   Input,
   InputPassword,
   message,
-  Select,
   Space,
   Spin,
   Steps,
   Table,
-  Tabs,
-  TabPane,
   Tag,
 } from 'ant-design-vue';
-
-import { connectDatabase, downloadCode, previewCode } from '#/api/tool';
 
 import CodePreview from './code-preview.vue';
 

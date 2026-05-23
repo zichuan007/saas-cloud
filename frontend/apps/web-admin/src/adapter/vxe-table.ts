@@ -1,17 +1,13 @@
-import type { VxeTableGridOptions } from '@vben/plugins/vxe-table';
+import type {VxeTableGridOptions} from '@vben/plugins/vxe-table';
+import {setupVbenVxeTable, useVbenVxeGrid as useGrid,} from '@vben/plugins/vxe-table';
 
-import type { ComponentPropsMap, ComponentType } from './component';
+import type {ComponentPropsMap, ComponentType} from './component';
 
-import { h } from 'vue';
+import {h} from 'vue';
 
-import {
-  setupVbenVxeTable,
-  useVbenVxeGrid as useGrid,
-} from '@vben/plugins/vxe-table';
+import {Button, Image} from 'ant-design-vue';
 
-import { Button, Image } from 'ant-design-vue';
-
-import { useVbenForm } from './form';
+import {useVbenForm} from './form';
 
 setupVbenVxeTable({
   configVxeTable: (vxeUI) => {

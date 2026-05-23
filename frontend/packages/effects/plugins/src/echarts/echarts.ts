@@ -1,4 +1,4 @@
-import { BarChart, LineChart, PieChart, RadarChart } from 'echarts/charts';
+import {BarChart, LineChart, PieChart, RadarChart} from 'echarts/charts';
 import {
   DatasetComponent,
   GridComponent,
@@ -9,12 +9,8 @@ import {
   TransformComponent,
 } from 'echarts/components';
 import * as echarts from 'echarts/core';
-import {
-  LabelLayout,
-  LegacyGridContainLabel,
-  UniversalTransition,
-} from 'echarts/features';
-import { CanvasRenderer } from 'echarts/renderers';
+import {LabelLayout, LegacyGridContainLabel, UniversalTransition,} from 'echarts/features';
+import {CanvasRenderer} from 'echarts/renderers';
 
 echarts.use([
   TitleComponent,

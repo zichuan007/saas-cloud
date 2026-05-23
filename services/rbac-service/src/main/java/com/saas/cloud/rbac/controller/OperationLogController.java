@@ -12,6 +12,8 @@ import com.saas.cloud.common.core.result.PageResult;
 import com.saas.cloud.rbac.entity.OperationLog;
 import com.saas.cloud.rbac.service.IOperationLogService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "操作日志管理")
 @RestController
 @RequestMapping("/operation-log")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -37,6 +40,7 @@ public class OperationLogController {
      * @param pageSize 每页大小
      * @return 分页结果
      */
+    @Operation(summary = "分页查询操作日志")
     @GetMapping("/list")
     public ApiResult<PageResult<OperationLog>> list(
             @RequestParam(required = false) String module,
@@ -52,6 +56,8 @@ public class OperationLogController {
      * @param keepDays 保留天数，默认90
      * @return 删除记录数
      */
+    @Operation(summary = "清理操作日志")
+    @com.saas.cloud.common.log.annotation.OperationLog(module = "操作日志", operation = "清理日志")
     @DeleteMapping("/clean")
     public ApiResult<Integer> clean(@RequestParam(defaultValue = "90") int keepDays) {
         return ApiResult.ok(operationLogService.cleanLogs(keepDays));

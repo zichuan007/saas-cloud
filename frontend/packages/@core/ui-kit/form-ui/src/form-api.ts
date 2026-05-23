@@ -1,19 +1,13 @@
-import type {
-  FormState,
-  GenericObject,
-  ResetFormOpts,
-  ValidationOptions,
-} from 'vee-validate';
+import type {FormState, GenericObject, ResetFormOpts, ValidationOptions,} from 'vee-validate';
 
-import type { ComponentPublicInstance } from 'vue';
+import type {ComponentPublicInstance} from 'vue';
+import {isRef, toRaw} from 'vue';
 
-import type { Recordable } from '@vben-core/typings';
+import type {Recordable} from '@vben-core/typings';
 
-import type { FormActions, FormSchema, VbenFormProps } from './types';
+import type {FormActions, FormSchema, VbenFormProps} from './types';
 
-import { isRef, toRaw } from 'vue';
-
-import { Store } from '@vben-core/shared/store';
+import {Store} from '@vben-core/shared/store';
 import {
   bindMethods,
   cloneDeep,
@@ -29,7 +23,7 @@ import {
   StateHandler,
 } from '@vben-core/shared/utils';
 
-import { resolveFieldNamePath } from './field-name';
+import {resolveFieldNamePath} from './field-name';
 
 function getDefaultState(): VbenFormProps {
   return {

@@ -1,4 +1,5 @@
-import type { ComputedRef, VNode } from 'vue';
+import type {ComputedRef, VNode} from 'vue';
+import {markRaw, toRaw} from 'vue';
 import type {
   RouteLocationNormalized,
   RouteLocationNormalizedLoaded,
@@ -7,11 +8,9 @@ import type {
   RouteRecordNormalized,
 } from 'vue-router';
 
-import type { TabDefinition } from '@vben-core/typings';
+import type {TabDefinition} from '@vben-core/typings';
 
-import { markRaw, toRaw } from 'vue';
-
-import { preferences } from '@vben-core/preferences';
+import {preferences} from '@vben-core/preferences';
 import {
   createStack,
   openWindow,
@@ -20,7 +19,7 @@ import {
   stopProgress,
 } from '@vben-core/shared/utils';
 
-import { acceptHMRUpdate, defineStore } from 'pinia';
+import {acceptHMRUpdate, defineStore} from 'pinia';
 
 interface RouteCached {
   component: VNode;

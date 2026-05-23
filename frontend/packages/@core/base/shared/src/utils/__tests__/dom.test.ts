@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-import { getElementVisibleRect } from '../dom';
+import {getElementVisibleRect} from '../dom';
 
 describe('getElementVisibleRect', () => {
   // 设置浏览器视口尺寸的 mock

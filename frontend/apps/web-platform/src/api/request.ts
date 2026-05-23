@@ -1,20 +1,20 @@
-import type { RequestClientOptions } from '@vben/request';
-
-import { useAppConfig } from '@vben/hooks';
-import { preferences } from '@vben/preferences';
+import type {RequestClientOptions} from '@vben/request';
 import {
   authenticateResponseInterceptor,
   defaultResponseInterceptor,
   errorMessageResponseInterceptor,
   RequestClient,
 } from '@vben/request';
-import { useAccessStore } from '@vben/stores';
 
-import { message } from 'ant-design-vue';
+import {useAppConfig} from '@vben/hooks';
+import {preferences} from '@vben/preferences';
+import {useAccessStore} from '@vben/stores';
 
-import { useAuthStore } from '#/store';
+import {message} from 'ant-design-vue';
 
-import { refreshTokenApi } from './core';
+import {useAuthStore} from '#/store';
+
+import {refreshTokenApi} from './core';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 

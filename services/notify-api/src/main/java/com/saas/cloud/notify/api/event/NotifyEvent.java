@@ -57,6 +57,9 @@ public class NotifyEvent implements Serializable {
     /** 接收人手机号（短信通道使用） */
     private String phone;
 
+    /** 接收人邮箱（邮件通道使用） */
+    private String email;
+
     /** 是否同步发送短信 */
     private Boolean sendSms;
 }

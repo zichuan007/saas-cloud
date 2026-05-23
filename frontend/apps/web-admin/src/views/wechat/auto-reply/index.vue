@@ -1,18 +1,9 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import {ref, watch} from 'vue';
 
-import { Page, useVbenModal } from '@vben/common-ui';
+import {Page, useVbenModal} from '@vben/common-ui';
 
-import {
-  Button,
-  message,
-  Popconfirm,
-  Select,
-  Space,
-  Switch,
-  Table,
-  Tag,
-} from 'ant-design-vue';
+import {Button, message, Popconfirm, Select, Space, Switch, Table, Tag,} from 'ant-design-vue';
 
 import {
   type AutoReplyRule,
@@ -21,7 +12,7 @@ import {
   updateAutoReplyStatus,
 } from '#/api/wechat/auto-reply';
 
-import { useWechatAccount } from '../use-account';
+import {useWechatAccount} from '../use-account';
 import AutoReplyFormModal from './auto-reply-form-modal.vue';
 
 defineOptions({ name: 'WechatAutoReply' });

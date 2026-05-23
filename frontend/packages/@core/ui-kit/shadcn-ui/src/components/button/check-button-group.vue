@@ -1,16 +1,15 @@
 <script lang="ts" setup>
-import type { Arrayable } from '@vueuse/core';
+import type {Arrayable} from '@vueuse/core';
+import {objectOmit} from '@vueuse/core';
 
-import type { ValueType, VbenButtonGroupProps } from './button';
+import type {ValueType, VbenButtonGroupProps} from './button';
 
-import { computed, ref, watch } from 'vue';
+import {computed, ref, watch} from 'vue';
 
-import { Circle, CircleCheckBig, LoaderCircle } from '@vben-core/icons';
-import { cn, isFunction } from '@vben-core/shared/utils';
+import {Circle, CircleCheckBig, LoaderCircle} from '@vben-core/icons';
+import {cn, isFunction} from '@vben-core/shared/utils';
 
-import { objectOmit } from '@vueuse/core';
-
-import { VbenRenderContent } from '../render-content';
+import {VbenRenderContent} from '../render-content';
 import VbenButtonGroup from './button-group.vue';
 import Button from './button.vue';
 

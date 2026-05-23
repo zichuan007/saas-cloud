@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { Page } from '@vben/common-ui';
+import {Page} from '@vben/common-ui';
 
-import { Button, message, Popconfirm, Space, Table, Tag } from 'ant-design-vue';
+import {Button, message, Popconfirm, Space, Table, Tag} from 'ant-design-vue';
 
-import { requestClient } from '#/api/request';
+import {requestClient} from '#/api/request';
 
 defineOptions({ name: 'NotifyMessage' });
 

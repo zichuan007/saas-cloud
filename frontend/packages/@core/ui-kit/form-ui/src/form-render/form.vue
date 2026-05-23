@@ -1,28 +1,18 @@
 <script setup lang="ts">
-import type { GenericObject } from 'vee-validate';
-import type { ZodTypeAny } from 'zod';
+import type {GenericObject} from 'vee-validate';
+import type {ZodTypeAny} from 'zod';
 
-import type {
-  FormCommonConfig,
-  FormRenderProps,
-  FormSchema,
-  FormShape,
-} from '../types';
+import type {FormCommonConfig, FormRenderProps, FormSchema, FormShape,} from '../types';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { Form } from '@vben-core/shadcn-ui';
-import {
-  cn,
-  isFunction,
-  isString,
-  mergeWithArrayOverride,
-} from '@vben-core/shared/utils';
+import {Form} from '@vben-core/shadcn-ui';
+import {cn, isFunction, isString, mergeWithArrayOverride,} from '@vben-core/shared/utils';
 
-import { provideFormRenderProps } from './context';
-import { useExpandable } from './expandable';
+import {provideFormRenderProps} from './context';
+import {useExpandable} from './expandable';
 import FormField from './form-field.vue';
-import { getBaseRules, getDefaultValueInZodStack } from './helper';
+import {getBaseRules, getDefaultValueInZodStack} from './helper';
 
 interface Props extends FormRenderProps {}
 

@@ -1,23 +1,10 @@
 <script lang="ts" setup>
-import type { ExtendedModalApi, ModalProps } from './modal';
+import type {ExtendedModalApi, ModalProps} from './modal';
 
-import {
-  computed,
-  nextTick,
-  onDeactivated,
-  provide,
-  ref,
-  unref,
-  useId,
-  watch,
-} from 'vue';
+import {computed, nextTick, onDeactivated, provide, ref, unref, useId, watch,} from 'vue';
 
-import {
-  useIsMobile,
-  usePriorityValues,
-  useSimpleLocale,
-} from '@vben-core/composables';
-import { Expand, Shrink } from '@vben-core/icons';
+import {useIsMobile, usePriorityValues, useSimpleLocale,} from '@vben-core/composables';
+import {Expand, Shrink} from '@vben-core/icons';
 import {
   Dialog,
   DialogContent,
@@ -31,11 +18,11 @@ import {
   VbenLoading,
   VisuallyHidden,
 } from '@vben-core/shadcn-ui';
-import { ELEMENT_ID_MAIN_CONTENT } from '@vben-core/shared/constants';
-import { globalShareState } from '@vben-core/shared/global-state';
-import { cn } from '@vben-core/shared/utils';
+import {ELEMENT_ID_MAIN_CONTENT} from '@vben-core/shared/constants';
+import {globalShareState} from '@vben-core/shared/global-state';
+import {cn} from '@vben-core/shared/utils';
 
-import { useModalDraggable } from './use-modal-draggable';
+import {useModalDraggable} from './use-modal-draggable';
 
 interface Props extends ModalProps {
   modalApi?: ExtendedModalApi;

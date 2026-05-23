@@ -93,6 +93,14 @@ public interface IUserService extends IService<User> {
     void changePassword(Long userId, String oldPassword, String newPassword);
 
     /**
+     * 修改用户头像
+     *
+     * @param userId 用户ID
+     * @param avatar 头像URL
+     */
+    void updateAvatar(Long userId, String avatar);
+
+    /**
      * 查询用户列表（导出用）
      *
      * @param keyword 搜索关键字（可选）

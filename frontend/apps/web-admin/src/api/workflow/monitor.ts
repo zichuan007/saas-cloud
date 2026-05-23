@@ -1,4 +1,4 @@
-import { requestClient } from '#/api/request';
+import {requestClient} from '#/api/request';
 
 export function getRunningInstances(params?: Record<string, any>) {
   return requestClient.get('/workflow/monitor/instances', { params });

@@ -1,13 +1,13 @@
-import type { MenuRecordRaw } from '@vben/types';
+import type {MenuRecordRaw} from '@vben/types';
 
-import { computed, onBeforeMount, ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import {computed, onBeforeMount, ref, watch} from 'vue';
+import {useRoute} from 'vue-router';
 
-import { preferences, usePreferences } from '@vben/preferences';
-import { useAccessStore } from '@vben/stores';
-import { findRootMenuByPath } from '@vben/utils';
+import {preferences, usePreferences} from '@vben/preferences';
+import {useAccessStore} from '@vben/stores';
+import {findRootMenuByPath} from '@vben/utils';
 
-import { useNavigation } from './use-navigation';
+import {useNavigation} from './use-navigation';
 
 function useMixedMenu() {
   const { navigation, willOpenedByWindow } = useNavigation();

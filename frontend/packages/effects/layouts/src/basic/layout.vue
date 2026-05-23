@@ -1,38 +1,27 @@
 <script lang="ts" setup>
-import type { SetupContext } from 'vue';
-import type { RouteLocationNormalizedLoaded } from 'vue-router';
+import type {SetupContext} from 'vue';
+import {computed, onMounted, useSlots, watch} from 'vue';
+import type {RouteLocationNormalizedLoaded} from 'vue-router';
+import {useRoute} from 'vue-router';
 
-import type { MenuRecordRaw } from '@vben/types';
+import type {MenuRecordRaw} from '@vben/types';
 
-import { computed, onMounted, useSlots, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import {useRefresh} from '@vben/hooks';
+import {$t, i18n} from '@vben/locales';
+import {preferences, updatePreferences, usePreferences,} from '@vben/preferences';
+import {useAccessStore, useTabbarStore, useTimezoneStore} from '@vben/stores';
+import {cloneDeep, mapTree} from '@vben/utils';
 
-import { useRefresh } from '@vben/hooks';
-import { $t, i18n } from '@vben/locales';
-import {
-  preferences,
-  updatePreferences,
-  usePreferences,
-} from '@vben/preferences';
-import { useAccessStore, useTabbarStore, useTimezoneStore } from '@vben/stores';
-import { cloneDeep, mapTree } from '@vben/utils';
+import {VbenAdminLayout} from '@vben-core/layout-ui';
+import {VbenBackTop, VbenLogo} from '@vben-core/shadcn-ui';
 
-import { VbenAdminLayout } from '@vben-core/layout-ui';
-import { VbenBackTop, VbenLogo } from '@vben-core/shadcn-ui';
-
-import { Breadcrumb, CheckUpdates, Preferences } from '../widgets';
-import { LayoutContent, LayoutContentSpinner } from './content';
-import { Copyright } from './copyright';
-import { LayoutFooter } from './footer';
-import { LayoutHeader } from './header';
-import {
-  LayoutExtraMenu,
-  LayoutMenu,
-  LayoutMixedMenu,
-  useExtraMenu,
-  useMixedMenu,
-} from './menu';
-import { LayoutTabbar } from './tabbar';
+import {Breadcrumb, CheckUpdates, Preferences} from '../widgets';
+import {LayoutContent, LayoutContentSpinner} from './content';
+import {Copyright} from './copyright';
+import {LayoutFooter} from './footer';
+import {LayoutHeader} from './header';
+import {LayoutExtraMenu, LayoutMenu, LayoutMixedMenu, useExtraMenu, useMixedMenu,} from './menu';
+import {LayoutTabbar} from './tabbar';
 
 defineOptions({ name: 'BasicLayout' });
 

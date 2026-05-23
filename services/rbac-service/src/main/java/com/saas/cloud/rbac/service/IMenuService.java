@@ -18,12 +18,11 @@ import com.saas.cloud.rbac.entity.Menu;
 public interface IMenuService extends IService<Menu> {
 
     /**
-     * 构建菜单树形结构
+     * 构建菜单树形结构（按当前租户套餐过滤可见菜单）
      *
-     * @param tenantId 租户ID
      * @return 菜单树列表
      */
-    List<MenuTreeVO> buildMenuTree(Long tenantId);
+    List<MenuTreeVO> buildMenuTree();
 
     /**
      * 根据用户ID获取其有权限的菜单树

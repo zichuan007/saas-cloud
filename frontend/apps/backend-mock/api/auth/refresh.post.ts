@@ -1,12 +1,12 @@
-import { defineEventHandler } from 'h3';
+import {defineEventHandler} from 'h3';
 import {
   clearRefreshTokenCookie,
   getRefreshTokenFromCookie,
   setRefreshTokenCookie,
 } from '~/utils/cookie-utils';
-import { generateAccessToken, verifyRefreshToken } from '~/utils/jwt-utils';
-import { MOCK_USERS } from '~/utils/mock-data';
-import { forbiddenResponse } from '~/utils/response';
+import {generateAccessToken, verifyRefreshToken} from '~/utils/jwt-utils';
+import {MOCK_USERS} from '~/utils/mock-data';
+import {forbiddenResponse} from '~/utils/response';
 
 export default defineEventHandler(async (event) => {
   const refreshToken = getRefreshTokenFromCookie(event);

@@ -1,4 +1,4 @@
-import { requestClient } from '#/api/request';
+import {requestClient} from '#/api/request';
 
 export interface TenantRecord {
   contactPerson?: string;
@@ -56,4 +56,10 @@ export function deleteTenant(id: number) {
 
 export function getTenantQuota(id: number) {
   return requestClient.get(`/platform/tenant/${id}/quota`);
+}
+
+export function exportTenants() {
+  return requestClient.download('/platform/tenant/export', {
+    responseReturn: 'raw',
+  });
 }

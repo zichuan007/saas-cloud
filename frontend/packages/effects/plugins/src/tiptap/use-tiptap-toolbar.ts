@@ -1,10 +1,10 @@
-import type { Editor } from '@tiptap/vue-3';
+import type {Editor} from '@tiptap/vue-3';
 
-import type { ShallowRef } from 'vue';
+import type {ShallowRef} from 'vue';
 
-import type { ToolbarAction, ToolbarMenuItem } from './types';
+import type {ToolbarAction, ToolbarMenuItem} from './types';
 
-import { cn } from '@vben-core/shared/utils';
+import {cn} from '@vben-core/shared/utils';
 
 interface UseTiptapToolbarOptions {
   editable: () => boolean;

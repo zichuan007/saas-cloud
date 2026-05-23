@@ -15,6 +15,8 @@ import com.saas.cloud.notify.api.dto.ChannelConfigUpdateDTO;
 import com.saas.cloud.notify.api.vo.ChannelConfigVO;
 import com.saas.cloud.notify.service.INotifyChannelConfigService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "通知渠道配置管理")
 @Slf4j
 @RestController
 @RequestMapping("/channel")
@@ -39,6 +42,7 @@ public class NotifyChannelConfigController {
      *
      * @return 渠道配置列表
      */
+    @Operation(summary = "查询渠道配置列表")
     @GetMapping("/list")
     public ApiResult<List<ChannelConfigVO>> list() {
         return ApiResult.ok(channelConfigService.listConfigs());
@@ -51,6 +55,7 @@ public class NotifyChannelConfigController {
      * @param dto         配置更新请求
      * @return 操作结果
      */
+    @Operation(summary = "更新渠道配置")
     @PutMapping("/{channelType}")
     public ApiResult<Void> update(@PathVariable("channelType") Byte channelType,
                                   @Valid @RequestBody ChannelConfigUpdateDTO dto) {

@@ -1,12 +1,11 @@
 /**
  * 参考 https://github.com/jspm/vite-plugin-jspm，调整为需要的功能
  */
-import type { GeneratorOptions } from '@jspm/generator';
-import type { Plugin } from 'vite';
-
-import { Generator } from '@jspm/generator';
-import { load } from 'cheerio';
-import { minify } from 'html-minifier-terser';
+import type {GeneratorOptions} from '@jspm/generator';
+import {Generator} from '@jspm/generator';
+import type {Plugin} from 'vite';
+import {load} from 'cheerio';
+import {minify} from 'html-minifier-terser';
 
 const DEFAULT_PROVIDER = 'jspm.io';
 

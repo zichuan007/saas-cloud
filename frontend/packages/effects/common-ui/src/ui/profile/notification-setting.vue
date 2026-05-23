@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Recordable } from '@vben/types';
+import type {Recordable} from '@vben/types';
 
-import type { SettingProps } from './types';
+import type {SettingProps} from './types';
 
 import {
   Form,

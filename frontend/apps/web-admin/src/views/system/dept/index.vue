@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { Page, useVbenModal } from '@vben/common-ui';
+import {Page, useVbenModal} from '@vben/common-ui';
 
-import { Button, message, Popconfirm, Space, Table } from 'ant-design-vue';
+import {Button, message, Popconfirm, Space, Table} from 'ant-design-vue';
 
-import { deleteDept, type DeptRecord, getDeptTree } from '#/api/system/dept';
+import {deleteDept, type DeptRecord, getDeptTree} from '#/api/system/dept';
 
 import DeptFormModal from './dept-form-modal.vue';
 

@@ -1,10 +1,10 @@
-import type { OxlintConfig } from 'oxlint';
+import type {OxlintConfig} from 'oxlint';
 
-import { fileURLToPath } from 'node:url';
+import {fileURLToPath} from 'node:url';
 
 import eslintPluginBetterTailwindcss from 'eslint-plugin-better-tailwindcss';
-import { getDefaultSelectors } from 'eslint-plugin-better-tailwindcss/defaults';
-import { SelectorKind } from 'eslint-plugin-better-tailwindcss/types';
+import {getDefaultSelectors} from 'eslint-plugin-better-tailwindcss/defaults';
+import {SelectorKind} from 'eslint-plugin-better-tailwindcss/types';
 
 const selectors = [
   ...getDefaultSelectors(),

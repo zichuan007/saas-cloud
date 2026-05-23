@@ -5,10 +5,6 @@ import type {
   WorkbenchTodoItem,
   WorkbenchTrendItem,
 } from '@vben/common-ui';
-
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-
 import {
   AnalysisChartCard,
   WorkbenchHeader,
@@ -17,9 +13,12 @@ import {
   WorkbenchTodo,
   WorkbenchTrends,
 } from '@vben/common-ui';
-import { preferences } from '@vben/preferences';
-import { useUserStore } from '@vben/stores';
-import { openWindow } from '@vben/utils';
+
+import {ref} from 'vue';
+import {useRouter} from 'vue-router';
+import {preferences} from '@vben/preferences';
+import {useUserStore} from '@vben/stores';
+import {openWindow} from '@vben/utils';
 
 import AnalyticsVisitsSource from '../analytics/analytics-visits-source.vue';
 

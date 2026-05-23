@@ -1,8 +1,8 @@
-import { cp, mkdir } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import {cp, mkdir} from 'node:fs/promises';
+import {dirname, join} from 'node:path';
+import {fileURLToPath} from 'node:url';
 
-import { defineConfig } from 'tsdown';
+import {defineConfig} from 'tsdown';
 
 const rootDir = dirname(fileURLToPath(import.meta.url));
 const loadingAssets = ['default-loading-antd.html', 'default-loading.html'];

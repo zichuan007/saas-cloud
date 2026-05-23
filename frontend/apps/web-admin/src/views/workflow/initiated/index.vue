@@ -1,16 +1,11 @@
 <script lang="ts" setup>
-import type { VxeGridProps } from '#/adapter/vxe-table';
+import type {VxeGridProps} from '#/adapter/vxe-table';
+import {useVbenVxeGrid} from '#/adapter/vxe-table';
 
-import { Page } from '@vben/common-ui';
+import {Page} from '@vben/common-ui';
 
-import { Button, message, Popconfirm, Space, Tag } from 'ant-design-vue';
-
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {
-  cancelProcess,
-  getMyInitiated,
-  type ProcessInstance,
-} from '#/api/workflow/process';
+import {Button, message, Popconfirm, Space, Tag} from 'ant-design-vue';
+import {cancelProcess, getMyInitiated, type ProcessInstance,} from '#/api/workflow/process';
 
 defineOptions({ name: 'WorkflowInitiated' });
 

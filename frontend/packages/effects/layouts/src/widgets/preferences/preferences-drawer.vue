@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import type { SupportedLanguagesType } from '@vben/locales';
-import type { CustomPreferencesRecord } from '@vben/preferences';
+import type {SupportedLanguagesType} from '@vben/locales';
+import {$t, loadLocaleMessages} from '@vben/locales';
+import type {CustomPreferencesRecord} from '@vben/preferences';
+import {
+  clearCache,
+  preferences,
+  resetPreferences,
+  updateCustomPreferences,
+  usePreferences,
+} from '@vben/preferences';
 import type {
   BreadcrumbStyleType,
   BuiltinThemeType,
@@ -13,29 +21,17 @@ import type {
   ThemeModeType,
 } from '@vben/types';
 
-import type { SegmentedItem } from '@vben-core/shadcn-ui';
+import type {SegmentedItem} from '@vben-core/shadcn-ui';
+import {VbenButton, VbenIconButton, VbenSegmented,} from '@vben-core/shadcn-ui';
 
-import { computed, ref } from 'vue';
+import {computed, ref} from 'vue';
 
-import { Copy, Pin, PinOff, RotateCw } from '@vben/icons';
-import { $t, loadLocaleMessages } from '@vben/locales';
-import {
-  clearCache,
-  preferences,
-  resetPreferences,
-  updateCustomPreferences,
-  usePreferences,
-} from '@vben/preferences';
+import {Copy, Pin, PinOff, RotateCw} from '@vben/icons';
 
-import { useVbenDrawer } from '@vben-core/popup-ui';
-import {
-  VbenButton,
-  VbenIconButton,
-  VbenSegmented,
-} from '@vben-core/shadcn-ui';
-import { globalShareState } from '@vben-core/shared/global-state';
+import {useVbenDrawer} from '@vben-core/popup-ui';
+import {globalShareState} from '@vben-core/shared/global-state';
 
-import { useClipboard } from '@vueuse/core';
+import {useClipboard} from '@vueuse/core';
 
 import {
   Animation,

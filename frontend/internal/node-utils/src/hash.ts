@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import {createHash} from 'node:crypto';
 
 /**
  * 生产基于内容的 hash，可自定义长度

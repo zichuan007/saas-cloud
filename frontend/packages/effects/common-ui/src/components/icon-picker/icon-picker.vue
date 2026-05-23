@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { IconPickerProps } from './types';
+import type {IconPickerProps} from './types';
 
-import { computed, ref, useAttrs, watch, watchEffect } from 'vue';
+import {computed, ref, useAttrs, watch, watchEffect} from 'vue';
 
-import { usePagination } from '@vben/hooks';
-import { EmptyIcon, Grip, listIcons } from '@vben/icons';
-import { $t } from '@vben/locales';
+import {usePagination} from '@vben/hooks';
+import {EmptyIcon, Grip, listIcons} from '@vben/icons';
+import {$t} from '@vben/locales';
 
 import {
   Button,
@@ -22,11 +22,11 @@ import {
   VbenIconButton,
   VbenPopover,
 } from '@vben-core/shadcn-ui';
-import { isFunction } from '@vben-core/shared/utils';
+import {isFunction} from '@vben-core/shared/utils';
 
-import { objectOmit, refDebounced, watchDebounced } from '@vueuse/core';
+import {objectOmit, refDebounced, watchDebounced} from '@vueuse/core';
 
-import { fetchIconsData } from './icons';
+import {fetchIconsData} from './icons';
 
 const props = withDefaults(defineProps<IconPickerProps>(), {
   prefix: 'ant-design',

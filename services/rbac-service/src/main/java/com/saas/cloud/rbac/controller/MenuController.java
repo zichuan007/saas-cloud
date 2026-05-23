@@ -16,13 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saas.cloud.common.core.result.ApiResult;
-import com.saas.cloud.common.security.context.TenantContext;
+import com.saas.cloud.common.log.annotation.OperationLog;
 import com.saas.cloud.common.security.context.UserContext;
 import com.saas.cloud.rbac.api.dto.MenuCreateDTO;
 import com.saas.cloud.rbac.api.dto.MenuUpdateDTO;
 import com.saas.cloud.rbac.api.vo.MenuTreeVO;
 import com.saas.cloud.rbac.service.IMenuService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2026-05-18
  */
 @Slf4j
+@Tag(name = "菜单管理")
 @RestController
 @RequestMapping("/menu")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -47,10 +50,10 @@ public class MenuController {
      *
      * @return 菜单树
      */
+    @Operation(summary = "获取菜单树形列表")
     @GetMapping("/tree")
     public ApiResult<List<MenuTreeVO>> tree() {
-        Long tenantId = TenantContext.getTenantId();
-        return ApiResult.ok(menuService.buildMenuTree(tenantId));
+        return ApiResult.ok(menuService.buildMenuTree());
     }
 
     /**
@@ -58,6 +61,7 @@ public class MenuController {
      *
      * @return 用户菜单树（仅目录和菜单，不含按钮）
      */
+    @Operation(summary = "获取当前用户有权限的菜单树")
     @GetMapping("/user-menus")
     public ApiResult<List<MenuTreeVO>> userMenus() {
         Long userId = UserContext.getUserId();
@@ -69,6 +73,7 @@ public class MenuController {
      *
      * @return Vben 兼容的路由配置列表
      */
+    @Operation(summary = "获取当前用户菜单树(Vben路由格式)")
     @GetMapping("/user-tree")
     public ApiResult<List<Map<String, Object>>> userTree() {
         Long userId = UserContext.getUserId();
@@ -120,6 +125,8 @@ public class MenuController {
      * @param dto 菜单创建请求
      * @return 操作结果
      */
+    @Operation(summary = "创建菜单")
+    @OperationLog(module = "菜单管理", operation = "创建菜单")
     @PostMapping
     public ApiResult<Void> create(@Valid @RequestBody MenuCreateDTO dto) {
         menuService.createMenu(dto);
@@ -133,6 +140,8 @@ public class MenuController {
      * @param dto 菜单更新请求
      * @return 操作结果
      */
+    @Operation(summary = "更新菜单")
+    @OperationLog(module = "菜单管理", operation = "更新菜单")
     @PutMapping("/{id}")
     public ApiResult<Void> update(@PathVariable("id") Long id, @Valid @RequestBody MenuUpdateDTO dto) {
         dto.setId(id);
@@ -146,6 +155,8 @@ public class MenuController {
      * @param id 菜单ID
      * @return 操作结果
      */
+    @Operation(summary = "删除菜单")
+    @OperationLog(module = "菜单管理", operation = "删除菜单")
     @DeleteMapping("/{id}")
     public ApiResult<Void> delete(@PathVariable("id") Long id) {
         menuService.deleteMenu(id);

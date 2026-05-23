@@ -1,27 +1,13 @@
 <script lang="ts" setup>
-import type { VxeGridProps } from '#/adapter/vxe-table';
+import type {VxeGridProps} from '#/adapter/vxe-table';
+import {useVbenVxeGrid} from '#/adapter/vxe-table';
 
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { Page } from '@vben/common-ui';
+import {Page} from '@vben/common-ui';
 
-import {
-  Button,
-  Card,
-  Col,
-  message,
-  Popconfirm,
-  Row,
-  Space,
-  Statistic,
-} from 'ant-design-vue';
-
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {
-  getRunningInstances,
-  getStatistics,
-  terminateInstance,
-} from '#/api/workflow/monitor';
+import {Button, Card, Col, message, Popconfirm, Row, Space, Statistic,} from 'ant-design-vue';
+import {getRunningInstances, getStatistics, terminateInstance,} from '#/api/workflow/monitor';
 
 defineOptions({ name: 'WorkflowMonitor' });
 

@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { ToolbarType } from './types';
+import type {ToolbarType} from './types';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { preferences } from '@vben/preferences';
+import {preferences} from '@vben/preferences';
 
 import {
   AuthenticationColorToggle,

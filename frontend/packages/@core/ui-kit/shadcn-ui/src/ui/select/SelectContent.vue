@@ -1,16 +1,10 @@
 <script setup lang="ts">
-import type { SelectContentEmits, SelectContentProps } from 'reka-ui';
+import type {SelectContentEmits, SelectContentProps} from 'reka-ui';
+import {SelectContent, SelectPortal, SelectViewport, useForwardPropsEmits,} from 'reka-ui';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { cn } from '@vben-core/shared/utils';
-
-import {
-  SelectContent,
-  SelectPortal,
-  SelectViewport,
-  useForwardPropsEmits,
-} from 'reka-ui';
+import {cn} from '@vben-core/shared/utils';
 
 import SelectScrollDownButton from './SelectScrollDownButton.vue';
 import SelectScrollUpButton from './SelectScrollUpButton.vue';

@@ -5,13 +5,13 @@ import type {
   SliderRotateVerifyPassingData,
 } from '../types';
 
-import { reactive, unref, useTemplateRef, watch, watchEffect } from 'vue';
+import {reactive, unref, useTemplateRef, watch, watchEffect} from 'vue';
 
-import { $t } from '@vben/locales';
+import {$t} from '@vben/locales';
 
-import { cn } from '@vben-core/shared/utils';
+import {cn} from '@vben-core/shared/utils';
 
-import { useTimeoutFn } from '@vueuse/core';
+import {useTimeoutFn} from '@vueuse/core';
 
 import SliderCaptchaAction from './slider-captcha-action.vue';
 import SliderCaptchaBar from './slider-captcha-bar.vue';

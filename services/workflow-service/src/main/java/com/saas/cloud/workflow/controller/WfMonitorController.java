@@ -21,6 +21,8 @@ import com.saas.cloud.workflow.api.dto.ProcessQueryDTO;
 import com.saas.cloud.workflow.entity.WfProcessInstanceExt;
 import com.saas.cloud.workflow.service.IWfProcessInstanceExtService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -30,6 +32,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "流程监控")
 @RestController
 @RequestMapping("/monitor")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -43,6 +46,7 @@ public class WfMonitorController {
      * @param query 查询条件
      * @return 分页结果
      */
+    @Operation(summary = "分页查询运行中的流程实例")
     @GetMapping("/instances")
     public ApiResult<PageResult<WfProcessInstanceExt>> instances(ProcessQueryDTO query) {
         return ApiResult.ok(processInstanceExtService.pageRunningInstances(query));
@@ -53,6 +57,7 @@ public class WfMonitorController {
      *
      * @return 统计信息
      */
+    @Operation(summary = "流程统计数据")
     @GetMapping("/statistics")
     public ApiResult<Map<String, Object>> statistics() {
         Map<String, Object> result = new HashMap<>(4);
@@ -75,6 +80,7 @@ public class WfMonitorController {
      * @param reason 终止原因
      * @return 操作结果
      */
+    @Operation(summary = "强制终止流程")
     @OperationLog(module = "流程监控", operation = "强制终止流程")
     @PostMapping("/{id}/terminate")
     public ApiResult<Void> terminate(@PathVariable("id") Long id,

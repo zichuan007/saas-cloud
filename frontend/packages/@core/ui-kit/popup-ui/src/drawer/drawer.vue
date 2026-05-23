@@ -1,22 +1,10 @@
 <script lang="ts" setup>
-import type { DrawerProps, ExtendedDrawerApi } from './drawer';
+import type {DrawerProps, ExtendedDrawerApi} from './drawer';
 
-import {
-  computed,
-  onDeactivated,
-  provide,
-  ref,
-  unref,
-  useId,
-  watch,
-} from 'vue';
+import {computed, onDeactivated, provide, ref, unref, useId, watch,} from 'vue';
 
-import {
-  useIsMobile,
-  usePriorityValues,
-  useSimpleLocale,
-} from '@vben-core/composables';
-import { X } from '@vben-core/icons';
+import {useIsMobile, usePriorityValues, useSimpleLocale,} from '@vben-core/composables';
+import {X} from '@vben-core/icons';
 import {
   Separator,
   Sheet,
@@ -32,9 +20,9 @@ import {
   VbenLoading,
   VisuallyHidden,
 } from '@vben-core/shadcn-ui';
-import { ELEMENT_ID_MAIN_CONTENT } from '@vben-core/shared/constants';
-import { globalShareState } from '@vben-core/shared/global-state';
-import { cn } from '@vben-core/shared/utils';
+import {ELEMENT_ID_MAIN_CONTENT} from '@vben-core/shared/constants';
+import {globalShareState} from '@vben-core/shared/global-state';
+import {cn} from '@vben-core/shared/utils';
 
 interface Props extends DrawerProps {
   drawerApi?: ExtendedDrawerApi;

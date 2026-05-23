@@ -1,9 +1,9 @@
-import type { RouteRecordRaw } from 'vue-router';
+import type {RouteRecordRaw} from 'vue-router';
 
-import { LOGIN_PATH } from '@vben/constants';
-import { preferences } from '@vben/preferences';
+import {LOGIN_PATH} from '@vben/constants';
+import {preferences} from '@vben/preferences';
 
-import { $t } from '#/locales';
+import {$t} from '#/locales';
 
 const BasicLayout = () => import('#/layouts/basic.vue');
 const AuthPageLayout = () => import('#/layouts/auth.vue');

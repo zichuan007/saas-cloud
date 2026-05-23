@@ -20,6 +20,7 @@ import com.saas.cloud.common.core.exception.BusinessException;
 import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.core.result.PageResult;
 import com.saas.cloud.common.core.result.ResultCode;
+import com.saas.cloud.common.data.annotation.DataScope;
 import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.platform.api.feign.PlatformFeignClient;
 import com.saas.cloud.rbac.api.dto.UserCreateDTO;
@@ -34,6 +35,7 @@ import com.saas.cloud.rbac.mapper.DeptMapper;
 import com.saas.cloud.rbac.mapper.RoleMapper;
 import com.saas.cloud.rbac.mapper.UserMapper;
 import com.saas.cloud.rbac.mapper.UserRoleMapper;
+import com.saas.cloud.rbac.service.IPostService;
 import com.saas.cloud.rbac.service.IUserService;
 
 import lombok.RequiredArgsConstructor;
@@ -55,17 +57,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private final DeptMapper deptMapper;
     private final RoleMapper roleMapper;
     private final PlatformFeignClient platformFeignClient;
+    private final IPostService postService;
 
     private static final BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
+    @DataScope
     @Override
     public PageResult<UserPageVO> pageUsers(Integer pageNum, Integer pageSize, String keyword) {
-        Long tenantId = TenantContext.getTenantId();
-        log.info("分页查询用户, tenantId={}, pageNum={}, pageSize={}, keyword={}", tenantId, pageNum, pageSize, keyword);
+        log.info("分页查询用户, pageNum={}, pageSize={}, keyword={}", pageNum, pageSize, keyword);
 
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(tenantId != null, User::getTenantId, tenantId);
-        // 关键字模糊搜索：用户名或真实姓名
         if (StringUtils.hasText(keyword)) {
             queryWrapper.and(wrapper ->
                     wrapper.like(User::getUsername, keyword)
@@ -164,8 +165,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         // 配额校验（非核心逻辑，Feign 调用失败时降级放行）
         if (tenantId != null) {
             try {
-                long currentUserCount = this.count(new LambdaQueryWrapper<User>()
-                        .eq(User::getTenantId, tenantId));
+                long currentUserCount = this.count();
                 ApiResult<Boolean> quotaResult = platformFeignClient.checkQuota(
                         tenantId, "USER", (int) currentUserCount);
                 if (quotaResult.isSuccess() && Boolean.FALSE.equals(quotaResult.getData())) {
@@ -178,10 +178,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             }
         }
 
-        // 检查同租户下用户名唯一
+        // 检查同租户下用户名唯一（拦截器自动注入 tenant_id 条件）
         long count = this.count(new LambdaQueryWrapper<User>()
-                .eq(User::getUsername, dto.getUsername())
-                .eq(tenantId != null, User::getTenantId, tenantId));
+                .eq(User::getUsername, dto.getUsername()));
         if (count > 0) {
             throw new BusinessException("用户名已存在");
         }
@@ -202,6 +201,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
         // 创建用户角色关联
         saveUserRoles(user.getId(), dto.getRoleIds());
+
+        // 创建用户岗位关联
+        postService.saveUserPosts(user.getId(), dto.getPostIds());
     }
 
     @Override
@@ -234,6 +236,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                     .eq(UserRole::getUserId, dto.getId()));
             saveUserRoles(dto.getId(), dto.getRoleIds());
         }
+
+        // 更新用户岗位关联
+        if (dto.getPostIds() != null) {
+            postService.saveUserPosts(dto.getId(), dto.getPostIds());
+        }
         log.info("用户更新成功, id={}", dto.getId());
     }
 
@@ -250,6 +257,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         // 删除用户角色关联
         userRoleMapper.delete(new LambdaQueryWrapper<UserRole>()
                 .eq(UserRole::getUserId, userId));
+        // 删除用户岗位关联
+        postService.saveUserPosts(userId, null);
         log.info("用户删除成功, userId={}", userId);
     }
 
@@ -293,6 +302,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         baseMapper.updateById(user);
         log.info("个人资料更新成功, userId={}", userId);
+    }
+
+    @Override
+    public void updateAvatar(Long userId, String avatar) {
+        User user = baseMapper.selectById(userId);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+        user.setAvatar(avatar);
+        baseMapper.updateById(user);
     }
 
     @Override

@@ -1,14 +1,13 @@
-import type { Component, VNode } from 'vue';
+import type {Component, VNode} from 'vue';
+import {h, nextTick, ref, render} from 'vue';
 
-import type { Recordable } from '@vben-core/typings';
+import type {Recordable} from '@vben-core/typings';
 
-import type { AlertProps, BeforeCloseScope, PromptProps } from './alert';
+import type {AlertProps, BeforeCloseScope, PromptProps} from './alert';
 
-import { h, nextTick, ref, render } from 'vue';
-
-import { useSimpleLocale } from '@vben-core/composables';
-import { Input, VbenRenderContent } from '@vben-core/shadcn-ui';
-import { isFunction, isString } from '@vben-core/shared/utils';
+import {useSimpleLocale} from '@vben-core/composables';
+import {Input, VbenRenderContent} from '@vben-core/shadcn-ui';
+import {isFunction, isString} from '@vben-core/shared/utils';
 
 import Alert from './alert.vue';
 

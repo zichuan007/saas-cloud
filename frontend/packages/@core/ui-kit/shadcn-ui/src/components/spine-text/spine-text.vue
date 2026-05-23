@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import {computed} from 'vue';
 
 const { animationDuration = 2, animationIterationCount = 'infinite' } =
   defineProps<{

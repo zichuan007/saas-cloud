@@ -1,17 +1,17 @@
-import type { Recordable, UserInfo } from '@vben/types';
+import type {Recordable, UserInfo} from '@vben/types';
 
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import {ref} from 'vue';
+import {useRouter} from 'vue-router';
 
-import { LOGIN_PATH } from '@vben/constants';
-import { preferences } from '@vben/preferences';
-import { resetAllStores, useAccessStore, useUserStore } from '@vben/stores';
+import {LOGIN_PATH} from '@vben/constants';
+import {preferences} from '@vben/preferences';
+import {resetAllStores, useAccessStore, useUserStore} from '@vben/stores';
 
-import { notification } from 'ant-design-vue';
-import { defineStore } from 'pinia';
+import {notification} from 'ant-design-vue';
+import {defineStore} from 'pinia';
 
-import { type AuthApi, getUserInfoApi, loginApi, logoutApi } from '#/api';
-import { $t } from '#/locales';
+import {type AuthApi, getUserInfoApi, loginApi, logoutApi} from '#/api';
+import {$t} from '#/locales';
 
 export const useAuthStore = defineStore('auth', () => {
   const accessStore = useAccessStore();

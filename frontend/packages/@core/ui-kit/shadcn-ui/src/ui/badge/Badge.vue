@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type { BadgeVariants } from './badge';
+import type {BadgeVariants} from './badge';
+import {badgeVariants} from './badge';
 
-import { cn } from '@vben-core/shared/utils';
-
-import { badgeVariants } from './badge';
+import {cn} from '@vben-core/shared/utils';
 
 const props = defineProps<{
   class?: any;

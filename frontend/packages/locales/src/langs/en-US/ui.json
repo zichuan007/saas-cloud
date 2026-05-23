@@ -123,7 +123,9 @@
       "unauthorized": "Unauthorized. Please log in to continue.",
       "forbidden": "Forbidden. You do not have permission to access this resource.",
       "notFound": "Not Found. The requested resource could not be found.",
-      "internalServerError": "Internal Server Error. Something went wrong on our end. Please try again later."
+      "internalServerError": "Internal Server Error. Something went wrong on our end. Please try again later.",
+      "tooManyRequests": "Too many requests. Please try again later.",
+      "serviceUnavailable": "Service temporarily unavailable. Please try again later."
     }
   },
   "widgets": {

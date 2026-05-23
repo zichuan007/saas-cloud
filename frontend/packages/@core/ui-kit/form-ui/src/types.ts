@@ -1,12 +1,12 @@
-import type { FieldOptions, FormContext, GenericObject } from 'vee-validate';
-import type { ZodTypeAny } from 'zod';
+import type {FieldOptions, FormContext, GenericObject} from 'vee-validate';
+import type {ZodTypeAny} from 'zod';
 
-import type { Component, HtmlHTMLAttributes, Ref } from 'vue';
+import type {Component, HtmlHTMLAttributes, Ref} from 'vue';
 
-import type { VbenButtonProps } from '@vben-core/shadcn-ui';
-import type { ClassType, MaybeComputedRef } from '@vben-core/typings';
+import type {VbenButtonProps} from '@vben-core/shadcn-ui';
+import type {ClassType, MaybeComputedRef} from '@vben-core/typings';
 
-import type { FormApi } from './form-api';
+import type {FormApi} from './form-api';
 
 export type FormLayout = 'horizontal' | 'inline' | 'vertical';
 

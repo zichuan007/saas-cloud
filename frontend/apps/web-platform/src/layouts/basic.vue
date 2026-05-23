@@ -1,22 +1,17 @@
 <script lang="ts" setup>
-import type { NotificationItem } from '@vben/layouts';
+import type {NotificationItem} from '@vben/layouts';
+import {BasicLayout, LockScreen, Notification, UserDropdown,} from '@vben/layouts';
 
-import { computed, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import {computed, ref, watch} from 'vue';
+import {useRouter} from 'vue-router';
 
-import { AuthenticationLoginExpiredModal } from '@vben/common-ui';
-import { useWatermark } from '@vben/hooks';
-import {
-  BasicLayout,
-  LockScreen,
-  Notification,
-  UserDropdown,
-} from '@vben/layouts';
-import { preferences, usePreferences } from '@vben/preferences';
-import { useAccessStore, useUserStore } from '@vben/stores';
+import {AuthenticationLoginExpiredModal} from '@vben/common-ui';
+import {useWatermark} from '@vben/hooks';
+import {preferences, usePreferences} from '@vben/preferences';
+import {useAccessStore, useUserStore} from '@vben/stores';
 
-import { $t } from '#/locales';
-import { useAuthStore } from '#/store';
+import {$t} from '#/locales';
+import {useAuthStore} from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
 const notifications = ref<NotificationItem[]>([]);

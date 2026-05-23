@@ -1,12 +1,8 @@
-import type { FormRenderProps } from '../types';
+import type {FormRenderProps} from '../types';
 
-import { computed, nextTick, onMounted, ref, useTemplateRef, watch } from 'vue';
+import {computed, nextTick, onMounted, ref, useTemplateRef, watch} from 'vue';
 
-import {
-  breakpointsTailwind,
-  useBreakpoints,
-  useElementVisibility,
-} from '@vueuse/core';
+import {breakpointsTailwind, useBreakpoints, useElementVisibility,} from '@vueuse/core';
 
 /**
  * 动态计算行数

@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { useVbenModal } from '@vben/common-ui';
+import {useVbenModal} from '@vben/common-ui';
 
-import { Form, FormItem, Input, message } from 'ant-design-vue';
+import {Form, FormItem, Input, message} from 'ant-design-vue';
 
-import { createTag, updateTag } from '#/api/wechat/tag';
+import {createTag, updateTag} from '#/api/wechat/tag';
 
 defineOptions({ name: 'TagFormModal' });
 

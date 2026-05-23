@@ -1,3 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.saas.cloud.common.core.exception.GlobalExceptionHandler,\
-  com.saas.cloud.common.core.config.JacksonConfig
+  com.saas.cloud.common.core.config.JacksonConfig,\
+  com.saas.cloud.common.sentinel.SentinelAutoConfiguration,\
+  com.saas.cloud.common.job.XxlJobAutoConfiguration

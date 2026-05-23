@@ -1,6 +1,6 @@
-import type { Linter } from 'eslint';
+import type {Linter} from 'eslint';
 
-import { interopDefault } from '../util';
+import {interopDefault} from '../util';
 
 export async function vue(): Promise<Linter.Config[]> {
   const [pluginVue, parserVue, parserTs] = await Promise.all([

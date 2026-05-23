@@ -1,18 +1,18 @@
-import type { CSSOptions, UserConfig } from 'vite';
+import type {CSSOptions, UserConfig} from 'vite';
+import {defineConfig, loadEnv, mergeConfig} from 'vite';
 
-import type { DefineApplicationOptions } from '../typing';
+import type {DefineApplicationOptions} from '../typing';
 
-import path, { relative } from 'node:path';
+import path, {relative} from 'node:path';
 
-import { findMonorepoRoot } from '@vben/node-utils';
+import {findMonorepoRoot} from '@vben/node-utils';
 
-import { NodePackageImporter } from 'sass-embedded';
-import { defineConfig, loadEnv, mergeConfig } from 'vite';
+import {NodePackageImporter} from 'sass-embedded';
 
-import { defaultImportmapOptions, getDefaultPwaOptions } from '../options';
-import { loadApplicationPlugins } from '../plugins';
-import { loadAndConvertEnv } from '../utils/env';
-import { getCommonConfig } from './common';
+import {defaultImportmapOptions, getDefaultPwaOptions} from '../options';
+import {loadApplicationPlugins} from '../plugins';
+import {loadAndConvertEnv} from '../utils/env';
+import {getCommonConfig} from './common';
 
 function defineApplicationConfig(userConfigPromise?: DefineApplicationOptions) {
   return defineConfig(async (config) => {

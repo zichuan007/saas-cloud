@@ -1,13 +1,9 @@
-import {
-  createRouter,
-  createWebHashHistory,
-  createWebHistory,
-} from 'vue-router';
+import {createRouter, createWebHashHistory, createWebHistory,} from 'vue-router';
 
-import { resetStaticRoutes } from '@vben/utils';
+import {resetStaticRoutes} from '@vben/utils';
 
-import { createRouterGuard } from './guard';
-import { routes } from './routes';
+import {createRouterGuard} from './guard';
+import {routes} from './routes';
 
 /**
  *  @zh_CN 创建vue-router实例

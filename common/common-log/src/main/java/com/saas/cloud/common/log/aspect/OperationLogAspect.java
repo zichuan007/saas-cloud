@@ -15,6 +15,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.saas.cloud.common.core.util.IpRegionUtils;
 import com.saas.cloud.common.kafka.config.KafkaConfig;
 import com.saas.cloud.common.kafka.producer.KafkaProducerService;
 import com.saas.cloud.common.log.annotation.OperationLog;
@@ -100,7 +101,9 @@ public class OperationLogAspect {
             HttpServletRequest request = attributes.getRequest();
             event.setRequestUrl(request.getRequestURI());
             event.setRequestMethod(request.getMethod());
-            event.setIp(getClientIp(request));
+            String clientIp = getClientIp(request);
+            event.setIp(clientIp);
+            event.setLocation(IpRegionUtils.getRegion(clientIp));
             event.setUserAgent(request.getHeader("User-Agent"));
         }
 

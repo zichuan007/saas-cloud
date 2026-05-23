@@ -1,9 +1,8 @@
 <script lang="ts" setup>
-import type { PrimitiveProps } from 'reka-ui';
+import type {PrimitiveProps} from 'reka-ui';
+import {Primitive} from 'reka-ui';
 
-import { cn } from '@vben-core/shared/utils';
-
-import { Primitive } from 'reka-ui';
+import {cn} from '@vben-core/shared/utils';
 
 const props = withDefaults(defineProps<PrimitiveProps & { class?: any }>(), {
   as: 'a',

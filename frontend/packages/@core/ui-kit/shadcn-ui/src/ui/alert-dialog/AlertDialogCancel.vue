@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import type { AlertDialogCancelProps } from 'reka-ui';
-
-import { AlertDialogCancel } from 'reka-ui';
+import type {AlertDialogCancelProps} from 'reka-ui';
+import {AlertDialogCancel} from 'reka-ui';
 
 const props = defineProps<AlertDialogCancelProps>();
 </script>

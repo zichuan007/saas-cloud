@@ -68,6 +68,16 @@
         <!-- 文档 -->
         <knife4j.version>4.5.0</knife4j.version>
 
+        <!-- IP归属地 -->
+        <ip2region.version>2.7.0</ip2region.version>
+
+        <!-- 社交登录 -->
+        <justauth.version>1.16.7</justauth.version>
+
+        <!-- 监控 -->
+        <oshi.version>6.6.5</oshi.version>
+        <spring-boot-admin.version>3.4.5</spring-boot-admin.version>
+
         <!-- 代码规范 -->
         <checkstyle.version>10.21.4</checkstyle.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
@@ -110,27 +120,12 @@
             </dependency>
             <dependency>
                 <groupId>com.saas.cloud</groupId>
-                <artifactId>common-security</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.saas.cloud</groupId>
                 <artifactId>common-data</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.saas.cloud</groupId>
                 <artifactId>common-redis</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.saas.cloud</groupId>
-                <artifactId>common-kafka</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.saas.cloud</groupId>
-                <artifactId>common-feign</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -148,16 +143,6 @@
                 <artifactId>common-excel</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.saas.cloud</groupId>
-                <artifactId>common-sentinel</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.saas.cloud</groupId>
-                <artifactId>common-job</artifactId>
-                <version>${project.version}</version>
-            </dependency>
 
             <!-- 业务服务 API -->
             <dependency>
@@ -173,11 +158,6 @@
             <dependency>
                 <groupId>com.saas.cloud</groupId>
                 <artifactId>workflow-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.saas.cloud</groupId>
-                <artifactId>wechat-oa-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -298,6 +278,39 @@
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
                 <version>${knife4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-gateway-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+
+            <!-- 系统硬件信息 -->
+            <dependency>
+                <groupId>com.github.oshi</groupId>
+                <artifactId>oshi-core</artifactId>
+                <version>${oshi.version}</version>
+            </dependency>
+
+            <!-- IP归属地 -->
+            <dependency>
+                <groupId>org.lionsoul</groupId>
+                <artifactId>ip2region</artifactId>
+                <version>${ip2region.version}</version>
+            </dependency>
+
+            <!-- 社交登录 -->
+            <dependency>
+                <groupId>me.zhyd.oauth</groupId>
+                <artifactId>JustAuth</artifactId>
+                <version>${justauth.version}</version>
+            </dependency>
+
+            <!-- Spring Boot Admin Client -->
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-starter-client</artifactId>
+                <version>${spring-boot-admin.version}</version>
             </dependency>
 
         </dependencies>

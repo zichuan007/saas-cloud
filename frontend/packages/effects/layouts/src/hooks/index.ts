@@ -1,12 +1,11 @@
-import type { VNode } from 'vue';
+import type {VNode} from 'vue';
+import {computed} from 'vue';
 import type {
   RouteLocationNormalizedLoaded,
   RouteLocationNormalizedLoadedGeneric,
 } from 'vue-router';
 
-import { computed } from 'vue';
-
-import { preferences, usePreferences } from '@vben/preferences';
+import {preferences, usePreferences} from '@vben/preferences';
 
 /**
  * 转换组件，自动添加 name

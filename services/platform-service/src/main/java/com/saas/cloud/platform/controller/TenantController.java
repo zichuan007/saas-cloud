@@ -26,6 +26,8 @@ import com.saas.cloud.platform.api.vo.TenantVO;
 import com.saas.cloud.platform.entity.Tenant;
 import com.saas.cloud.platform.service.ITenantService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +38,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "租户管理")
 @RestController
 @RequestMapping("/tenant")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -49,6 +52,7 @@ public class TenantController {
      * @param query 查询条件
      * @return 分页结果
      */
+    @Operation(summary = "分页查询租户列表")
     @GetMapping("/list")
     public ApiResult<PageResult<TenantVO>> pageTenants(TenantQueryDTO query) {
         return ApiResult.ok(tenantService.pageTenants(query));
@@ -60,6 +64,7 @@ public class TenantController {
      * @param id 租户ID
      * @return 租户实体
      */
+    @Operation(summary = "获取租户详情")
     @GetMapping("/{id}")
     public ApiResult<Tenant> getTenantDetail(@PathVariable("id") Long id) {
         return ApiResult.ok(tenantService.getById(id));
@@ -71,6 +76,7 @@ public class TenantController {
      * @param dto 租户创建请求
      * @return 操作结果
      */
+    @Operation(summary = "创建租户")
     @OperationLog(module = "租户管理", operation = "创建租户")
     @PostMapping
     @com.saas.cloud.common.redis.idempotent.Idempotent(key = "'tenant:create:' + #dto.tenantName", timeout = 10)
@@ -85,6 +91,7 @@ public class TenantController {
      * @param id 租户ID
      * @return 操作结果
      */
+    @Operation(summary = "冻结租户")
     @OperationLog(module = "租户管理", operation = "冻结租户")
     @PutMapping("/{id}/freeze")
     public ApiResult<Void> freezeTenant(@PathVariable("id") Long id) {
@@ -98,6 +105,7 @@ public class TenantController {
      * @param id 租户ID
      * @return 操作结果
      */
+    @Operation(summary = "解冻租户")
     @OperationLog(module = "租户管理", operation = "解冻租户")
     @PutMapping("/{id}/unfreeze")
     public ApiResult<Void> unfreezeTenant(@PathVariable("id") Long id) {
@@ -110,6 +118,7 @@ public class TenantController {
      *
      * @param response HTTP 响应
      */
+    @Operation(summary = "导出租户列表")
     @OperationLog(module = "租户管理", operation = "导出租户")
     @GetMapping("/export")
     public void export(HttpServletResponse response) throws IOException {

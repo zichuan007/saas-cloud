@@ -1,8 +1,8 @@
-import { consola } from '@vben/node-utils';
+import {consola} from '@vben/node-utils';
 
-import { cac } from 'cac';
+import {cac} from 'cac';
 
-import { run } from './run';
+import {run} from './run';
 
 try {
   const turboRun = cac('turbo-run');

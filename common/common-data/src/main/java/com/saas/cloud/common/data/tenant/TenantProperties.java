@@ -38,6 +38,7 @@ public class TenantProperties {
             "sys_platform_user",
             "sys_announcement",
             "sys_global_config",
-            "notify_template"
+            "notify_template",
+            "sys_area"
     );
 }

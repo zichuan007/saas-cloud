@@ -14,7 +14,7 @@
     <packaging>pom</packaging>
     <name>Service Modules</name>
 
-    <!-- 所有服务公共依赖：Actuator + Prometheus -->
+    <!-- 所有服务公共依赖：Actuator + Prometheus + SBA Client -->
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -23,6 +23,10 @@
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-client</artifactId>
         </dependency>
     </dependencies>
 
@@ -34,7 +38,6 @@
         <module>rbac-service</module>
         <module>workflow-api</module>
         <module>workflow-service</module>
-        <module>wechat-oa-api</module>
         <module>wechat-oa-service</module>
         <module>notify-api</module>
         <module>notify-service</module>

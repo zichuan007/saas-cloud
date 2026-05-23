@@ -1,26 +1,17 @@
 <script lang="ts" setup>
-import type { VxeGridProps } from '#/adapter/vxe-table';
+import type {VxeGridProps} from '#/adapter/vxe-table';
+import {useVbenVxeGrid} from '#/adapter/vxe-table';
 
-import { Page } from '@vben/common-ui';
+import {Page} from '@vben/common-ui';
 
-import {
-  Button,
-  message,
-  Popconfirm,
-  Select,
-  Space,
-  Tag,
-  Upload,
-} from 'ant-design-vue';
-
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import {Button, message, Popconfirm, Select, Space, Tag, Upload,} from 'ant-design-vue';
 import {
   deleteMaterial,
   getMaterialList,
   syncMaterial,
   uploadMaterial,
 } from '#/api/wechat/material';
-import { useWechatAccount } from '../use-account';
+import {useWechatAccount} from '../use-account';
 
 defineOptions({ name: 'WechatMaterial' });
 

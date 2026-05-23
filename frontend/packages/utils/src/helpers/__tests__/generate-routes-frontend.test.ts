@@ -1,11 +1,8 @@
-import type { RouteRecordRaw } from 'vue-router';
+import type {RouteRecordRaw} from 'vue-router';
 
-import { describe, expect, it } from 'vitest';
+import {describe, expect, it} from 'vitest';
 
-import {
-  generateRoutesByFrontend,
-  hasAuthority,
-} from '../generate-routes-frontend';
+import {generateRoutesByFrontend, hasAuthority,} from '../generate-routes-frontend';
 
 // Mock 路由数据
 const mockRoutes = [

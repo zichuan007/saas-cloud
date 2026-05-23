@@ -1,8 +1,8 @@
-import { mount } from '@vue/test-utils';
+import {mount} from '@vue/test-utils';
 
-import { describe, expect, it } from 'vitest';
+import {describe, expect, it} from 'vitest';
 
-import { Page } from '..';
+import {Page} from '..';
 
 describe('page.vue', () => {
   it('renders title when passed', () => {

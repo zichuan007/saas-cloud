@@ -1,22 +1,10 @@
-import type {
-  DrawerApiOptions,
-  DrawerProps,
-  ExtendedDrawerApi,
-} from './drawer';
+import type {DrawerApiOptions, DrawerProps, ExtendedDrawerApi,} from './drawer';
 
-import {
-  defineComponent,
-  h,
-  inject,
-  nextTick,
-  provide,
-  reactive,
-  ref,
-} from 'vue';
+import {defineComponent, h, inject, nextTick, provide, reactive, ref,} from 'vue';
 
-import { useStore } from '@vben-core/shared/store';
+import {useStore} from '@vben-core/shared/store';
 
-import { DrawerApi } from './drawer-api';
+import {DrawerApi} from './drawer-api';
 import VbenDrawer from './drawer.vue';
 
 const USER_DRAWER_INJECT_KEY = Symbol('VBEN_DRAWER_INJECT');

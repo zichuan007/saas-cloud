@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { RendererElement } from 'vue';
+import type {RendererElement} from 'vue';
 
 defineOptions({
   name: 'CollapseTransition',

@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { useVbenModal } from '@vben/common-ui';
+import {useVbenModal} from '@vben/common-ui';
 
-import { Form, FormItem, Input, message, Select } from 'ant-design-vue';
+import {Form, FormItem, Input, message, Select} from 'ant-design-vue';
 
-import { requestClient } from '#/api/request';
+import {requestClient} from '#/api/request';
 
 defineOptions({ name: 'TemplateFormModal' });
 

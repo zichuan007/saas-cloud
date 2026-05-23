@@ -1,19 +1,12 @@
 <script lang="ts" setup>
-import type { Component } from 'vue';
+import type {Component} from 'vue';
+import {computed, h, nextTick, ref} from 'vue';
 
-import type { AlertProps } from './alert';
+import type {AlertProps} from './alert';
+import {provideAlertContext} from './alert';
 
-import { computed, h, nextTick, ref } from 'vue';
-
-import { useSimpleLocale } from '@vben-core/composables';
-import {
-  CircleAlert,
-  CircleCheckBig,
-  CircleHelp,
-  CircleX,
-  Info,
-  X,
-} from '@vben-core/icons';
+import {useSimpleLocale} from '@vben-core/composables';
+import {CircleAlert, CircleCheckBig, CircleHelp, CircleX, Info, X,} from '@vben-core/icons';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,10 +18,8 @@ import {
   VbenLoading,
   VbenRenderContent,
 } from '@vben-core/shadcn-ui';
-import { globalShareState } from '@vben-core/shared/global-state';
-import { cn } from '@vben-core/shared/utils';
-
-import { provideAlertContext } from './alert';
+import {globalShareState} from '@vben-core/shared/global-state';
+import {cn} from '@vben-core/shared/utils';
 
 const props = withDefaults(defineProps<AlertProps>(), {
   bordered: true,

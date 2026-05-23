@@ -17,6 +17,8 @@ import com.saas.cloud.common.log.annotation.OperationLog;
 import com.saas.cloud.platform.api.vo.SysFileVO;
 import com.saas.cloud.platform.service.ISysFileService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -26,6 +28,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-21
  */
+@Tag(name = "文件管理")
 @RestController
 @RequestMapping("/file")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -41,6 +44,7 @@ public class FileController {
      * @param bizId   关联业务ID（可选）
      * @return 文件信息
      */
+    @Operation(summary = "上传文件")
     @OperationLog(module = "文件管理", operation = "上传文件")
     @PostMapping("/upload")
     @com.saas.cloud.common.redis.idempotent.Idempotent(key = "'upload:' + #file.originalFilename + ':' + #file.size", timeout = 5)
@@ -56,6 +60,7 @@ public class FileController {
      * @param id 文件ID
      * @return 预签名URL（30分钟有效）
      */
+    @Operation(summary = "获取文件预签名访问URL")
     @GetMapping("/{id}/url")
     public ApiResult<String> getUrl(@PathVariable("id") Long id) {
         return ApiResult.ok(sysFileService.getPresignedUrl(id));
@@ -68,6 +73,7 @@ public class FileController {
      * @param bizId   业务ID
      * @return 文件列表
      */
+    @Operation(summary = "根据业务类型和业务ID查询文件列表")
     @GetMapping("/list")
     public ApiResult<List<SysFileVO>> listByBiz(@RequestParam("bizType") String bizType,
                                                  @RequestParam("bizId") String bizId) {
@@ -80,6 +86,7 @@ public class FileController {
      * @param id 文件ID
      * @return 操作结果
      */
+    @Operation(summary = "删除文件")
     @OperationLog(module = "文件管理", operation = "删除文件")
     @DeleteMapping("/{id}")
     public ApiResult<Void> delete(@PathVariable("id") Long id) {

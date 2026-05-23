@@ -16,6 +16,7 @@ CREATE DATABASE IF NOT EXISTS `rbac` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8m
 CREATE DATABASE IF NOT EXISTS `wechat_oa` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 CREATE DATABASE IF NOT EXISTS `notify` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 CREATE DATABASE IF NOT EXISTS `workflow` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE IF NOT EXISTS `xxl_job` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- =====================================================================
 -- 2. platform 库 - 平台管理（5 张表）
@@ -154,6 +155,55 @@ CREATE TABLE `sys_global_config` (
   UNIQUE KEY `uk_config_key` (`config_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='全局配置表';
 
+-- 租户订阅订单表（设计预留）
+CREATE TABLE IF NOT EXISTS `sys_tenant_order` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `package_id` bigint(20) NOT NULL COMMENT '套餐ID',
+  `order_no` varchar(64) NOT NULL COMMENT '订单号',
+  `amount` decimal(10,2) NOT NULL COMMENT '金额（元）',
+  `pay_type` tinyint(4) DEFAULT NULL COMMENT '支付方式 1-微信 2-支付宝',
+  `status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '状态 0-待支付 1-已支付 2-已取消 3-已退款',
+  `pay_time` datetime DEFAULT NULL COMMENT '支付时间',
+  `expire_time` datetime DEFAULT NULL COMMENT '订阅到期时间',
+  `create_user_id` varchar(64) DEFAULT NULL,
+  `create_user_name` varchar(64) DEFAULT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_user_id` varchar(64) DEFAULT NULL,
+  `update_user_name` varchar(64) DEFAULT NULL,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `delete_flag` int(11) NOT NULL DEFAULT 0,
+  `data_version` int(11) NOT NULL DEFAULT 0,
+  `remark` varchar(512) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_order_no` (`order_no`),
+  KEY `idx_tenant` (`tenant_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='租户订阅订单表';
+
+-- API开放平台客户端表（设计预留）
+CREATE TABLE IF NOT EXISTS `sys_api_client` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `client_name` varchar(128) NOT NULL COMMENT '应用名称',
+  `api_key` varchar(64) NOT NULL COMMENT 'API Key',
+  `api_secret` varchar(128) NOT NULL COMMENT 'API Secret',
+  `status` tinyint(4) NOT NULL DEFAULT 1 COMMENT '状态 0-禁用 1-启用',
+  `rate_limit` int(11) NOT NULL DEFAULT 100 COMMENT '每分钟调用限额',
+  `expire_time` datetime DEFAULT NULL COMMENT '过期时间',
+  `create_user_id` varchar(64) DEFAULT NULL,
+  `create_user_name` varchar(64) DEFAULT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_user_id` varchar(64) DEFAULT NULL,
+  `update_user_name` varchar(64) DEFAULT NULL,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `delete_flag` int(11) NOT NULL DEFAULT 0,
+  `data_version` int(11) NOT NULL DEFAULT 0,
+  `remark` varchar(512) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_api_key` (`api_key`),
+  KEY `idx_tenant` (`tenant_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='API开放平台客户端表';
+
 -- =====================================================================
 -- 3. rbac 库 - 权限管理（9 张表）
 -- =====================================================================
@@ -198,7 +248,7 @@ CREATE TABLE `sys_user` (
   `remark` varchar(512) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_tenant_username` (`tenant_id`, `username`, `delete_flag`),
-  UNIQUE KEY `uk_tenant_phone` (`tenant_id`, `phone`, `delete_flag`),
+  UNIQUE KEY `uk_phone_global` (`phone`, `delete_flag`),
   KEY `idx_tenant_dept` (`tenant_id`, `dept_id`),
   KEY `idx_tenant_status` (`tenant_id`, `status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
@@ -350,6 +400,7 @@ CREATE TABLE `sys_operation_log` (
   `response_code` int(11) DEFAULT NULL COMMENT '响应状态码',
   `error_msg` text COMMENT '错误信息',
   `ip` varchar(64) DEFAULT NULL COMMENT '操作IP',
+  `location` varchar(128) DEFAULT NULL COMMENT 'IP归属地',
   `user_agent` varchar(512) DEFAULT NULL COMMENT '用户代理',
   `duration` bigint(20) DEFAULT NULL COMMENT '执行时长(ms)',
   `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
@@ -383,6 +434,79 @@ CREATE TABLE `sys_password_history` (
   PRIMARY KEY (`id`),
   KEY `idx_tenant_user` (`tenant_id`, `user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='密码历史表';
+
+DROP TABLE IF EXISTS `sys_login_log`;
+CREATE TABLE `sys_login_log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '日志ID',
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `user_id` bigint(20) DEFAULT NULL COMMENT '用户ID（登录成功时）',
+  `username` varchar(64) NOT NULL COMMENT '登录用户名',
+  `login_type` tinyint(4) NOT NULL DEFAULT 0 COMMENT '登录类型 0-密码登录 1-短信登录 2-第三方登录',
+  `status` tinyint(4) NOT NULL COMMENT '登录状态 0-失败 1-成功',
+  `ip` varchar(64) DEFAULT NULL COMMENT '登录IP',
+  `location` varchar(128) DEFAULT NULL COMMENT '登录地点',
+  `browser` varchar(128) DEFAULT NULL COMMENT '浏览器',
+  `os` varchar(128) DEFAULT NULL COMMENT '操作系统',
+  `user_agent` varchar(512) DEFAULT NULL COMMENT 'User-Agent',
+  `error_msg` varchar(512) DEFAULT NULL COMMENT '失败原因',
+  `login_time` datetime NOT NULL COMMENT '登录时间',
+  `create_user_id` varchar(64) DEFAULT NULL,
+  `create_user_name` varchar(64) DEFAULT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_user_id` varchar(64) DEFAULT NULL,
+  `update_user_name` varchar(64) DEFAULT NULL,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `delete_flag` int(11) NOT NULL DEFAULT 0,
+  `data_version` int(11) NOT NULL DEFAULT 0,
+  `remark` varchar(512) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_tenant_user` (`tenant_id`, `user_id`),
+  KEY `idx_tenant_time` (`tenant_id`, `login_time`),
+  KEY `idx_tenant_username` (`tenant_id`, `username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='登录日志表';
+
+-- 3.11 岗位表
+DROP TABLE IF EXISTS `sys_post`;
+CREATE TABLE `sys_post` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '岗位ID',
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `post_code` varchar(64) NOT NULL COMMENT '岗位编码',
+  `post_name` varchar(128) NOT NULL COMMENT '岗位名称',
+  `sort_order` int(11) NOT NULL DEFAULT 0 COMMENT '排序',
+  `status` tinyint(4) NOT NULL DEFAULT 1 COMMENT '状态 0-禁用 1-启用',
+  `create_user_id` varchar(64) DEFAULT NULL,
+  `create_user_name` varchar(64) DEFAULT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_user_id` varchar(64) DEFAULT NULL,
+  `update_user_name` varchar(64) DEFAULT NULL,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `delete_flag` int(11) NOT NULL DEFAULT 0,
+  `data_version` int(11) NOT NULL DEFAULT 0,
+  `remark` varchar(512) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_tenant_post_code` (`tenant_id`, `post_code`, `delete_flag`),
+  KEY `idx_tenant_status` (`tenant_id`, `status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='岗位表';
+
+-- 3.12 用户岗位关联表
+DROP TABLE IF EXISTS `sys_user_post`;
+CREATE TABLE `sys_user_post` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+  `post_id` bigint(20) NOT NULL COMMENT '岗位ID',
+  `create_user_id` varchar(64) DEFAULT NULL,
+  `create_user_name` varchar(64) DEFAULT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_user_id` varchar(64) DEFAULT NULL,
+  `update_user_name` varchar(64) DEFAULT NULL,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `delete_flag` int(11) NOT NULL DEFAULT 0,
+  `data_version` int(11) NOT NULL DEFAULT 0,
+  `remark` varchar(512) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_tenant_user_post` (`tenant_id`, `user_id`, `post_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户岗位关联表';
 
 -- =====================================================================
 -- 4. wechat_oa 库 - 公众号管理（7 张表）
@@ -1170,14 +1294,352 @@ INSERT INTO `sys_role_menu` (`tenant_id`, `role_id`, `menu_id`, `create_user_id`
 INSERT INTO `sys_password_history` (`tenant_id`, `user_id`, `password`, `create_user_id`, `create_user_name`) VALUES
 (1, 1, '$2a$10$hrXlewp4KX10seMt1TBO4ehzSO0SGTWMsVti87zVKOP0K0NjGF2kC', '1', '系统管理员');
 
+-- =====================================================================
+-- 9. 导出任务表 (rbac 库)
+-- =====================================================================
+CREATE TABLE IF NOT EXISTS `sys_export_task` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `task_name` varchar(128) NOT NULL COMMENT '任务名称',
+  `task_type` varchar(64) NOT NULL COMMENT '任务类型 export-导出 template-模板',
+  `status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '状态 0-排队中 1-处理中 2-成功 3-失败',
+  `file_name` varchar(256) DEFAULT NULL COMMENT '文件名',
+  `file_path` varchar(512) DEFAULT NULL COMMENT 'MinIO objectName',
+  `file_size` bigint(20) DEFAULT NULL COMMENT '文件大小(字节)',
+  `error_msg` varchar(512) DEFAULT NULL COMMENT '失败原因',
+  `expire_time` datetime DEFAULT NULL COMMENT '过期时间(7天后自动清理)',
+  `download_count` int(11) NOT NULL DEFAULT 0 COMMENT '下载次数',
+  `request_params` varchar(1024) DEFAULT NULL COMMENT '请求参数JSON',
+  `create_user_id` varchar(64) DEFAULT NULL,
+  `create_user_name` varchar(64) DEFAULT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_user_id` varchar(64) DEFAULT NULL,
+  `update_user_name` varchar(64) DEFAULT NULL,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `delete_flag` int(11) NOT NULL DEFAULT 0,
+  `data_version` int(11) NOT NULL DEFAULT 0,
+  `remark` varchar(512) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_tenant_user` (`tenant_id`, `create_user_id`),
+  KEY `idx_tenant_status` (`tenant_id`, `status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='导出任务表';
+
+-- 社交登录绑定表
+CREATE TABLE IF NOT EXISTS `sys_social_user` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `user_id` bigint(20) NOT NULL COMMENT '关联的系统用户ID',
+  `social_type` varchar(32) NOT NULL COMMENT '平台类型 wechat/dingtalk/github/gitee',
+  `social_id` varchar(128) NOT NULL COMMENT '第三方平台用户ID',
+  `social_name` varchar(128) DEFAULT NULL COMMENT '第三方平台用户名',
+  `social_avatar` varchar(512) DEFAULT NULL COMMENT '头像',
+  `access_token` varchar(512) DEFAULT NULL COMMENT '访问令牌',
+  `refresh_token` varchar(512) DEFAULT NULL COMMENT '刷新令牌',
+  `expire_time` datetime DEFAULT NULL COMMENT '令牌过期时间',
+  `create_user_id` varchar(64) DEFAULT NULL,
+  `create_user_name` varchar(64) DEFAULT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_user_id` varchar(64) DEFAULT NULL,
+  `update_user_name` varchar(64) DEFAULT NULL,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `delete_flag` int(11) NOT NULL DEFAULT 0,
+  `data_version` int(11) NOT NULL DEFAULT 0,
+  `remark` varchar(512) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_tenant_social` (`tenant_id`, `social_type`, `social_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='社交登录绑定表';
+
+-- 行政区划表（全局平台级数据，不走租户隔离）
+CREATE TABLE IF NOT EXISTS `sys_area` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `parent_code` varchar(12) NOT NULL DEFAULT '0' COMMENT '父级区划代码（0=顶级）',
+  `area_code` varchar(12) NOT NULL COMMENT '国标行政区划代码（6位）',
+  `area_name` varchar(64) NOT NULL COMMENT '区域名称',
+  `short_name` varchar(64) DEFAULT NULL COMMENT '简称',
+  `merger_name` varchar(256) DEFAULT NULL COMMENT '组合名称（如：北京,东城）',
+  `pinyin` varchar(128) DEFAULT NULL COMMENT '拼音',
+  `first_letter` varchar(4) DEFAULT NULL COMMENT '拼音首字母',
+  `area_level` tinyint(4) NOT NULL COMMENT '层级 1-省 2-市 3-区/县',
+  `zip_code` varchar(12) DEFAULT NULL COMMENT '邮政编码',
+  `city_code` varchar(12) DEFAULT NULL COMMENT '电话区号',
+  `lng` decimal(10,6) DEFAULT NULL COMMENT '经度',
+  `lat` decimal(10,6) DEFAULT NULL COMMENT '纬度',
+  `sort_order` int(11) NOT NULL DEFAULT 0 COMMENT '排序',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_area_code` (`area_code`),
+  KEY `idx_parent_code` (`parent_code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='行政区划表';
+
+-- 敏感词表
+CREATE TABLE IF NOT EXISTS `sys_sensitive_word` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `word` varchar(128) NOT NULL COMMENT '敏感词',
+  `category` varchar(64) DEFAULT NULL COMMENT '分类（涉政/色情/暴力/广告等）',
+  `status` tinyint(4) NOT NULL DEFAULT 1 COMMENT '状态 0-禁用 1-启用',
+  `create_user_id` varchar(64) DEFAULT NULL,
+  `create_user_name` varchar(64) DEFAULT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_user_id` varchar(64) DEFAULT NULL,
+  `update_user_name` varchar(64) DEFAULT NULL,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `delete_flag` int(11) NOT NULL DEFAULT 0,
+  `data_version` int(11) NOT NULL DEFAULT 0,
+  `remark` varchar(512) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_tenant_status` (`tenant_id`, `status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='敏感词表';
+
+-- 通知公告表
+CREATE TABLE IF NOT EXISTS `sys_notice` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '公告ID',
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `title` varchar(128) NOT NULL COMMENT '公告标题',
+  `content` text COMMENT '公告内容',
+  `notice_type` tinyint(4) NOT NULL DEFAULT 1 COMMENT '类型 1-通知 2-公告',
+  `status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '状态 0-草稿 1-已发布 2-已撤回',
+  `publish_time` datetime DEFAULT NULL COMMENT '发布时间',
+  `create_user_id` varchar(64) DEFAULT NULL,
+  `create_user_name` varchar(64) DEFAULT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_user_id` varchar(64) DEFAULT NULL,
+  `update_user_name` varchar(64) DEFAULT NULL,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `delete_flag` int(11) NOT NULL DEFAULT 0,
+  `data_version` int(11) NOT NULL DEFAULT 0,
+  `remark` varchar(512) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_tenant_status` (`tenant_id`, `status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='通知公告表';
+
+-- 公告已读记录表
+CREATE TABLE IF NOT EXISTS `sys_notice_read` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `notice_id` bigint(20) NOT NULL COMMENT '公告ID',
+  `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+  `read_time` datetime NOT NULL COMMENT '阅读时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_notice_user` (`notice_id`, `user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='公告已读记录表';
+
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- =====================================================================
+-- 补充菜单数据（系统管理子菜单 + 系统监控）
+-- =====================================================================
+USE `rbac`;
+
+-- 系统管理下新增子菜单
+INSERT INTO sys_menu (id, menu_name, parent_id, menu_type, path, component, icon, sort_order, status, visible, is_external, is_cached, module) VALUES
+(207, '字典管理',   2, 1, '/system/dict',           '/views/system/dict/index',           'lucide:book-open',     7,  1, 1, 0, 0, 'RBAC'),
+(208, '岗位管理',   2, 1, '/system/post',           '/views/system/post/index',           'lucide:briefcase',     8,  1, 1, 0, 0, 'RBAC'),
+(209, '通知公告',   2, 1, '/system/notice',         '/views/system/notice/index',         'lucide:megaphone',     9,  1, 1, 0, 0, 'RBAC'),
+(210, '登录日志',   2, 1, '/system/login-log',      '/views/system/login-log/index',      'lucide:log-in',       10,  1, 1, 0, 0, 'RBAC'),
+(211, '在线用户',   2, 1, '/system/online-user',    '/views/system/online-user/index',    'lucide:wifi',         11,  1, 1, 0, 0, 'RBAC'),
+(212, '下载中心',   2, 1, '/system/export-task',    '/views/system/export-task/index',    'lucide:download',     12,  1, 1, 0, 0, 'RBAC'),
+(213, '敏感词管理', 2, 1, '/system/sensitive-word',  '/views/system/sensitive-word/index', 'lucide:shield-alert', 13,  1, 1, 0, 0, 'RBAC'),
+(214, '租户信息',   2, 1, '/system/tenant-self',    '/views/system/tenant-self/index',    'lucide:home',         14,  1, 1, 0, 0, 'RBAC'),
+(215, '菜单管理',   2, 1, '/system/menu',           '/views/system/menu/index',          'lucide:list-tree',    4,   1, 1, 0, 0, 'RBAC');
+
+-- 新增顶级菜单：系统监控
+INSERT INTO sys_menu (id, menu_name, parent_id, menu_type, path, component, icon, sort_order, status, visible, is_external, is_cached, module) VALUES
+(6, '系统监控', 0, 0, '/monitor', 'BasicLayout', 'lucide:monitor', 15, 1, 1, 0, 0, 'RBAC');
+
+INSERT INTO sys_menu (id, menu_name, parent_id, menu_type, path, component, icon, sort_order, status, visible, is_external, is_cached, module) VALUES
+(601, '缓存监控',   6, 1, '/monitor/cache',  '/views/monitor/cache/index',  'lucide:database', 1, 1, 1, 0, 0, 'RBAC'),
+(602, '服务器监控', 6, 1, '/monitor/server', '/views/monitor/server/index', 'lucide:server',   2, 1, 1, 0, 0, 'RBAC');
+
+-- 按钮权限
+INSERT INTO sys_menu (id, menu_name, parent_id, menu_type, permission, sort_order, status, visible, module) VALUES
+(2071, '字典查询', 207, 2, 'system:dict:list',   1, 1, 1, 'RBAC'),
+(2072, '字典新增', 207, 2, 'system:dict:add',    2, 1, 1, 'RBAC'),
+(2073, '字典修改', 207, 2, 'system:dict:edit',   3, 1, 1, 'RBAC'),
+(2074, '字典删除', 207, 2, 'system:dict:delete', 4, 1, 1, 'RBAC'),
+(2081, '岗位查询', 208, 2, 'system:post:list',   1, 1, 1, 'RBAC'),
+(2082, '岗位新增', 208, 2, 'system:post:add',    2, 1, 1, 'RBAC'),
+(2083, '岗位修改', 208, 2, 'system:post:edit',   3, 1, 1, 'RBAC'),
+(2084, '岗位删除', 208, 2, 'system:post:delete', 4, 1, 1, 'RBAC'),
+(2091, '公告查询', 209, 2, 'system:notice:list',    1, 1, 1, 'RBAC'),
+(2092, '公告新增', 209, 2, 'system:notice:add',     2, 1, 1, 'RBAC'),
+(2093, '公告修改', 209, 2, 'system:notice:edit',    3, 1, 1, 'RBAC'),
+(2094, '公告删除', 209, 2, 'system:notice:delete',  4, 1, 1, 'RBAC'),
+(2095, '公告发布', 209, 2, 'system:notice:publish', 5, 1, 1, 'RBAC'),
+(2101, '日志查询', 210, 2, 'system:loginlog:list',  1, 1, 1, 'RBAC'),
+(2102, '日志清理', 210, 2, 'system:loginlog:clean', 2, 1, 1, 'RBAC'),
+(2111, '在线查询', 211, 2, 'system:online:list', 1, 1, 1, 'RBAC'),
+(2112, '强制下线', 211, 2, 'system:online:kick', 2, 1, 1, 'RBAC'),
+(2131, '敏感词查询', 213, 2, 'system:sensitiveword:list',   1, 1, 1, 'RBAC'),
+(2132, '敏感词新增', 213, 2, 'system:sensitiveword:add',    2, 1, 1, 'RBAC'),
+(2133, '敏感词删除', 213, 2, 'system:sensitiveword:delete', 3, 1, 1, 'RBAC'),
+(2151, '新增菜单',   215, 2, 'system:menu:add',    1, 1, 1, 'RBAC'),
+(2152, '编辑菜单',   215, 2, 'system:menu:edit',   2, 1, 1, 'RBAC'),
+(2153, '删除菜单',   215, 2, 'system:menu:delete', 3, 1, 1, 'RBAC');
+
+-- 角色菜单分配（超级管理员 + 管理员拥有全部新菜单，普通用户仅下载中心和租户信息）
+INSERT INTO sys_role_menu (tenant_id, role_id, menu_id) VALUES
+(1,1,6),(1,1,207),(1,1,208),(1,1,209),(1,1,210),(1,1,211),(1,1,212),(1,1,213),(1,1,214),(1,1,601),(1,1,602),
+(1,1,2071),(1,1,2072),(1,1,2073),(1,1,2074),(1,1,2081),(1,1,2082),(1,1,2083),(1,1,2084),
+(1,1,2091),(1,1,2092),(1,1,2093),(1,1,2094),(1,1,2095),(1,1,2101),(1,1,2102),(1,1,2111),(1,1,2112),
+(1,1,2131),(1,1,2132),(1,1,2133),
+(1,1,215),(1,1,2151),(1,1,2152),(1,1,2153),
+(1,2,6),(1,2,207),(1,2,208),(1,2,209),(1,2,210),(1,2,211),(1,2,212),(1,2,213),(1,2,214),(1,2,601),(1,2,602),
+(1,2,2071),(1,2,2072),(1,2,2073),(1,2,2074),(1,2,2081),(1,2,2082),(1,2,2083),(1,2,2084),
+(1,2,2091),(1,2,2092),(1,2,2093),(1,2,2094),(1,2,2095),(1,2,2101),(1,2,2102),(1,2,2111),(1,2,2112),
+(1,2,2131),(1,2,2132),(1,2,2133),
+(1,2,215),(1,2,2151),(1,2,2152),(1,2,2153),
+(1,3,212),(1,3,214);
+
+-- =====================================================================
+-- 修正租户管理员信息
+-- =====================================================================
+UPDATE sys_user SET real_name='系统管理员', phone='13800000000', gender=1, dept_id=1 WHERE id=1 AND tenant_id=1;
+
+-- =====================================================================
+-- 字典类型
+-- =====================================================================
+INSERT INTO sys_dict_type (id, tenant_id, dict_name, dict_type, status, create_user_id, create_user_name) VALUES
+(1, 1, '用户性别',     'sys_user_sex',       1, '1', '系统管理员'),
+(2, 1, '系统状态',     'sys_common_status',   1, '1', '系统管理员'),
+(3, 1, '菜单类型',     'sys_menu_type',       1, '1', '系统管理员'),
+(4, 1, '通知类型',     'sys_notice_type',     1, '1', '系统管理员'),
+(5, 1, '通知状态',     'sys_notice_status',   1, '1', '系统管理员'),
+(6, 1, '登录状态',     'sys_login_status',    1, '1', '系统管理员'),
+(7, 1, '操作类型',     'sys_oper_type',       1, '1', '系统管理员'),
+(8, 1, '是否',         'sys_yes_no',          1, '1', '系统管理员'),
+(9, 1, '数据权限范围', 'sys_data_scope',      1, '1', '系统管理员'),
+(10, 1, '任务状态',    'sys_task_status',     1, '1', '系统管理员');
+
+-- =====================================================================
+-- 字典数据
+-- =====================================================================
+INSERT INTO sys_dict_data (tenant_id, dict_type, dict_label, dict_value, sort_order, status, list_class, create_user_id, create_user_name) VALUES
+(1, 'sys_user_sex',      '男',           '1', 1, 1, 'primary',    '1', '系统管理员'),
+(1, 'sys_user_sex',      '女',           '2', 2, 1, 'success',    '1', '系统管理员'),
+(1, 'sys_user_sex',      '未知',         '0', 3, 1, 'default',    '1', '系统管理员'),
+(1, 'sys_common_status', '启用',         '1', 1, 1, 'success',    '1', '系统管理员'),
+(1, 'sys_common_status', '禁用',         '0', 2, 1, 'danger',     '1', '系统管理员'),
+(1, 'sys_menu_type',     '目录',         '0', 1, 1, 'primary',    '1', '系统管理员'),
+(1, 'sys_menu_type',     '菜单',         '1', 2, 1, 'success',    '1', '系统管理员'),
+(1, 'sys_menu_type',     '按钮',         '2', 3, 1, 'warning',    '1', '系统管理员'),
+(1, 'sys_notice_type',   '通知',         '1', 1, 1, 'primary',    '1', '系统管理员'),
+(1, 'sys_notice_type',   '公告',         '2', 2, 1, 'success',    '1', '系统管理员'),
+(1, 'sys_notice_status', '草稿',         '0', 1, 1, 'default',    '1', '系统管理员'),
+(1, 'sys_notice_status', '已发布',       '1', 2, 1, 'success',    '1', '系统管理员'),
+(1, 'sys_notice_status', '已撤回',       '2', 3, 1, 'warning',    '1', '系统管理员'),
+(1, 'sys_login_status',  '成功',         '1', 1, 1, 'success',    '1', '系统管理员'),
+(1, 'sys_login_status',  '失败',         '0', 2, 1, 'danger',     '1', '系统管理员'),
+(1, 'sys_oper_type',     '查询',         '1', 1, 1, 'primary',    '1', '系统管理员'),
+(1, 'sys_oper_type',     '新增',         '2', 2, 1, 'success',    '1', '系统管理员'),
+(1, 'sys_oper_type',     '修改',         '3', 3, 1, 'warning',    '1', '系统管理员'),
+(1, 'sys_oper_type',     '删除',         '4', 4, 1, 'danger',     '1', '系统管理员'),
+(1, 'sys_oper_type',     '导出',         '5', 5, 1, 'default',    '1', '系统管理员'),
+(1, 'sys_oper_type',     '导入',         '6', 6, 1, 'default',    '1', '系统管理员'),
+(1, 'sys_yes_no',        '是',           '1', 1, 1, 'success',    '1', '系统管理员'),
+(1, 'sys_yes_no',        '否',           '0', 2, 1, 'danger',     '1', '系统管理员'),
+(1, 'sys_data_scope',    '全部数据',     '1', 1, 1, 'default',    '1', '系统管理员'),
+(1, 'sys_data_scope',    '本部门数据',   '2', 2, 1, 'default',    '1', '系统管理员'),
+(1, 'sys_data_scope',    '本部门及以下', '3', 3, 1, 'default',    '1', '系统管理员'),
+(1, 'sys_data_scope',    '仅本人数据',   '4', 4, 1, 'default',    '1', '系统管理员'),
+(1, 'sys_data_scope',    '自定义',       '5', 5, 1, 'default',    '1', '系统管理员'),
+(1, 'sys_task_status',   '排队中',       '0', 1, 1, 'default',    '1', '系统管理员'),
+(1, 'sys_task_status',   '处理中',       '1', 2, 1, 'processing', '1', '系统管理员'),
+(1, 'sys_task_status',   '成功',         '2', 3, 1, 'success',    '1', '系统管理员'),
+(1, 'sys_task_status',   '失败',         '3', 4, 1, 'danger',     '1', '系统管理员');
+
+-- =====================================================================
+-- 岗位
+-- =====================================================================
+INSERT INTO sys_post (tenant_id, post_code, post_name, sort_order, status, create_user_id, create_user_name) VALUES
+(1, 'CEO',  '总经理',     1, 1, '1', '系统管理员'),
+(1, 'CTO',  '技术总监',   2, 1, '1', '系统管理员'),
+(1, 'PM',   '项目经理',   3, 1, '1', '系统管理员'),
+(1, 'DEV',  '开发工程师', 4, 1, '1', '系统管理员'),
+(1, 'HR',   '人事专员',   5, 1, '1', '系统管理员'),
+(1, 'FIN',  '财务专员',   6, 1, '1', '系统管理员');
+
+-- =====================================================================
+-- 测试租户数据（密码统一：Test@1234）
+-- =====================================================================
+
+-- 测试租户
+USE `platform`;
+INSERT INTO `sys_tenant` (`id`, `tenant_name`, `tenant_code`, `contact_person`, `contact_phone`, `status`, `package_id`, `remark`) VALUES
+(2, '星辰科技', 'STAR_TECH',  '张星辰', '13900001001', 1, 3, '测试租户-专业版'),
+(3, '蓝海集团', 'BLUE_OCEAN', '李蓝海', '13900002001', 1, 2, '测试租户-基础版');
+
+USE `rbac`;
+
+-- 测试部门
+INSERT INTO `sys_dept` (`id`, `tenant_id`, `dept_name`, `parent_id`, `ancestors`, `leader`, `sort_order`, `status`, `create_user_name`) VALUES
+(101, 2, '星辰科技', 0,     '0',       '张星辰', 1, 1, 'system'),
+(102, 2, '技术部',   101,   '0,101',   '张三',   1, 1, 'system'),
+(103, 2, '产品部',   101,   '0,101',   '李四',   2, 1, 'system'),
+(104, 2, '运营部',   101,   '0,101',   '王五',   3, 1, 'system'),
+(201, 3, '蓝海集团', 0,     '0',       '李蓝海', 1, 1, 'system'),
+(202, 3, '研发中心', 201,   '0,201',   '刘一',   1, 1, 'system'),
+(203, 3, '市场部',   201,   '0,201',   '陈七',   2, 1, 'system');
+
+-- 测试角色
+INSERT INTO `sys_role` (`id`, `tenant_id`, `role_name`, `role_code`, `role_level`, `data_scope`, `sort_order`, `status`, `is_system`, `create_user_name`, `remark`) VALUES
+(101, 2, '超级管理', 'tenant_admin', 0, 1, 1, 1, 1, 'system', '星辰科技超管'),
+(102, 2, '管理员',   'admin',        1, 1, 2, 1, 1, 'system', '星辰科技管理员'),
+(103, 2, '普通用户', 'user',         2, 4, 3, 1, 1, 'system', '星辰科技普通用户'),
+(201, 3, '超级管理', 'tenant_admin', 0, 1, 1, 1, 1, 'system', '蓝海集团超管'),
+(202, 3, '管理员',   'admin',        1, 1, 2, 1, 1, 'system', '蓝海集团管理员'),
+(203, 3, '普通用户', 'user',         2, 4, 3, 1, 1, 'system', '蓝海集团普通用户');
+
+-- 测试用户 (密码: Test@1234 BCrypt)
+INSERT INTO `sys_user` (`id`, `tenant_id`, `username`, `password`, `real_name`, `phone`, `gender`, `dept_id`, `status`, `role_level`, `create_user_name`) VALUES
+-- 默认租户额外用户
+(2,   1, 'zhaomin',      '$2b$10$zqLFDqHvwVDxuURw6wKt5ujfEVcfFeUNFKiTkXRgVTpc8GPLcWAfG', '赵敏', '13800000002', 2, 1, 1, 2, 'system'),
+(3,   1, 'sunli',        '$2b$10$zqLFDqHvwVDxuURw6wKt5ujfEVcfFeUNFKiTkXRgVTpc8GPLcWAfG', '孙莉', '13800000003', 2, 1, 1, 2, 'system'),
+-- 星辰科技
+(101, 2, '13900001001',  '$2b$10$zqLFDqHvwVDxuURw6wKt5ujfEVcfFeUNFKiTkXRgVTpc8GPLcWAfG', '张星辰', '13900001001', 1, 101, 1, 0, 'system'),
+(102, 2, 'zhangsan',     '$2b$10$zqLFDqHvwVDxuURw6wKt5ujfEVcfFeUNFKiTkXRgVTpc8GPLcWAfG', '张三',   '13900001002', 1, 102, 1, 2, 'system'),
+(103, 2, 'lisi',         '$2b$10$zqLFDqHvwVDxuURw6wKt5ujfEVcfFeUNFKiTkXRgVTpc8GPLcWAfG', '李四',   '13900001003', 1, 103, 1, 2, 'system'),
+(104, 2, 'wangwu',       '$2b$10$zqLFDqHvwVDxuURw6wKt5ujfEVcfFeUNFKiTkXRgVTpc8GPLcWAfG', '王五',   '13900001004', 1, 104, 1, 2, 'system'),
+-- 蓝海集团
+(201, 3, '13900002001',  '$2b$10$zqLFDqHvwVDxuURw6wKt5ujfEVcfFeUNFKiTkXRgVTpc8GPLcWAfG', '李蓝海', '13900002001', 1, 201, 1, 0, 'system'),
+(202, 3, 'liuyi',        '$2b$10$zqLFDqHvwVDxuURw6wKt5ujfEVcfFeUNFKiTkXRgVTpc8GPLcWAfG', '刘一',   '13900002002', 1, 202, 1, 2, 'system'),
+(203, 3, 'chenqi',       '$2b$10$zqLFDqHvwVDxuURw6wKt5ujfEVcfFeUNFKiTkXRgVTpc8GPLcWAfG', '陈七',   '13900002003', 1, 203, 1, 2, 'system');
+
+-- 测试用户-角色关联
+INSERT INTO `sys_user_role` (`tenant_id`, `user_id`, `role_id`, `create_user_name`) VALUES
+(1, 2, 2, 'system'),
+(1, 3, 3, 'system'),
+(2, 101, 101, 'system'),
+(2, 102, 102, 'system'),
+(2, 103, 103, 'system'),
+(2, 104, 103, 'system'),
+(3, 201, 201, 'system'),
+(3, 202, 202, 'system'),
+(3, 203, 203, 'system');
+
+-- 测试角色-菜单权限（从默认租户复制）
+INSERT INTO `sys_role_menu` (`tenant_id`, `role_id`, `menu_id`, `create_user_name`)
+SELECT 2, 101, menu_id, 'system' FROM sys_role_menu WHERE role_id=1 AND tenant_id=1 AND delete_flag=0;
+INSERT INTO `sys_role_menu` (`tenant_id`, `role_id`, `menu_id`, `create_user_name`)
+SELECT 2, 102, menu_id, 'system' FROM sys_role_menu WHERE role_id=2 AND tenant_id=1 AND delete_flag=0;
+INSERT INTO `sys_role_menu` (`tenant_id`, `role_id`, `menu_id`, `create_user_name`)
+SELECT 2, 103, menu_id, 'system' FROM sys_role_menu WHERE role_id=3 AND tenant_id=1 AND delete_flag=0;
+INSERT INTO `sys_role_menu` (`tenant_id`, `role_id`, `menu_id`, `create_user_name`)
+SELECT 3, 201, menu_id, 'system' FROM sys_role_menu WHERE role_id=1 AND tenant_id=1 AND delete_flag=0;
+INSERT INTO `sys_role_menu` (`tenant_id`, `role_id`, `menu_id`, `create_user_name`)
+SELECT 3, 202, menu_id, 'system' FROM sys_role_menu WHERE role_id=2 AND tenant_id=1 AND delete_flag=0;
+INSERT INTO `sys_role_menu` (`tenant_id`, `role_id`, `menu_id`, `create_user_name`)
+SELECT 3, 203, menu_id, 'system' FROM sys_role_menu WHERE role_id=3 AND tenant_id=1 AND delete_flag=0;
+
+-- 更新租户管理员用户ID
+USE `platform`;
+UPDATE `sys_tenant` SET `admin_user_id` = 101 WHERE `id` = 2;
+UPDATE `sys_tenant` SET `admin_user_id` = 201 WHERE `id` = 3;
 
 -- =====================================================================
 -- 初始化完成
 -- =====================================================================
 -- 数据库总览:
---   platform  : sys_package, sys_tenant, sys_platform_user, sys_announcement, sys_global_config
---   rbac      : sys_user, sys_role, sys_dept, sys_menu, sys_user_role, sys_role_menu, sys_role_dept, sys_operation_log, sys_password_history
+--   platform  : sys_package, sys_tenant, sys_platform_user, sys_announcement, sys_global_config, sys_tenant_order(预留), sys_api_client(预留)
+--   rbac      : sys_user, sys_role, sys_dept, sys_menu, sys_user_role, sys_role_menu, sys_role_dept, sys_operation_log, sys_password_history, sys_login_log, sys_post, sys_user_post, sys_export_task, sys_social_user, sys_area, sys_sensitive_word, sys_notice, sys_notice_read
 --   wechat_oa : wechat_oa_account, wechat_oa_material, wechat_oa_article, wechat_oa_fan_user, wechat_oa_user_tag, wechat_oa_auto_reply_rule, wechat_oa_menu
 --   notify    : notify_message, notify_template, notify_channel_config
 --   workflow  : wf_process_definition_ext, wf_process_instance_ext, wf_task_ext, wf_copy, wf_node_config
@@ -1185,6 +1647,11 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- 默认账号:
 --   平台管理员: admin / Admin@2026 (platform.sys_platform_user)
 --   租户管理员: admin / Admin@2026 (rbac.sys_user, tenant_id=1)
+--
+-- 测试账号 (密码: Test@1234):
+--   默认租户: zhaomin(赵敏/管理员) sunli(孙莉/普通用户)
+--   星辰科技: 13900001001(张星辰/超管) zhangsan(张三/管理员) lisi(李四/普通) wangwu(王五/普通)
+--   蓝海集团: 13900002001(李蓝海/超管) liuyi(刘一/管理员) chenqi(陈七/普通)
 --
 -- 默认角色:
 --   超级管理员(SUPER_ADMIN) - 全部权限

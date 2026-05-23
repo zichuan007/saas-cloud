@@ -1,11 +1,10 @@
-import type { DefaultProps, Props } from 'tippy.js';
+import type {DefaultProps, Props} from 'tippy.js';
 
-import type { App, SetupContext } from 'vue';
+import type {App, SetupContext} from 'vue';
+import {h, watchEffect} from 'vue';
+import {setDefaultProps, Tippy as TippyComponent} from 'vue-tippy';
 
-import { h, watchEffect } from 'vue';
-import { setDefaultProps, Tippy as TippyComponent } from 'vue-tippy';
-
-import { usePreferences } from '@vben-core/preferences';
+import {usePreferences} from '@vben-core/preferences';
 
 import useTippyDirective from './directive';
 

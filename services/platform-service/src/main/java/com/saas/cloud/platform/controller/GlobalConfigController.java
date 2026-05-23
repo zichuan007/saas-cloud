@@ -14,6 +14,8 @@ import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.platform.entity.GlobalConfig;
 import com.saas.cloud.platform.service.IGlobalConfigService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -23,6 +25,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "全局配置管理")
 @RestController
 @RequestMapping("/config")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -35,6 +38,7 @@ public class GlobalConfigController {
      *
      * @return 配置列表
      */
+    @Operation(summary = "查询所有配置列表")
     @GetMapping("/list")
     public ApiResult<List<GlobalConfig>> listConfigs() {
         return ApiResult.ok(globalConfigService.listConfigs());
@@ -47,6 +51,7 @@ public class GlobalConfigController {
      * @param value 配置值
      * @return 操作结果
      */
+    @Operation(summary = "更新配置值")
     @PutMapping("/{key}")
     public ApiResult<Void> updateConfig(@PathVariable("key") String key,
                                         @RequestParam("value") String value) {

@@ -1,7 +1,7 @@
-import { createPinia, setActivePinia } from 'pinia';
-import { beforeEach, describe, expect, it } from 'vitest';
+import {createPinia, setActivePinia} from 'pinia';
+import {beforeEach, describe, expect, it} from 'vitest';
 
-import { useUserStore } from './user';
+import {useUserStore} from './user';
 
 describe('useUserStore', () => {
   beforeEach(() => {

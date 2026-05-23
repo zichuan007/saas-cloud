@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import type { VxeGridProps } from '#/adapter/vxe-table';
+import type {VxeGridProps} from '#/adapter/vxe-table';
+import {useVbenVxeGrid} from '#/adapter/vxe-table';
 
-import { Page, useVbenModal } from '@vben/common-ui';
+import {Page, useVbenModal} from '@vben/common-ui';
 
-import { Button, message, Popconfirm, Space, Tag } from 'ant-design-vue';
-
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import {Button, message, Popconfirm, Space, Tag} from 'ant-design-vue';
 import {
   deleteTenant,
+  exportTenants,
   freezeTenant,
   getTenantList,
   type TenantRecord,
@@ -89,6 +89,24 @@ async function handleDelete(id: number) {
   message.success('已注销');
   gridApi.reload();
 }
+
+async function handleExport() {
+  try {
+    const res = await exportTenants();
+    const blob = new Blob([res as any], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = '租户列表.xlsx';
+    link.click();
+    window.URL.revokeObjectURL(url);
+    message.success('导出成功');
+  } catch {
+    message.error('导出失败');
+  }
+}
 </script>
 
 <template>
@@ -97,6 +115,7 @@ async function handleDelete(id: number) {
     <Grid>
       <template #toolbar-btns>
         <Button type="primary" @click="handleAdd">创建租户</Button>
+        <Button class="ml-2" @click="handleExport">导出</Button>
       </template>
       <template #status="{ row }">
         <Tag v-if="row.status === 1" color="green">正常</Tag>

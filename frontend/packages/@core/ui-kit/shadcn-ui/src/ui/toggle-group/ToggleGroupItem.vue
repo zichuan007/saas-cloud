@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import type { VariantProps } from 'class-variance-authority';
-import type { ToggleGroupItemProps } from 'reka-ui';
+import type {VariantProps} from 'class-variance-authority';
+import type {ToggleGroupItemProps} from 'reka-ui';
+import {ToggleGroupItem, useForwardProps} from 'reka-ui';
 
-import { computed, inject } from 'vue';
+import {computed, inject} from 'vue';
 
-import { cn } from '@vben-core/shared/utils';
+import {cn} from '@vben-core/shared/utils';
 
-import { ToggleGroupItem, useForwardProps } from 'reka-ui';
-
-import { toggleVariants } from '../toggle';
+import {toggleVariants} from '../toggle';
 
 type ToggleGroupVariants = VariantProps<typeof toggleVariants>;
 

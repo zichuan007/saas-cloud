@@ -1,17 +1,11 @@
-import type { Locale } from 'ant-design-vue/es/locale';
+import type {Locale} from 'ant-design-vue/es/locale';
 
-import type { App } from 'vue';
+import type {App} from 'vue';
+import {ref} from 'vue';
 
-import type { LocaleSetupOptions, SupportedLanguagesType } from '@vben/locales';
-
-import { ref } from 'vue';
-
-import {
-  $t,
-  setupI18n as coreSetup,
-  loadLocalesMapFromDir,
-} from '@vben/locales';
-import { preferences } from '@vben/preferences';
+import type {LocaleSetupOptions, SupportedLanguagesType} from '@vben/locales';
+import {$t, loadLocalesMapFromDir, setupI18n as coreSetup,} from '@vben/locales';
+import {preferences} from '@vben/preferences';
 
 import antdEnLocale from 'ant-design-vue/es/locale/en_US';
 import antdDefaultLocale from 'ant-design-vue/es/locale/zh_CN';

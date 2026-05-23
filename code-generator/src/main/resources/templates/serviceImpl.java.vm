@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * ${table.comment!} 服务实现
+ * $!{table.comment} 服务实现
  *
  * @author ${author}
  * @version V1.0

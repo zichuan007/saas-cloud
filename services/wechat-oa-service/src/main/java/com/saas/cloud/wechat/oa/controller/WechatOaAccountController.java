@@ -17,6 +17,8 @@ import com.saas.cloud.common.log.annotation.OperationLog;
 import com.saas.cloud.wechat.oa.entity.WechatOaAccount;
 import com.saas.cloud.wechat.oa.service.IWechatOaAccountService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -26,6 +28,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "公众号账号管理")
 @RestController
 @RequestMapping("/account")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -38,6 +41,7 @@ public class WechatOaAccountController {
      *
      * @return 公众号列表
      */
+    @Operation(summary = "公众号列表")
     @GetMapping("/list")
     public ApiResult<List<WechatOaAccount>> list() {
         return ApiResult.ok(accountService.listAccounts());
@@ -49,6 +53,7 @@ public class WechatOaAccountController {
      * @param id 公众号ID
      * @return 公众号详情
      */
+    @Operation(summary = "公众号详情")
     @GetMapping("/{id}")
     public ApiResult<WechatOaAccount> detail(@PathVariable("id") Long id) {
         return ApiResult.ok(accountService.getAccountDetail(id));
@@ -60,6 +65,7 @@ public class WechatOaAccountController {
      * @param account 公众号信息
      * @return 操作结果
      */
+    @Operation(summary = "绑定公众号")
     @OperationLog(module = "公众号管理", operation = "绑定公众号")
     @PostMapping
     public ApiResult<Void> bind(@RequestBody WechatOaAccount account) {
@@ -74,6 +80,7 @@ public class WechatOaAccountController {
      * @param account 公众号信息
      * @return 操作结果
      */
+    @Operation(summary = "编辑公众号信息")
     @OperationLog(module = "公众号管理", operation = "编辑公众号")
     @PutMapping("/{id}")
     public ApiResult<Void> update(@PathVariable("id") Long id,
@@ -88,6 +95,7 @@ public class WechatOaAccountController {
      * @param id 公众号ID
      * @return 操作结果
      */
+    @Operation(summary = "解绑公众号")
     @OperationLog(module = "公众号管理", operation = "解绑公众号")
     @DeleteMapping("/{id}")
     public ApiResult<Void> unbind(@PathVariable("id") Long id) {

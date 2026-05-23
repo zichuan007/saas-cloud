@@ -22,6 +22,8 @@ import com.saas.cloud.platform.service.IPackageService;
 import com.saas.cloud.platform.service.ITenantService;
 import com.saas.cloud.platform.service.impl.TenantCacheService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "平台内部接口")
 @Slf4j
 @InnerApi
 @RestController
@@ -53,6 +56,7 @@ public class InternalController {
      * @param currentCount 当前已使用数量
      * @return 是否在配额内
      */
+    @Operation(summary = "配额校验")
     @GetMapping("/quota/check")
     public ApiResult<Boolean> checkQuota(@RequestParam("tenantId") Long tenantId,
                                          @RequestParam("quotaType") String quotaType,
@@ -138,6 +142,7 @@ public class InternalController {
      * @param tenantCode 租户编码
      * @return 租户视图对象
      */
+    @Operation(summary = "根据租户编码获取租户信息")
     @GetMapping("/tenant/by-code")
     public ApiResult<TenantVO> getTenantByCode(@RequestParam("tenantCode") String tenantCode) {
         // 优先从 Redis 缓存获取
@@ -154,6 +159,7 @@ public class InternalController {
      * @param dto 租户创建请求
      * @return 创建后的租户视图对象
      */
+    @Operation(summary = "创建租户(内部接口)")
     @PostMapping("/tenant/create")
     public ApiResult<TenantVO> createTenant(@RequestBody TenantCreateDTO dto) {
         Tenant tenant = tenantService.createTenantAndReturn(dto);
@@ -189,6 +195,7 @@ public class InternalController {
      * @param id 租户ID
      * @return 租户视图对象
      */
+    @Operation(summary = "获取租户信息")
     @GetMapping("/tenant/{id}")
     public ApiResult<TenantVO> getTenantInfo(@PathVariable("id") Long id) {
         Tenant tenant = tenantService.getById(id);

@@ -1,13 +1,9 @@
 <script lang="ts" setup>
-import type { ColPageProps } from './types';
+import type {ColPageProps} from './types';
 
-import { computed, ref, useSlots } from 'vue';
+import {computed, ref, useSlots} from 'vue';
 
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@vben-core/shadcn-ui';
+import {ResizableHandle, ResizablePanel, ResizablePanelGroup,} from '@vben-core/shadcn-ui';
 
 import Page from '../page/page.vue';
 

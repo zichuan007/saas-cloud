@@ -1,11 +1,11 @@
-import type { PluginOption } from 'vite';
+import type {PluginOption} from 'vite';
 
-import type { NitroMockPluginOptions } from '../typing';
+import type {NitroMockPluginOptions} from '../typing';
 
-import { colors, consola, getPackage } from '@vben/node-utils';
+import {colors, consola, getPackage} from '@vben/node-utils';
 
 import getPort from 'get-port';
-import { build, createDevServer, createNitro, prepare } from 'nitropack';
+import {build, createDevServer, createNitro, prepare} from 'nitropack';
 
 const hmrKeyRe = /^runtimeConfig\.|routeRules\./;
 

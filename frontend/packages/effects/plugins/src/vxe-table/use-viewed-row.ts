@@ -1,20 +1,12 @@
 import type {VxeGridProps as VxeTableGridProps} from 'vxe-table';
 
-import type {
-  ViewedRowOptions,
-  ViewedRowPersistOptions,
-  ViewedRowStorageAdapter,
-} from './types';
+import type {ViewedRowOptions, ViewedRowPersistOptions, ViewedRowStorageAdapter,} from './types';
 
 import {isRef, shallowRef, toRaw, triggerRef, watch} from 'vue';
 
 import {isBoolean, isFunction} from '@vben/utils';
 
-import {
-  IndexedDBDriver,
-  LocalStorageDriver,
-  StorageManager,
-} from '@vben-core/shared/cache';
+import {IndexedDBDriver, LocalStorageDriver, StorageManager,} from '@vben-core/shared/cache';
 
 import {useDebounceFn} from '@vueuse/core';
 

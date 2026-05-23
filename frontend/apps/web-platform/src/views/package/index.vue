@@ -1,19 +1,11 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { Page, useVbenModal } from '@vben/common-ui';
+import {Page, useVbenModal} from '@vben/common-ui';
 
-import {
-  Button,
-  message,
-  Switch,
-} from 'ant-design-vue';
+import {Button, message, Switch,} from 'ant-design-vue';
 
-import {
-  getPackageList,
-  type PackageRecord,
-  updatePackageStatus,
-} from '#/api/platform/package';
+import {getPackageList, type PackageRecord, updatePackageStatus,} from '#/api/platform/package';
 
 import PackageFormModal from './package-form-modal.vue';
 

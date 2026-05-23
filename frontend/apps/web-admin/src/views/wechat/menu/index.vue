@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { Page } from '@vben/common-ui';
+import {Page} from '@vben/common-ui';
 
 import {
   Button,
@@ -17,13 +17,8 @@ import {
   Space,
 } from 'ant-design-vue';
 
-import {
-  getMenuList,
-  publishMenu,
-  saveMenu,
-  type WechatMenuButton,
-} from '#/api/wechat/menu';
-import { useWechatAccount } from '../use-account';
+import {getMenuList, publishMenu, saveMenu, type WechatMenuButton,} from '#/api/wechat/menu';
+import {useWechatAccount} from '../use-account';
 
 defineOptions({ name: 'WechatMenu' });
 

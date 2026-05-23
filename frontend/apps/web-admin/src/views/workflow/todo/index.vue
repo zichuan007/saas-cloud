@@ -1,17 +1,11 @@
 <script lang="ts" setup>
-import type { VxeGridProps } from '#/adapter/vxe-table';
+import type {VxeGridProps} from '#/adapter/vxe-table';
+import {useVbenVxeGrid} from '#/adapter/vxe-table';
 
-import { Page } from '@vben/common-ui';
+import {Page} from '@vben/common-ui';
 
-import { Button, message, Modal, Space } from 'ant-design-vue';
-
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {
-  approveTask,
-  getTodoList,
-  rejectTask,
-  type TaskRecord,
-} from '#/api/workflow/task';
+import {Button, message, Modal, Space} from 'ant-design-vue';
+import {approveTask, getTodoList, rejectTask, type TaskRecord,} from '#/api/workflow/task';
 
 defineOptions({ name: 'WorkflowTodo' });
 

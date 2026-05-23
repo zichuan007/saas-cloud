@@ -36,4 +36,7 @@ public class UserUpdateDTO implements Serializable {
 
     /** 角色ID列表 */
     private List<Long> roleIds;
+
+    /** 岗位ID列表 */
+    private List<Long> postIds;
 }

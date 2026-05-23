@@ -1,4 +1,4 @@
-import type { ComputedRef, MaybeRef } from 'vue';
+import type {ComputedRef, MaybeRef} from 'vue';
 
 /**
  * 类型级递归中增加深度计数

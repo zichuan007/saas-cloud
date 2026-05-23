@@ -1,11 +1,5 @@
-import type {
-  ComponentInternalInstance,
-  VNode,
-  VNodeChild,
-  VNodeNormalizedChildren,
-} from 'vue';
-
-import { isVNode } from 'vue';
+import type {ComponentInternalInstance, VNode, VNodeChild, VNodeNormalizedChildren,} from 'vue';
+import {isVNode} from 'vue';
 
 type VNodeChildAtom = Exclude<VNodeChild, Array<any>>;
 type RawSlots = Exclude<VNodeNormalizedChildren, Array<any> | null | string>;

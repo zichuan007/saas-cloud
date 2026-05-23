@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { PinInputProps } from './types';
+import type {PinInputProps} from './types';
 
-import { computed, onBeforeUnmount, ref, useId, watch } from 'vue';
+import {computed, onBeforeUnmount, ref, useId, watch} from 'vue';
 
-import { PinInput, PinInputGroup, PinInputInput } from '../../ui';
-import { VbenButton } from '../button';
+import {PinInput, PinInputGroup, PinInputInput} from '../../ui';
+import {VbenButton} from '../button';
 
 defineOptions({
   inheritAttrs: false,

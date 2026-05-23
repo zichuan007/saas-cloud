@@ -1,4 +1,4 @@
-import type { PluginOption } from 'vite';
+import type {PluginOption} from 'vite';
 
 import type {
   ApplicationPluginOptions,
@@ -11,23 +11,23 @@ import viteVueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
 import tailwindcss from '@tailwindcss/vite';
 import viteVue from '@vitejs/plugin-vue';
 import viteVueJsx from '@vitejs/plugin-vue-jsx';
-import { visualizer as viteVisualizerPlugin } from 'rollup-plugin-visualizer';
+import {visualizer as viteVisualizerPlugin} from 'rollup-plugin-visualizer';
 import viteDtsPlugin from 'unplugin-dts/vite';
 import viteCompressPlugin from 'vite-plugin-compression';
-import { VitePWA } from 'vite-plugin-pwa';
+import {VitePWA} from 'vite-plugin-pwa';
 import viteVueDevTools from 'vite-plugin-vue-devtools';
 
-import { viteArchiverPlugin } from './archiver';
-import { viteExtraAppConfigPlugin } from './extra-app-config';
-import { viteHtmlPlugin } from './html';
-import { viteImportMapPlugin } from './importmap';
-import { viteInjectAppLoadingPlugin } from './inject-app-loading';
-import { viteMetadataPlugin } from './inject-metadata';
-import { viteLicensePlugin } from './license';
-import { viteNitroMockPlugin } from './nitro-mock';
-import { vitePrintPlugin } from './print';
-import { viteTailwindReferencePlugin } from './tailwind-reference';
-import { viteVxeTableImportsPlugin } from './vxe-table';
+import {viteArchiverPlugin} from './archiver';
+import {viteExtraAppConfigPlugin} from './extra-app-config';
+import {viteHtmlPlugin} from './html';
+import {viteImportMapPlugin} from './importmap';
+import {viteInjectAppLoadingPlugin} from './inject-app-loading';
+import {viteMetadataPlugin} from './inject-metadata';
+import {viteLicensePlugin} from './license';
+import {viteNitroMockPlugin} from './nitro-mock';
+import {vitePrintPlugin} from './print';
+import {viteTailwindReferencePlugin} from './tailwind-reference';
+import {viteVxeTableImportsPlugin} from './vxe-table';
 
 /**
  * 获取条件成立的 vite 插件

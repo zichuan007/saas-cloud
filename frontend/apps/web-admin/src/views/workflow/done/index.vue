@@ -1,12 +1,11 @@
 <script lang="ts" setup>
-import type { VxeGridProps } from '#/adapter/vxe-table';
+import type {VxeGridProps} from '#/adapter/vxe-table';
+import {useVbenVxeGrid} from '#/adapter/vxe-table';
 
-import { Page } from '@vben/common-ui';
+import {Page} from '@vben/common-ui';
 
-import { Tag } from 'ant-design-vue';
-
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getDoneList } from '#/api/workflow/task';
+import {Tag} from 'ant-design-vue';
+import {getDoneList} from '#/api/workflow/task';
 
 defineOptions({ name: 'WorkflowDone' });
 

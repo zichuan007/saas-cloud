@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import type { CSSProperties } from 'vue';
-
-import { computed, ref, useTemplateRef } from 'vue';
+import type {CSSProperties} from 'vue';
+import {computed, ref, useTemplateRef} from 'vue';
 
 const props = defineProps<{
   barStyle: CSSProperties;

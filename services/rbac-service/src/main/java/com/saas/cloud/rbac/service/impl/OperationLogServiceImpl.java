@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.saas.cloud.common.core.result.PageResult;
+import com.saas.cloud.common.data.annotation.DataScope;
 import com.saas.cloud.rbac.entity.OperationLog;
 import com.saas.cloud.rbac.mapper.OperationLogMapper;
 import com.saas.cloud.rbac.service.IOperationLogService;
@@ -28,6 +29,7 @@ public class OperationLogServiceImpl
         extends ServiceImpl<OperationLogMapper, OperationLog>
         implements IOperationLogService {
 
+    @DataScope
     @Override
     public PageResult<OperationLog> pageLogs(String module, String username, Integer pageNum, Integer pageSize) {
         LambdaQueryWrapper<OperationLog> wrapper = new LambdaQueryWrapper<>();

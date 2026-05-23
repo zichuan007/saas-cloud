@@ -1,8 +1,8 @@
-import type { PluginOption } from 'vite';
+import type {PluginOption} from 'vite';
 
-import type { PrintPluginOptions } from '../typing';
+import type {PrintPluginOptions} from '../typing';
 
-import { colors } from '@vben/node-utils';
+import {colors} from '@vben/node-utils';
 
 export const vitePrintPlugin = (
   options: PrintPluginOptions = {},

@@ -1,18 +1,14 @@
 <script setup lang="ts">
-import type { Recordable } from '@vben-core/typings';
+import type {Recordable} from '@vben-core/typings';
 
-import type { CollapsibleParamSchema } from './type';
+import type {CollapsibleParamSchema} from './type';
 
-import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
+import {computed, nextTick, ref, useTemplateRef, watch} from 'vue';
 
-import { useNamespace } from '@vben-core/composables';
+import {useNamespace} from '@vben-core/composables';
 
-import { ChevronsDown } from 'lucide-vue-next';
-import {
-  CollapsibleContent,
-  CollapsibleRoot,
-  CollapsibleTrigger,
-} from 'reka-ui';
+import {ChevronsDown} from 'lucide-vue-next';
+import {CollapsibleContent, CollapsibleRoot, CollapsibleTrigger,} from 'reka-ui';
 
 import CollapsibleParamsItem from './collapsible-params-item.vue';
 

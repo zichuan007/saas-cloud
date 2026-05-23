@@ -4,7 +4,6 @@
     viewBox="0 0 656 458.68642"
     width="656"
     xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
   >
     <rect fill="#3f3d56" height="2" width="656" y="434.34322" />
     <g>

@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import type {
-  CustomPreferencesField,
-  CustomPreferencesRecord,
-} from '@vben/preferences';
+import type {CustomPreferencesField, CustomPreferencesRecord,} from '@vben/preferences';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { $t } from '@vben/locales';
+import {$t} from '@vben/locales';
 
 import InputItem from '../input-item.vue';
 import NumberFieldItem from '../number-field-item.vue';

@@ -1,11 +1,6 @@
-import type { EChartsOption } from 'echarts';
+import type {EChartsOption} from 'echarts';
 
-import type { Ref } from 'vue';
-
-import type { Nullable } from '@vben/types';
-
-import type EchartsUI from './echarts-ui.vue';
-
+import type {Ref} from 'vue';
 import {
   computed,
   nextTick,
@@ -18,7 +13,11 @@ import {
   watch,
 } from 'vue';
 
-import { usePreferences } from '@vben/preferences';
+import type {Nullable} from '@vben/types';
+
+import type EchartsUI from './echarts-ui.vue';
+
+import {usePreferences} from '@vben/preferences';
 
 import {
   tryOnUnmounted,

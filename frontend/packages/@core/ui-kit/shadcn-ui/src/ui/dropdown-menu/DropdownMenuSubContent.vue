@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import type {
-  DropdownMenuSubContentEmits,
-  DropdownMenuSubContentProps,
-} from 'reka-ui';
+import type {DropdownMenuSubContentEmits, DropdownMenuSubContentProps,} from 'reka-ui';
+import {DropdownMenuSubContent, useForwardPropsEmits} from 'reka-ui';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { cn } from '@vben-core/shared/utils';
-
-import { DropdownMenuSubContent, useForwardPropsEmits } from 'reka-ui';
+import {cn} from '@vben-core/shared/utils';
 
 const props = defineProps<DropdownMenuSubContentProps & { class?: any }>();
 const emits = defineEmits<DropdownMenuSubContentEmits>();

@@ -1,12 +1,10 @@
-import type { Arrayable, MaybeElementRef } from '@vueuse/core';
+import type {Arrayable, MaybeElementRef} from '@vueuse/core';
+import {tryOnScopeDispose, useElementHover} from '@vueuse/core';
 
-import type { Ref } from 'vue';
+import type {Ref} from 'vue';
+import {computed, effectScope, ref, unref, watch} from 'vue';
 
-import { computed, effectScope, ref, unref, watch } from 'vue';
-
-import { isFunction } from '@vben/utils';
-
-import { tryOnScopeDispose, useElementHover } from '@vueuse/core';
+import {isFunction} from '@vben/utils';
 
 interface HoverDelayOptions {
   /** 鼠标进入延迟时间 */

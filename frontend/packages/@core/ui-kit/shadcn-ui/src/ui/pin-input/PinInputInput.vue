@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import type { PinInputInputProps } from 'reka-ui';
+import type {PinInputInputProps} from 'reka-ui';
+import {PinInputInput, useForwardProps} from 'reka-ui';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { cn } from '@vben-core/shared/utils';
-
-import { PinInputInput, useForwardProps } from 'reka-ui';
+import {cn} from '@vben-core/shared/utils';
 
 const props = defineProps<PinInputInputProps & { class?: any }>();
 

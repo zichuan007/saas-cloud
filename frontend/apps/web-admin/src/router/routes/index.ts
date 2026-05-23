@@ -1,8 +1,8 @@
-import type { RouteRecordRaw } from 'vue-router';
+import type {RouteRecordRaw} from 'vue-router';
 
-import { mergeRouteModules, traverseTreeValues } from '@vben/utils';
+import {mergeRouteModules, traverseTreeValues} from '@vben/utils';
 
-import { coreRoutes, fallbackNotFoundRoute } from './core';
+import {coreRoutes, fallbackNotFoundRoute} from './core';
 
 const dynamicRouteFiles = import.meta.glob('./modules/**/*.ts', {
   eager: true,

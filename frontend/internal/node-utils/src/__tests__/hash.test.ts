@@ -1,8 +1,8 @@
-import { createHash } from 'node:crypto';
+import {createHash} from 'node:crypto';
 
-import { describe, expect, it } from 'vitest';
+import {describe, expect, it} from 'vitest';
 
-import { generatorContentHash } from '../hash';
+import {generatorContentHash} from '../hash';
 
 describe('generatorContentHash', () => {
   it('should generate an MD5 hash for the content', () => {

@@ -1,13 +1,12 @@
-import type { ConfigEnv, UserConfig } from 'vite';
+import type {ConfigEnv, UserConfig} from 'vite';
+import {defineConfig, mergeConfig} from 'vite';
 
-import type { DefineLibraryOptions } from '../typing';
+import type {DefineLibraryOptions} from '../typing';
 
-import { readPackageJSON } from '@vben/node-utils';
+import {readPackageJSON} from '@vben/node-utils';
 
-import { defineConfig, mergeConfig } from 'vite';
-
-import { loadLibraryPlugins } from '../plugins';
-import { getCommonConfig } from './common';
+import {loadLibraryPlugins} from '../plugins';
+import {getCommonConfig} from './common';
 
 function defineLibraryConfig(userConfigPromise?: DefineLibraryOptions) {
   return defineConfig(async (config: ConfigEnv) => {

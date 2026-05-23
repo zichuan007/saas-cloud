@@ -1,6 +1,5 @@
-import type { VariantProps } from 'class-variance-authority';
-
-import { cva } from 'class-variance-authority';
+import type {VariantProps} from 'class-variance-authority';
+import {cva} from 'class-variance-authority';
 
 export const avatarVariant = cva(
   'inline-flex items-center justify-center font-normal text-foreground select-none shrink-0 bg-secondary overflow-hidden',

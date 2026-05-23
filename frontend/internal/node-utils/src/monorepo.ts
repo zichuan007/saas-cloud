@@ -1,9 +1,9 @@
-import type { Package } from '@manypkg/get-packages';
-
-import { existsSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
-
+import type {Package} from '@manypkg/get-packages';
 import * as manypkg from '@manypkg/get-packages';
+
+import {existsSync} from 'node:fs';
+import {dirname, join, resolve} from 'node:path';
+
 const { getPackages: getPackagesFunc, getPackagesSync: getPackagesSyncFunc } =
   manypkg;
 

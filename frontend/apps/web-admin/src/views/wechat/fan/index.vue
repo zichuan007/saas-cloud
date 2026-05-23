@@ -1,21 +1,12 @@
 <script lang="ts" setup>
-import type { VxeGridProps } from '#/adapter/vxe-table';
+import type {VxeGridProps} from '#/adapter/vxe-table';
+import {useVbenVxeGrid} from '#/adapter/vxe-table';
 
-import { Page } from '@vben/common-ui';
+import {Page} from '@vben/common-ui';
 
-import {
-  Avatar,
-  Button,
-  message,
-  Popconfirm,
-  Select,
-  Space,
-  Tag,
-} from 'ant-design-vue';
-
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { getFanList, setFanBlacklist, syncFans } from '#/api/wechat/fan';
-import { useWechatAccount } from '../use-account';
+import {Avatar, Button, message, Popconfirm, Select, Space, Tag,} from 'ant-design-vue';
+import {getFanList, setFanBlacklist, syncFans} from '#/api/wechat/fan';
+import {useWechatAccount} from '../use-account';
 
 defineOptions({ name: 'WechatFan' });
 

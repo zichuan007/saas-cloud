@@ -1,11 +1,9 @@
-import type { EventHandlerRequest, H3Event } from 'h3';
+import type {EventHandlerRequest, H3Event} from 'h3';
+import {getHeader} from 'h3';
 
-import type { UserInfo } from './mock-data';
-
-import { getHeader } from 'h3';
+import type {UserInfo} from './mock-data';
+import {MOCK_USERS} from './mock-data';
 import jwt from 'jsonwebtoken';
-
-import { MOCK_USERS } from './mock-data';
 
 // TODO: Replace with your own secret key
 const ACCESS_TOKEN_SECRET = 'access_token_secret';

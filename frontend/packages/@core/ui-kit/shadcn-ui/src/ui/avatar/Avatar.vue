@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import type { AvatarVariants } from './avatar';
+import type {AvatarVariants} from './avatar';
+import {avatarVariant} from './avatar';
 
-import { cn } from '@vben-core/shared/utils';
+import {cn} from '@vben-core/shared/utils';
 
-import { AvatarRoot } from 'reka-ui';
-
-import { avatarVariant } from './avatar';
+import {AvatarRoot} from 'reka-ui';
 
 const props = withDefaults(
   defineProps<{

@@ -1,6 +1,6 @@
-import { execaCommand, getPackages } from '@vben/node-utils';
+import {execaCommand, getPackages} from '@vben/node-utils';
 
-import { cancel, isCancel, select } from '@clack/prompts';
+import {cancel, isCancel, select} from '@clack/prompts';
 
 interface RunOptions {
   command?: string;

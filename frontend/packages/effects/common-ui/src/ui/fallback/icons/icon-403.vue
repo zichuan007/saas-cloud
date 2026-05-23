@@ -4,7 +4,6 @@
     viewBox="0 0 586 659.29778"
     width="586"
     xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
   >
     <circle cx="332.47856" cy="254" fill="#f2f2f2" r="254.00001" />
     <path

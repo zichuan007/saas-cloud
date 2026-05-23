@@ -1,22 +1,11 @@
 <script setup lang="ts">
-import type { ZodType } from 'zod';
+import type {ZodType} from 'zod';
 
-import type {
-  FormActions,
-  FormFieldProps,
-  MaybeComponentProps,
-} from '../types';
+import type {FormActions, FormFieldProps, MaybeComponentProps,} from '../types';
 
-import {
-  computed,
-  nextTick,
-  onUnmounted,
-  ref,
-  useTemplateRef,
-  watch,
-} from 'vue';
+import {computed, nextTick, onUnmounted, ref, useTemplateRef, watch,} from 'vue';
 
-import { ChevronsDown, CircleAlert } from '@vben-core/icons';
+import {ChevronsDown, CircleAlert} from '@vben-core/icons';
 import {
   Button,
   FormControl,
@@ -28,16 +17,16 @@ import {
   VbenRenderContent,
   VbenTooltip,
 } from '@vben-core/shadcn-ui';
-import { cn, isFunction, isObject, isString } from '@vben-core/shared/utils';
+import {cn, isFunction, isObject, isString} from '@vben-core/shared/utils';
 
-import { toTypedSchema } from '@vee-validate/zod';
-import { useFieldError, useFormValues } from 'vee-validate';
+import {toTypedSchema} from '@vee-validate/zod';
+import {useFieldError, useFormValues} from 'vee-validate';
 
-import { injectComponentRefMap } from '../use-form-context';
-import { injectRenderFormProps, useFormContext } from './context';
+import {injectComponentRefMap} from '../use-form-context';
+import {injectRenderFormProps, useFormContext} from './context';
 import useDependencies from './dependencies';
 import FormLabel from './form-label.vue';
-import { isEventObjectLike } from './helper';
+import {isEventObjectLike} from './helper';
 
 interface Props extends FormFieldProps {}
 

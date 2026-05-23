@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import type { CountToProps } from './types';
+import type {CountToProps} from './types';
 
-import { computed, onMounted, ref, watch } from 'vue';
+import {computed, onMounted, ref, watch} from 'vue';
 
-import { isString } from '@vben-core/shared/utils';
+import {isString} from '@vben-core/shared/utils';
 
-import { TransitionPresets, useTransition } from '@vueuse/core';
+import {TransitionPresets, useTransition} from '@vueuse/core';
 
 const props = withDefaults(defineProps<CountToProps>(), {
   startVal: 0,

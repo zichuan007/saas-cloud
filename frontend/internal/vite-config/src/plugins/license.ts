@@ -1,13 +1,9 @@
-import type {
-  NormalizedOutputOptions,
-  OutputBundle,
-  OutputChunk,
-} from 'rolldown';
-import type { PluginOption } from 'vite';
+import type {NormalizedOutputOptions, OutputBundle, OutputChunk,} from 'rolldown';
+import type {PluginOption} from 'vite';
 
-import { EOL } from 'node:os';
+import {EOL} from 'node:os';
 
-import { dateUtil, readPackageJSON } from '@vben/node-utils';
+import {dateUtil, readPackageJSON} from '@vben/node-utils';
 
 /**
  * 用于注入版权信息

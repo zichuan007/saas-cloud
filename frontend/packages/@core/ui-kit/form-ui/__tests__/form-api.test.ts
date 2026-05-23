@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-import { FormApi } from '../src/form-api';
+import {FormApi} from '../src/form-api';
 
 describe('formApi', () => {
   let formApi: FormApi;

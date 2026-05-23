@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { Page, useVbenModal } from '@vben/common-ui';
+import {Page, useVbenModal} from '@vben/common-ui';
 
-import { Card, Col, Empty, Row } from 'ant-design-vue';
+import {Card, Col, Empty, Row} from 'ant-design-vue';
 
-import { getStartableList } from '#/api/workflow/process';
+import {getStartableList} from '#/api/workflow/process';
 
 import StartProcessModal from './start-process-modal.vue';
 

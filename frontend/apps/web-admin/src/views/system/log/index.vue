@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { Page } from '@vben/common-ui';
+import {Page} from '@vben/common-ui';
 
-import { Input, Table, Tag } from 'ant-design-vue';
+import {Input, Table, Tag} from 'ant-design-vue';
 
-import { requestClient } from '#/api/request';
+import {requestClient} from '#/api/request';
 
 defineOptions({ name: 'SystemLog' });
 

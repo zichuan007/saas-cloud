@@ -8,7 +8,7 @@ import ${pkg};
 #end
 
 /**
- * ${table.comment!} 分页查询参数
+ * $!{table.comment} 分页查询参数
  *
  * @author ${author}
  * @version V1.0

@@ -1,6 +1,6 @@
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { getAccountList, type WechatAccount } from '#/api/wechat/account';
+import {getAccountList, type WechatAccount} from '#/api/wechat/account';
 
 const accountList = ref<WechatAccount[]>([]);
 const currentAccountId = ref<number>(0);

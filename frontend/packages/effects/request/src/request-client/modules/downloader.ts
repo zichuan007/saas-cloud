@@ -1,5 +1,5 @@
-import type { RequestClient } from '../request-client';
-import type { RequestClientConfig } from '../types';
+import type {RequestClient} from '../request-client';
+import type {RequestClientConfig} from '../types';
 
 type DownloadRequestConfig = {
   /**

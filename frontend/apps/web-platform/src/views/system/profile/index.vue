@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { useUserStore } from '@vben/stores';
+import {useUserStore} from '@vben/stores';
 
 import {
   Button,
@@ -12,11 +12,11 @@ import {
   Input,
   message,
   Row,
-  Tabs,
   TabPane,
+  Tabs,
 } from 'ant-design-vue';
 
-import { updatePassword, updateProfile } from '#/api/platform/profile';
+import {updatePassword, updateProfile} from '#/api/platform/profile';
 
 defineOptions({ name: 'SystemProfile' });
 

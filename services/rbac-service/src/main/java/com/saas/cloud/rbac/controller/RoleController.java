@@ -25,6 +25,8 @@ import com.saas.cloud.rbac.api.vo.RoleVO;
 import com.saas.cloud.rbac.entity.Role;
 import com.saas.cloud.rbac.service.IRoleService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2026-05-18
  */
 @Slf4j
+@Tag(name = "角色管理")
 @RestController
 @RequestMapping("/role")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -50,6 +53,7 @@ public class RoleController {
      *
      * @return 角色列表
      */
+    @Operation(summary = "查询角色列表")
     @GetMapping("/list")
     public ApiResult<List<RoleVO>> list() {
         return ApiResult.ok(roleService.listRoles());
@@ -61,6 +65,7 @@ public class RoleController {
      * @param dto 角色创建请求
      * @return 操作结果
      */
+    @Operation(summary = "创建角色")
     @OperationLog(module = "角色管理", operation = "创建角色")
     @PostMapping
     public ApiResult<Void> create(@Valid @RequestBody RoleCreateDTO dto) {
@@ -75,6 +80,8 @@ public class RoleController {
      * @param dto 角色更新请求
      * @return 操作结果
      */
+    @Operation(summary = "更新角色")
+    @OperationLog(module = "角色管理", operation = "更新角色")
     @PutMapping("/{id}")
     public ApiResult<Void> update(@PathVariable("id") Long id, @Valid @RequestBody RoleUpdateDTO dto) {
         dto.setId(id);
@@ -88,6 +95,7 @@ public class RoleController {
      * @param id 角色ID
      * @return 操作结果
      */
+    @Operation(summary = "删除角色")
     @OperationLog(module = "角色管理", operation = "删除角色")
     @DeleteMapping("/{id}")
     public ApiResult<Void> delete(@PathVariable("id") Long id) {
@@ -102,6 +110,7 @@ public class RoleController {
      * @param params 包含 menuIds 字段
      * @return 操作结果
      */
+    @Operation(summary = "分配菜单权限")
     @OperationLog(module = "角色管理", operation = "分配菜单")
     @SuppressWarnings("unchecked")
     @PutMapping("/{id}/menus")
@@ -119,6 +128,8 @@ public class RoleController {
      * @param params 包含 dataScope 和 deptIds 字段
      * @return 操作结果
      */
+    @Operation(summary = "设置数据范围")
+    @OperationLog(module = "角色管理", operation = "设置数据范围")
     @SuppressWarnings("unchecked")
     @PutMapping("/{id}/data-scope")
     public ApiResult<Void> updateDataScope(@PathVariable("id") Long id,
@@ -134,6 +145,7 @@ public class RoleController {
      *
      * @param response HTTP 响应
      */
+    @Operation(summary = "导出角色列表")
     @OperationLog(module = "角色管理", operation = "导出角色")
     @GetMapping("/export")
     public void export(HttpServletResponse response) throws IOException {

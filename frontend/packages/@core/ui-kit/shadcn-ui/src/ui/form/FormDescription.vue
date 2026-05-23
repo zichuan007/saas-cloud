@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { cn } from '@vben-core/shared/utils';
+import {cn} from '@vben-core/shared/utils';
 
-import { useFormField } from './useFormField';
+import {useFormField} from './useFormField';
 
 const props = defineProps<{
   class?: any;

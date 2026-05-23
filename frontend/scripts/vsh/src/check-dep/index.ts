@@ -1,6 +1,6 @@
-import type { CAC } from 'cac';
+import type {CAC} from 'cac';
 
-import { getPackages } from '@vben/node-utils';
+import {getPackages} from '@vben/node-utils';
 
 import depcheck from 'depcheck';
 

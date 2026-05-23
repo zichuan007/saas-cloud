@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { VbenAvatar } from '../avatar';
+import {VbenAvatar} from '../avatar';
 
 interface Props {
   /**

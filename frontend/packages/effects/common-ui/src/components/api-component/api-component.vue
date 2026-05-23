@@ -1,16 +1,13 @@
 <script lang="ts" setup>
-import type {
-  ApiComponentProps,
-  ApiComponentOptionsItem as OptionsItem,
-} from './types';
+import type {ApiComponentOptionsItem as OptionsItem, ApiComponentProps,} from './types';
 
-import { computed, nextTick, ref, unref, useAttrs, watch } from 'vue';
+import {computed, nextTick, ref, unref, useAttrs, watch} from 'vue';
 
-import { LoaderCircle } from '@vben/icons';
+import {LoaderCircle} from '@vben/icons';
 
-import { cloneDeep, get, isEqual, isFunction } from '@vben-core/shared/utils';
+import {cloneDeep, get, isEqual, isFunction} from '@vben-core/shared/utils';
 
-import { objectOmit } from '@vueuse/core';
+import {objectOmit} from '@vueuse/core';
 
 defineOptions({ name: 'ApiComponent', inheritAttrs: false });
 

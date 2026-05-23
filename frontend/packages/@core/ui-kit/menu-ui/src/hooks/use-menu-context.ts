@@ -1,8 +1,8 @@
-import type { MenuProvider, SubMenuProvider } from '../types';
+import type {MenuProvider, SubMenuProvider} from '../types';
 
-import { getCurrentInstance, inject, provide } from 'vue';
+import {getCurrentInstance, inject, provide} from 'vue';
 
-import { findComponentUpward } from '../utils';
+import {findComponentUpward} from '../utils';
 
 const menuContextKey = Symbol('menuContext');
 

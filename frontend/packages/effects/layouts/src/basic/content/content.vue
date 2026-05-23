@@ -1,15 +1,15 @@
 <script lang="ts" setup>
-import type { RouteLocationNormalizedLoadedGeneric } from 'vue-router';
+import type {RouteLocationNormalizedLoadedGeneric} from 'vue-router';
+import {RouterView} from 'vue-router';
 
-import { unref } from 'vue';
-import { RouterView } from 'vue-router';
+import {unref} from 'vue';
 
-import { usePreferences } from '@vben/preferences';
-import { getTabKey, storeToRefs, useTabbarStore } from '@vben/stores';
+import {usePreferences} from '@vben/preferences';
+import {getTabKey, storeToRefs, useTabbarStore} from '@vben/stores';
 
-import { transformComponent, useLayoutHook } from '../../hooks';
-import { IFrameRouterView } from '../../iframe';
-import { RouteCachedPage, RouteCachedView } from '../../route-cached';
+import {transformComponent, useLayoutHook} from '../../hooks';
+import {IFrameRouterView} from '../../iframe';
+import {RouteCachedPage, RouteCachedView} from '../../route-cached';
 
 defineOptions({ name: 'LayoutContent' });
 

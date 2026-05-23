@@ -1,17 +1,12 @@
 <script setup lang="ts">
-import type {
-  SplitterResizeHandleEmits,
-  SplitterResizeHandleProps,
-} from 'reka-ui';
+import type {SplitterResizeHandleEmits, SplitterResizeHandleProps,} from 'reka-ui';
+import {SplitterResizeHandle, useForwardPropsEmits} from 'reka-ui';
 
-import type { HTMLAttributes } from 'vue';
+import type {HTMLAttributes} from 'vue';
+import {computed} from 'vue';
 
-import { computed } from 'vue';
-
-import { GripVertical } from '@vben-core/icons';
-import { cn } from '@vben-core/shared/utils';
-
-import { SplitterResizeHandle, useForwardPropsEmits } from 'reka-ui';
+import {GripVertical} from '@vben-core/icons';
+import {cn} from '@vben-core/shared/utils';
 
 const props = defineProps<
   SplitterResizeHandleProps & {

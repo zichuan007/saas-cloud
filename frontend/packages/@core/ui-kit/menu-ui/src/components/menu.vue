@@ -1,38 +1,18 @@
 <script lang="ts" setup>
-import type { UseResizeObserverReturn } from '@vueuse/core';
+import type {UseResizeObserverReturn} from '@vueuse/core';
+import {useResizeObserver} from '@vueuse/core';
 
-import type { SetupContext, VNodeArrayChildren } from 'vue';
+import type {SetupContext, VNodeArrayChildren} from 'vue';
+import {computed, nextTick, reactive, ref, toRef, useSlots, watch, watchEffect,} from 'vue';
 
-import type {
-  MenuItemClicked,
-  MenuItemRegistered,
-  MenuProps,
-  MenuProvider,
-} from '../types';
+import type {MenuItemClicked, MenuItemRegistered, MenuProps, MenuProvider,} from '../types';
 
-import {
-  computed,
-  nextTick,
-  reactive,
-  ref,
-  toRef,
-  useSlots,
-  watch,
-  watchEffect,
-} from 'vue';
+import {useNamespace} from '@vben-core/composables';
+import {Ellipsis} from '@vben-core/icons';
 
-import { useNamespace } from '@vben-core/composables';
-import { Ellipsis } from '@vben-core/icons';
-
-import { useResizeObserver } from '@vueuse/core';
-
-import {
-  createMenuContext,
-  createSubMenuContext,
-  useMenuStyle,
-} from '../hooks';
-import { useMenuScroll } from '../hooks/use-menu-scroll';
-import { flattedChildren } from '../utils';
+import {createMenuContext, createSubMenuContext, useMenuStyle,} from '../hooks';
+import {useMenuScroll} from '../hooks/use-menu-scroll';
+import {flattedChildren} from '../utils';
 import SubMenu from './sub-menu.vue';
 
 interface Props extends MenuProps {}

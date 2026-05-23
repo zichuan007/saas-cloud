@@ -1,11 +1,10 @@
 <script lang="ts" setup>
-import type { VxeGridProps } from '#/adapter/vxe-table';
+import type {VxeGridProps} from '#/adapter/vxe-table';
+import {useVbenVxeGrid} from '#/adapter/vxe-table';
 
-import { Page, useVbenModal } from '@vben/common-ui';
+import {Page, useVbenModal} from '@vben/common-ui';
 
-import { Button, message, Popconfirm, Select, Space, Tag } from 'ant-design-vue';
-
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import {Button, message, Popconfirm, Select, Space, Tag} from 'ant-design-vue';
 import {
   type ArticleRecord,
   deleteArticle,
@@ -13,7 +12,7 @@ import {
   offlineArticle,
   publishArticle,
 } from '#/api/wechat/article';
-import { useWechatAccount } from '../use-account';
+import {useWechatAccount} from '../use-account';
 
 import ArticleFormModal from './article-form-modal.vue';
 

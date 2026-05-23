@@ -1,4 +1,4 @@
-import type { RouteRecordRaw } from 'vue-router';
+import type {RouteRecordRaw} from 'vue-router';
 
 import type {
   ComponentRecordType,
@@ -6,7 +6,7 @@ import type {
   RouteRecordStringComponent,
 } from '@vben-core/typings';
 
-import { mapTree } from '@vben-core/shared/utils';
+import {mapTree} from '@vben-core/shared/utils';
 
 /**
  * 判断路由是否在菜单中显示但访问时展示 403（让用户知悉功能并申请权限）

@@ -15,6 +15,8 @@ import com.saas.cloud.common.log.annotation.OperationLog;
 import com.saas.cloud.wechat.oa.entity.WechatOaFanUser;
 import com.saas.cloud.wechat.oa.service.IWechatOaFanUserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "公众号粉丝管理")
 @RestController
 @RequestMapping("/fan")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -40,6 +43,7 @@ public class WechatOaFanUserController {
      * @param pageSize  每页条数
      * @return 分页结果
      */
+    @Operation(summary = "粉丝列表")
     @GetMapping("/list")
     public ApiResult<PageResult<WechatOaFanUser>> list(@RequestParam Long accountId,
                                                         @RequestParam(required = false) String nickname,
@@ -61,6 +65,7 @@ public class WechatOaFanUserController {
      * @param accountId 公众号ID
      * @return 操作结果
      */
+    @Operation(summary = "全量同步粉丝")
     @OperationLog(module = "粉丝管理", operation = "全量同步粉丝")
     @PostMapping("/sync")
     public ApiResult<Void> syncFans(@RequestParam Long accountId) {
@@ -68,6 +73,7 @@ public class WechatOaFanUserController {
         return ApiResult.ok();
     }
 
+    @Operation(summary = "拉黑/取消拉黑")
     @OperationLog(module = "粉丝管理", operation = "更新黑名单状态")
     @PutMapping("/{id}/blacklist")
     public ApiResult<Void> updateBlacklist(@PathVariable("id") Long id,
@@ -83,6 +89,7 @@ public class WechatOaFanUserController {
      * @param tagIds 标签ID列表（JSON格式）
      * @return 操作结果
      */
+    @Operation(summary = "设置粉丝标签")
     @OperationLog(module = "粉丝管理", operation = "设置粉丝标签")
     @PutMapping("/{id}/tags")
     public ApiResult<Void> updateTags(@PathVariable("id") Long id,

@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import type { HoverCardContentProps } from '@vben-core/shadcn-ui';
+import type {HoverCardContentProps} from '@vben-core/shadcn-ui';
+import {VbenHoverCard} from '@vben-core/shadcn-ui';
 
-import type { MenuItemRegistered, MenuProvider, SubMenuProps } from '../types';
+import type {MenuItemRegistered, MenuProvider, SubMenuProps} from '../types';
 
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import {computed, onBeforeUnmount, onMounted, reactive, ref} from 'vue';
 
-import { useNamespace } from '@vben-core/composables';
-import { VbenHoverCard } from '@vben-core/shadcn-ui';
+import {useNamespace} from '@vben-core/composables';
 
 import {
   createSubMenuContext,

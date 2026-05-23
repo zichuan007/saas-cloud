@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { useVbenModal } from '@vben/common-ui';
+import {useVbenModal} from '@vben/common-ui';
 
-import { Form, FormItem, Input, InputNumber, message } from 'ant-design-vue';
+import {Form, FormItem, Input, InputNumber, message} from 'ant-design-vue';
 
 import {
   createPackage,

@@ -1,24 +1,19 @@
-import type { Component } from 'vue';
+import type {Component} from 'vue';
+import {h} from 'vue';
 
-import type {
-  BaseFormComponentType,
-  FormCommonConfig,
-  VbenFormAdapterOptions,
-} from './types';
-
-import { h } from 'vue';
+import type {BaseFormComponentType, FormCommonConfig, VbenFormAdapterOptions,} from './types';
 
 import {
+  Input as VbenInput,
   VbenButton,
   VbenCheckbox,
-  Input as VbenInput,
   VbenInputPassword,
   VbenPinInput,
   VbenSelect,
 } from '@vben-core/shadcn-ui';
-import { globalShareState } from '@vben-core/shared/global-state';
+import {globalShareState} from '@vben-core/shared/global-state';
 
-import { defineRule } from 'vee-validate';
+import {defineRule} from 'vee-validate';
 
 const DEFAULT_MODEL_PROP_NAME = 'modelValue';
 

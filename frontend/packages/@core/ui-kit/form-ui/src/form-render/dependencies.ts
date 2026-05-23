@@ -5,15 +5,15 @@ import type {
   MaybeComponentProps,
 } from '../types';
 
-import { computed, isRef, ref, watch } from 'vue';
+import {computed, isRef, ref, watch} from 'vue';
 
-import { get, isBoolean, isFunction } from '@vben-core/shared/utils';
+import {get, isBoolean, isFunction} from '@vben-core/shared/utils';
 
-import { useFormValues } from 'vee-validate';
+import {useFormValues} from 'vee-validate';
 
-import { resolveFieldNamePath } from '../field-name';
-import { injectFormProps } from '../use-form-context';
-import { injectRenderFormProps } from './context';
+import {resolveFieldNamePath} from '../field-name';
+import {injectFormProps} from '../use-form-context';
+import {injectRenderFormProps} from './context';
 
 /**
  * 解析Nested Objects对应的字段值

@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import {onMounted, ref} from 'vue';
 
-import { Page } from '@vben/common-ui';
+import {Page} from '@vben/common-ui';
 
-import { Card, Col, Row, Statistic } from 'ant-design-vue';
+import {Card, Col, Row, Statistic} from 'ant-design-vue';
 
-import { getOverview, type OverviewData } from '#/api/platform/statistics';
+import {getOverview, type OverviewData} from '#/api/platform/statistics';
 
 defineOptions({ name: 'PlatformOverview' });
 

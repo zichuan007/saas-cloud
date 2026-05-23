@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import type { DialogContentEmits, DialogContentProps } from 'reka-ui';
+import type {DialogContentEmits, DialogContentProps} from 'reka-ui';
+import {DialogContent, useForwardPropsEmits} from 'reka-ui';
 
-import type { SheetVariants } from './sheet';
+import type {SheetVariants} from './sheet';
+import {sheetVariants} from './sheet';
 
-import { computed, ref } from 'vue';
+import {computed, ref} from 'vue';
 
-import { cn } from '@vben-core/shared/utils';
-
-import { DialogContent, useForwardPropsEmits } from 'reka-ui';
-
-import { sheetVariants } from './sheet';
+import {cn} from '@vben-core/shared/utils';
 import SheetOverlay from './SheetOverlay.vue';
 
 interface SheetContentProps extends DialogContentProps {

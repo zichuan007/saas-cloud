@@ -1,8 +1,8 @@
-import type { FormRenderProps } from '../types';
+import type {FormRenderProps} from '../types';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { createContext } from '@vben-core/shadcn-ui';
+import {createContext} from '@vben-core/shadcn-ui';
 
 export const [injectRenderFormProps, provideFormRenderProps] =
   createContext<FormRenderProps>('FormRenderProps');

@@ -1,5 +1,4 @@
-import type { Ora } from 'ora';
-
+import type {Ora} from 'ora';
 import ora from 'ora';
 
 interface SpinnerOptions {

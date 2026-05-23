@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, toRaw, unref, watch } from 'vue';
+import {computed, toRaw, unref, watch} from 'vue';
 
-import { useSimpleLocale } from '@vben-core/composables';
-import { VbenExpandableArrow } from '@vben-core/shadcn-ui';
-import { cn, isFunction, triggerWindowResize } from '@vben-core/shared/utils';
+import {useSimpleLocale} from '@vben-core/composables';
+import {VbenExpandableArrow} from '@vben-core/shadcn-ui';
+import {cn, isFunction, triggerWindowResize} from '@vben-core/shared/utils';
 
-import { COMPONENT_MAP } from '../config';
-import { injectFormProps } from '../use-form-context';
+import {COMPONENT_MAP} from '../config';
+import {injectFormProps} from '../use-form-context';
 
 const { $t } = useSimpleLocale();
 

@@ -4,7 +4,6 @@
     viewBox="0 0 1119 699"
     width="1119"
     xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
   >
     <title>server down</title>
     <circle cx="292.60911" cy="213" fill="#f2f2f2" r="213" />

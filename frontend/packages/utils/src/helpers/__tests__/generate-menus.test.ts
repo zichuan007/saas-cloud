@@ -1,10 +1,9 @@
-import type { Router, RouteRecordRaw } from 'vue-router';
+import type {Router, RouteRecordRaw} from 'vue-router';
+import {createRouter, createWebHistory} from 'vue-router';
 
-import { createRouter, createWebHistory } from 'vue-router';
+import {describe, expect, it, vi} from 'vitest';
 
-import { describe, expect, it, vi } from 'vitest';
-
-import { generateMenus } from '../generate-menus';
+import {generateMenus} from '../generate-menus';
 
 // Nested route setup to test child inclusion and hideChildrenInMenu functionality
 

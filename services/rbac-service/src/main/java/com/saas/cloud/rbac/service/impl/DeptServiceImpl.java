@@ -55,11 +55,10 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
     private static final String ROOT_ANCESTORS = "0";
 
     @Override
-    public List<DeptTreeVO> buildDeptTree(Long tenantId) {
-        log.info("构建部门树, tenantId={}", tenantId);
+    public List<DeptTreeVO> buildDeptTree() {
+        log.info("构建部门树");
         LambdaQueryWrapper<Dept> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(tenantId != null, Dept::getTenantId, tenantId)
-                .orderByAsc(Dept::getSortOrder);
+        queryWrapper.orderByAsc(Dept::getSortOrder);
         List<Dept> deptList = this.list(queryWrapper);
         // 转换为 VO 并构建树
         List<DeptTreeVO> voList = deptList.stream()
@@ -77,8 +76,7 @@ public class DeptServiceImpl extends ServiceImpl<DeptMapper, Dept> implements ID
         Long tenantId = TenantContext.getTenantId();
         if (tenantId != null) {
             try {
-                long currentDeptCount = this.count(new LambdaQueryWrapper<Dept>()
-                        .eq(Dept::getTenantId, tenantId));
+                long currentDeptCount = this.count();
                 ApiResult<Boolean> quotaResult = platformFeignClient.checkQuota(
                         tenantId, "DEPT", (int) currentDeptCount);
                 if (quotaResult.isSuccess() && Boolean.FALSE.equals(quotaResult.getData())) {

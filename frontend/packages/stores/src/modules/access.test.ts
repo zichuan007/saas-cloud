@@ -1,7 +1,7 @@
-import { createPinia, setActivePinia } from 'pinia';
-import { beforeEach, describe, expect, it } from 'vitest';
+import {createPinia, setActivePinia} from 'pinia';
+import {beforeEach, describe, expect, it} from 'vitest';
 
-import { useAccessStore } from './access';
+import {useAccessStore} from './access';
 
 describe('useAccessStore', () => {
   beforeEach(() => {

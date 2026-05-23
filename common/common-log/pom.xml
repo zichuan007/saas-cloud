@@ -31,14 +31,13 @@
         <!-- UserContext 用户上下文 -->
         <dependency>
             <groupId>com.saas.cloud</groupId>
-            <artifactId>common-security</artifactId>
+            <artifactId>common-data</artifactId>
             <optional>true</optional>
         </dependency>
-        <!-- Kafka 异步发送操作日志 -->
+        <!-- Kafka（原 common-kafka） -->
         <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>common-kafka</artifactId>
-            <optional>true</optional>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
         </dependency>
 
         <!-- Micrometer Tracing + Brave + Zipkin -->

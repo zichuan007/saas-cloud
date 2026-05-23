@@ -16,6 +16,8 @@ import com.saas.cloud.rbac.entity.User;
 import com.saas.cloud.rbac.service.IDeptService;
 import com.saas.cloud.rbac.service.IUserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2026-05-18
  */
 @Slf4j
+@Tag(name = "内部接口")
 @InnerApi
 @RestController
 @RequestMapping("/internal")
@@ -42,6 +45,7 @@ public class InternalController {
      * @param id 用户ID
      * @return 用户信息
      */
+    @Operation(summary = "根据用户ID获取用户信息")
     @GetMapping("/user/{id}")
     public ApiResult<UserInfoVO> getUserById(@PathVariable("id") Long id) {
         log.info("内部接口: 获取用户信息, userId={}", id);
@@ -55,6 +59,7 @@ public class InternalController {
      * @param tenantId 租户ID
      * @return 用户数量
      */
+    @Operation(summary = "获取指定租户的用户数量")
     @GetMapping("/user/count")
     public ApiResult<Long> getUserCount(@RequestParam("tenantId") Long tenantId) {
         log.info("内部接口: 获取租户用户数, tenantId={}", tenantId);
@@ -69,6 +74,7 @@ public class InternalController {
      * @param id 部门ID
      * @return 部门负责人用户信息
      */
+    @Operation(summary = "获取部门负责人信息")
     @GetMapping("/dept/{id}/leader")
     public ApiResult<UserInfoVO> getDeptLeader(@PathVariable("id") Long id) {
         log.info("内部接口: 获取部门负责人, deptId={}", id);

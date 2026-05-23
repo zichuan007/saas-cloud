@@ -1,25 +1,13 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import {ref, watch} from 'vue';
 
-import { Page, useVbenModal } from '@vben/common-ui';
+import {Page, useVbenModal} from '@vben/common-ui';
 
-import {
-  Button,
-  message,
-  Popconfirm,
-  Select,
-  Space,
-  Table,
-} from 'ant-design-vue';
+import {Button, message, Popconfirm, Select, Space, Table,} from 'ant-design-vue';
 
-import {
-  deleteTag,
-  getTagList,
-  syncTags,
-  type TagRecord,
-} from '#/api/wechat/tag';
+import {deleteTag, getTagList, syncTags, type TagRecord,} from '#/api/wechat/tag';
 
-import { useWechatAccount } from '../use-account';
+import {useWechatAccount} from '../use-account';
 import TagFormModal from './tag-form-modal.vue';
 
 defineOptions({ name: 'WechatTag' });

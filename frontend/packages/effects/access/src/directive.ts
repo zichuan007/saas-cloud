@@ -4,9 +4,9 @@
  * @Example v-access:role="[ROLE_NAME]" or v-access:role="ROLE_NAME"
  * @Example v-access:code="[ROLE_CODE]" or v-access:code="ROLE_CODE"
  */
-import type { App, Directive, DirectiveBinding } from 'vue';
+import type {App, Directive, DirectiveBinding} from 'vue';
 
-import { useAccess } from './use-access';
+import {useAccess} from './use-access';
 
 function isAccessible(
   el: Element,

@@ -1,4 +1,4 @@
-import { defineConfig as defineOxfmtConfig } from 'oxfmt';
+import {defineConfig as defineOxfmtConfig} from 'oxfmt';
 
 type OxfmtConfig = Parameters<typeof defineOxfmtConfig>[0];
 

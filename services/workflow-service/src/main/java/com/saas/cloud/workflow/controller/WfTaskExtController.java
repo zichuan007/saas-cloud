@@ -24,6 +24,8 @@ import com.saas.cloud.workflow.entity.WfTaskExt;
 import com.saas.cloud.workflow.service.IWfCopyService;
 import com.saas.cloud.workflow.service.IWfTaskExtService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -33,6 +35,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "任务管理")
 @RestController
 @RequestMapping("/task")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -47,6 +50,7 @@ public class WfTaskExtController {
      * @param query 查询条件
      * @return 分页结果
      */
+    @Operation(summary = "分页查询我的待办任务")
     @GetMapping("/todo")
     public ApiResult<PageResult<WfTaskExt>> todo(TaskQueryDTO query) {
         return ApiResult.ok(taskExtService.pageTodoTasks(query));
@@ -58,6 +62,7 @@ public class WfTaskExtController {
      * @param query 查询条件
      * @return 分页结果
      */
+    @Operation(summary = "分页查询我的已办任务")
     @GetMapping("/done")
     public ApiResult<PageResult<WfTaskExt>> done(TaskQueryDTO query) {
         return ApiResult.ok(taskExtService.pageDoneTasks(query));
@@ -69,6 +74,7 @@ public class WfTaskExtController {
      * @param query 查询条件
      * @return 分页结果
      */
+    @Operation(summary = "分页查询抄送给我的记录")
     @GetMapping("/copy")
     public ApiResult<PageResult<WfCopy>> copy(TaskQueryDTO query) {
         return ApiResult.ok(copyService.pageMyCopies(query));
@@ -81,6 +87,7 @@ public class WfTaskExtController {
      * @param dto 审批请求
      * @return 操作结果
      */
+    @Operation(summary = "审批通过")
     @OperationLog(module = "流程审批", operation = "审批通过")
     @PostMapping("/{id}/approve")
     public ApiResult<Void> approve(@PathVariable("id") String id,
@@ -97,6 +104,7 @@ public class WfTaskExtController {
      * @param dto 驳回请求
      * @return 操作结果
      */
+    @Operation(summary = "驳回")
     @OperationLog(module = "流程审批", operation = "审批驳回")
     @PostMapping("/{id}/reject")
     public ApiResult<Void> reject(@PathVariable("id") String id,
@@ -113,6 +121,7 @@ public class WfTaskExtController {
      * @param dto 转办请求
      * @return 操作结果
      */
+    @Operation(summary = "转办")
     @OperationLog(module = "流程审批", operation = "转办任务")
     @PostMapping("/{id}/transfer")
     public ApiResult<Void> transfer(@PathVariable("id") String id,
@@ -129,6 +138,7 @@ public class WfTaskExtController {
      * @param dto 委派请求
      * @return 操作结果
      */
+    @Operation(summary = "委派")
     @OperationLog(module = "流程审批", operation = "委派任务")
     @PostMapping("/{id}/delegate")
     public ApiResult<Void> delegate(@PathVariable("id") String id,
@@ -145,6 +155,7 @@ public class WfTaskExtController {
      * @param dto 加签请求
      * @return 操作结果
      */
+    @Operation(summary = "加签")
     @OperationLog(module = "流程审批", operation = "加签")
     @PostMapping("/{id}/add-sign")
     public ApiResult<Void> addSign(@PathVariable("id") String id,
@@ -160,6 +171,7 @@ public class WfTaskExtController {
      * @param id Flowable任务ID
      * @return 操作结果
      */
+    @Operation(summary = "催办")
     @PostMapping("/{id}/urge")
     public ApiResult<Void> urge(@PathVariable("id") String id) {
         taskExtService.urge(id);
@@ -172,6 +184,7 @@ public class WfTaskExtController {
      * @param id 抄送记录主键
      * @return 操作结果
      */
+    @Operation(summary = "标记抄送记录已读")
     @PutMapping("/copy/{id}/read")
     public ApiResult<Void> markCopyAsRead(@PathVariable("id") Long id) {
         copyService.markAsRead(id);

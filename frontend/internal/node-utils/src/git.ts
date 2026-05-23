@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { execa } from 'execa';
+import {execa} from 'execa';
 
 export * from '@changesets/git';
 

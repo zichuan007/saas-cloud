@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { Page, useVbenModal } from '@vben/common-ui';
+import {Page, useVbenModal} from '@vben/common-ui';
 
-import { Button, message, Space, Tag } from 'ant-design-vue';
+import {Button, message, Space, Tag} from 'ant-design-vue';
 
 import {
   type AnnouncementRecord,

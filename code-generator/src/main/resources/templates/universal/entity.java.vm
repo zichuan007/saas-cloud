@@ -9,7 +9,7 @@ import ${pkg};
 #end
 
 /**
- * ${table.comment!}
+ * $!{table.comment}
  *
  * @author ${author}
  * @version V1.0

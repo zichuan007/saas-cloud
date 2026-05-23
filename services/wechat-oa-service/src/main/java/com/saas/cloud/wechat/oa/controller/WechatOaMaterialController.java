@@ -16,6 +16,8 @@ import com.saas.cloud.common.log.annotation.OperationLog;
 import com.saas.cloud.wechat.oa.entity.WechatOaMaterial;
 import com.saas.cloud.wechat.oa.service.IWechatOaMaterialService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "公众号素材管理")
 @RestController
 @RequestMapping("/material")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -41,6 +44,7 @@ public class WechatOaMaterialController {
      * @param pageSize     每页条数
      * @return 分页结果
      */
+    @Operation(summary = "素材列表")
     @GetMapping("/list")
     public ApiResult<PageResult<WechatOaMaterial>> list(@RequestParam Long accountId,
                                                         @RequestParam(required = false) Byte materialType,
@@ -55,6 +59,7 @@ public class WechatOaMaterialController {
      * @param material 素材信息
      * @return 操作结果
      */
+    @Operation(summary = "上传素材")
     @OperationLog(module = "素材管理", operation = "上传素材")
     @PostMapping("/upload")
     public ApiResult<Void> upload(@RequestBody WechatOaMaterial material) {
@@ -68,6 +73,7 @@ public class WechatOaMaterialController {
      * @param id 素材ID
      * @return 操作结果
      */
+    @Operation(summary = "删除素材")
     @OperationLog(module = "素材管理", operation = "删除素材")
     @DeleteMapping("/{id}")
     public ApiResult<Void> delete(@PathVariable("id") Long id) {
@@ -81,6 +87,7 @@ public class WechatOaMaterialController {
      * @param id 素材ID
      * @return 操作结果
      */
+    @Operation(summary = "同步素材到微信")
     @OperationLog(module = "素材管理", operation = "同步素材到微信")
     @PostMapping("/{id}/sync")
     public ApiResult<Void> syncToWechat(@PathVariable("id") Long id) {

@@ -1,28 +1,24 @@
 <script setup lang="ts">
-import type {
-  TipTapProps,
-  ToolbarAction,
-  ToolbarMenuItem,
-  VbenTiptapChangeEvent,
-} from './types';
+import type {TipTapProps, ToolbarAction, ToolbarMenuItem, VbenTiptapChangeEvent,} from './types';
 
-import { computed, onBeforeUnmount, reactive, watch } from 'vue';
+import {computed, onBeforeUnmount, reactive, watch} from 'vue';
 
-import { Check, ChevronDown, Eye } from '@vben/icons';
-import { $t } from '@vben/locales';
+import {Check, ChevronDown, Eye} from '@vben/icons';
+import {$t} from '@vben/locales';
 
-import { useVbenModal } from '@vben-core/popup-ui';
-import { VbenIconButton, VbenPopover } from '@vben-core/shadcn-ui';
-import { cn } from '@vben-core/shared/utils';
+import {useVbenModal} from '@vben-core/popup-ui';
+import {VbenIconButton, VbenPopover} from '@vben-core/shadcn-ui';
+import {cn} from '@vben-core/shared/utils';
 
-import { EditorContent, useEditor } from '@tiptap/vue-3';
+import {EditorContent, useEditor} from '@tiptap/vue-3';
 
-import { createDefaultTiptapExtensions } from './extensions';
+import {createDefaultTiptapExtensions} from './extensions';
 import Preview from './preview.vue';
-import { createToolbarGroups } from './toolbar';
-import { useTiptapToolbar } from './use-tiptap-toolbar';
+import {createToolbarGroups} from './toolbar';
+import {useTiptapToolbar} from './use-tiptap-toolbar';
 
 import './style.css';
+
 const props = withDefaults(defineProps<TipTapProps>(), {
   editable: true,
   extensions: undefined,

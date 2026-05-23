@@ -1,17 +1,12 @@
 <script setup lang="ts">
-import type {
-  AvatarFallbackProps,
-  AvatarImageProps,
-  AvatarRootProps,
-} from 'reka-ui';
+import type {AvatarFallbackProps, AvatarImageProps, AvatarRootProps,} from 'reka-ui';
 
-import type { CSSProperties } from 'vue';
+import type {CSSProperties} from 'vue';
+import {computed} from 'vue';
 
-import type { ClassType } from '@vben-core/typings';
+import type {ClassType} from '@vben-core/typings';
 
-import { computed } from 'vue';
-
-import { Avatar, AvatarFallback, AvatarImage } from '../../ui';
+import {Avatar, AvatarFallback, AvatarImage} from '../../ui';
 
 interface Props extends AvatarFallbackProps, AvatarImageProps, AvatarRootProps {
   alt?: string;

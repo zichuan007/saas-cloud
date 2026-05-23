@@ -1,20 +1,12 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import {ref, watch} from 'vue';
 
-import { Page } from '@vben/common-ui';
+import {Page} from '@vben/common-ui';
 
-import {
-  Card,
-  Col,
-  Empty,
-  Row,
-  Select,
-  Statistic,
-  Table,
-} from 'ant-design-vue';
+import {Card, Col, Empty, Row, Select, Statistic, Table,} from 'ant-design-vue';
 
-import { getArticleRank, getFanTrend } from '#/api/wechat/dashboard';
-import { useWechatAccount } from '../use-account';
+import {getArticleRank, getFanTrend} from '#/api/wechat/dashboard';
+import {useWechatAccount} from '../use-account';
 
 defineOptions({ name: 'WechatDashboard' });
 

@@ -1,6 +1,6 @@
-import type { Preferences } from './types';
+import type {Preferences} from './types';
 
-import { preferencesManager } from './preferences';
+import {preferencesManager} from './preferences';
 
 export const {
   getPreferences,

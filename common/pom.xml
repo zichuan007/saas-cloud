@@ -18,14 +18,9 @@
         <module>common-core</module>
         <module>common-data</module>
         <module>common-redis</module>
-        <module>common-security</module>
-        <module>common-kafka</module>
-        <module>common-feign</module>
         <module>common-log</module>
         <module>common-storage</module>
         <module>common-excel</module>
-        <module>common-sentinel</module>
-        <module>common-job</module>
     </modules>
 
 </project>

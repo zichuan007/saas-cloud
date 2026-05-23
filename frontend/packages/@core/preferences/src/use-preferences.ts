@@ -1,9 +1,9 @@
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { diff } from '@vben-core/shared/utils';
+import {diff} from '@vben-core/shared/utils';
 
-import { preferencesManager } from './preferences';
-import { isDarkTheme } from './update-css-variables';
+import {preferencesManager} from './preferences';
+import {isDarkTheme} from './update-css-variables';
 
 function usePreferences() {
   const preferences = preferencesManager.getPreferences();

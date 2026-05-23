@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import type { PopoverContentEmits, PopoverContentProps } from 'reka-ui';
+import type {PopoverContentEmits, PopoverContentProps} from 'reka-ui';
+import {PopoverContent, PopoverPortal, useForwardPropsEmits} from 'reka-ui';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { cn } from '@vben-core/shared/utils';
-
-import { PopoverContent, PopoverPortal, useForwardPropsEmits } from 'reka-ui';
+import {cn} from '@vben-core/shared/utils';
 
 defineOptions({
   inheritAttrs: false,

@@ -11,7 +11,7 @@ import ${cfg.commonPackage}.result.PageResult;
 import java.util.List;
 
 /**
- * ${table.comment!} 服务接口
+ * $!{table.comment} 服务接口
  *
  * @author ${author}
  * @version V1.0

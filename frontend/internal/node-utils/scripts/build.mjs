@@ -1,4 +1,4 @@
-import { spawnSync } from 'node:child_process';
+import {spawnSync} from 'node:child_process';
 
 const pnpmCommand =
   process.env.npm_execpath && process.env.npm_execpath.endsWith('.cjs')

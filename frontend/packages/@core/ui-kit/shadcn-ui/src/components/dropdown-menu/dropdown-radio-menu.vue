@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { DropdownMenuProps } from './interface';
+import type {DropdownMenuProps} from './interface';
 
 import {
   DropdownMenu,

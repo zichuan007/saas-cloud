@@ -1,7 +1,6 @@
-import type { Options as HtmlMinifierOptions } from 'html-minifier-terser';
-import type { PluginOption } from 'vite';
-
-import { minify } from 'html-minifier-terser';
+import type {Options as HtmlMinifierOptions} from 'html-minifier-terser';
+import {minify} from 'html-minifier-terser';
+import type {PluginOption} from 'vite';
 
 const HTML_MINIFY_OPTIONS = {
   collapseWhitespace: true,

@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import type { Component } from 'vue';
+import type {Component} from 'vue';
+import {computed} from 'vue';
 
-import { computed } from 'vue';
+import {$t} from '@vben/locales';
 
-import { $t } from '@vben/locales';
-
-import { ContentCompact, ContentWide } from '../../icons';
+import {ContentCompact, ContentWide} from '../../icons';
 
 defineOptions({
   name: 'PreferenceLayoutContent',

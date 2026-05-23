@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saas.cloud.common.core.result.ApiResult;
-import com.saas.cloud.common.security.context.TenantContext;
+import com.saas.cloud.common.log.annotation.OperationLog;
 import com.saas.cloud.rbac.api.dto.DeptCreateDTO;
 import com.saas.cloud.rbac.api.dto.DeptUpdateDTO;
 import com.saas.cloud.rbac.api.vo.DeptTreeVO;
 import com.saas.cloud.rbac.service.IDeptService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2026-05-18
  */
 @Slf4j
+@Tag(name = "部门管理")
 @RestController
 @RequestMapping("/dept")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -43,10 +46,10 @@ public class DeptController {
      *
      * @return 部门树
      */
+    @Operation(summary = "获取部门树形列表")
     @GetMapping("/tree")
     public ApiResult<List<DeptTreeVO>> tree() {
-        Long tenantId = TenantContext.getTenantId();
-        return ApiResult.ok(deptService.buildDeptTree(tenantId));
+        return ApiResult.ok(deptService.buildDeptTree());
     }
 
     /**
@@ -55,6 +58,8 @@ public class DeptController {
      * @param dto 部门创建请求
      * @return 操作结果
      */
+    @Operation(summary = "创建部门")
+    @OperationLog(module = "部门管理", operation = "创建部门")
     @PostMapping
     public ApiResult<Void> create(@Valid @RequestBody DeptCreateDTO dto) {
         deptService.createDept(dto);
@@ -68,6 +73,8 @@ public class DeptController {
      * @param dto 部门更新请求
      * @return 操作结果
      */
+    @Operation(summary = "更新部门")
+    @OperationLog(module = "部门管理", operation = "更新部门")
     @PutMapping("/{id}")
     public ApiResult<Void> update(@PathVariable("id") Long id, @Valid @RequestBody DeptUpdateDTO dto) {
         dto.setId(id);
@@ -81,6 +88,8 @@ public class DeptController {
      * @param id 部门ID
      * @return 操作结果
      */
+    @Operation(summary = "删除部门")
+    @OperationLog(module = "部门管理", operation = "删除部门")
     @DeleteMapping("/{id}")
     public ApiResult<Void> delete(@PathVariable("id") Long id) {
         deptService.deleteDept(id);

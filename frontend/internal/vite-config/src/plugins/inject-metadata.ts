@@ -1,13 +1,8 @@
-import type { PluginOption } from 'vite';
+import type {PluginOption} from 'vite';
 
-import {
-  dateUtil,
-  findMonorepoRoot,
-  getPackages,
-  readPackageJSON,
-} from '@vben/node-utils';
+import {dateUtil, findMonorepoRoot, getPackages, readPackageJSON,} from '@vben/node-utils';
 
-import { readWorkspaceManifest } from '@pnpm/workspace.read-manifest';
+import {readWorkspaceManifest} from '@pnpm/workspace.read-manifest';
 
 function resolvePackageVersion(
   pkgsMeta: Record<string, string>,

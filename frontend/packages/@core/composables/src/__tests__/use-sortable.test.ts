@@ -1,8 +1,8 @@
-import type { SortableOptions } from 'sortablejs';
+import type {SortableOptions} from 'sortablejs';
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-import { useSortable } from '../use-sortable';
+import {useSortable} from '../use-sortable';
 
 describe('useSortable', () => {
   beforeEach(() => {

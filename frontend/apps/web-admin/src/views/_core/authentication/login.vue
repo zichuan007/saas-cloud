@@ -1,12 +1,11 @@
 <script lang="ts" setup>
-import type { VbenFormSchema } from '@vben/common-ui';
+import type {VbenFormSchema} from '@vben/common-ui';
+import {AuthenticationLogin, z} from '@vben/common-ui';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
+import {$t} from '@vben/locales';
 
-import { AuthenticationLogin, z } from '@vben/common-ui';
-import { $t } from '@vben/locales';
-
-import { useAuthStore } from '#/store';
+import {useAuthStore} from '#/store';
 
 defineOptions({ name: 'Login' });
 
@@ -17,16 +16,7 @@ const formSchema = computed((): VbenFormSchema[] => {
     {
       component: 'VbenInput',
       componentProps: {
-        placeholder: '请输入租户编码',
-      },
-      fieldName: 'tenantCode',
-      label: '租户编码',
-      rules: z.string().min(1, { message: '请输入租户编码' }),
-    },
-    {
-      component: 'VbenInput',
-      componentProps: {
-        placeholder: $t('authentication.usernameTip'),
+        placeholder: '请输入手机号或用户名',
       },
       fieldName: 'username',
       label: $t('authentication.username'),

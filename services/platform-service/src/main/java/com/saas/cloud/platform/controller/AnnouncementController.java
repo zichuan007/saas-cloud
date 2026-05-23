@@ -18,6 +18,8 @@ import com.saas.cloud.platform.api.dto.AnnouncementQueryDTO;
 import com.saas.cloud.platform.entity.Announcement;
 import com.saas.cloud.platform.service.IAnnouncementService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "公告管理")
 @RestController
 @RequestMapping("/announcement")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -40,6 +43,7 @@ public class AnnouncementController {
      * @param query 查询条件
      * @return 分页结果
      */
+    @Operation(summary = "分页查询公告列表")
     @GetMapping("/list")
     public ApiResult<PageResult<Announcement>> list(AnnouncementQueryDTO query) {
         return ApiResult.ok(announcementService.pageAnnouncements(query));
@@ -51,6 +55,7 @@ public class AnnouncementController {
      * @param dto 创建请求
      * @return 操作结果
      */
+    @Operation(summary = "创建公告")
     @OperationLog(module = "平台管理", operation = "创建公告")
     @PostMapping
     public ApiResult<Void> create(@Validated @RequestBody AnnouncementCreateDTO dto) {
@@ -65,6 +70,7 @@ public class AnnouncementController {
      * @param dto 更新请求
      * @return 操作结果
      */
+    @Operation(summary = "更新公告")
     @OperationLog(module = "平台管理", operation = "更新公告")
     @PutMapping("/{id}")
     public ApiResult<Void> update(@PathVariable("id") Long id,
@@ -79,6 +85,7 @@ public class AnnouncementController {
      * @param id 公告ID
      * @return 操作结果
      */
+    @Operation(summary = "发布公告")
     @OperationLog(module = "平台管理", operation = "发布公告")
     @PostMapping("/{id}/publish")
     public ApiResult<Void> publish(@PathVariable("id") Long id) {
@@ -92,6 +99,7 @@ public class AnnouncementController {
      * @param id 公告ID
      * @return 操作结果
      */
+    @Operation(summary = "下线公告")
     @OperationLog(module = "平台管理", operation = "下线公告")
     @PutMapping("/{id}/offline")
     public ApiResult<Void> offline(@PathVariable("id") Long id) {

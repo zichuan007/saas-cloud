@@ -23,6 +23,12 @@ spring:
         server-addr: ${NACOS_ADDR:localhost:8848}
         namespace: ${NACOS_NAMESPACE:e96d2e6b-7bf3-4a42-973a-e020a213cde2}
         file-extension: yml
+  boot:
+    admin:
+      client:
+        url: http://${SBA_HOST:localhost}:9090
+        instance:
+          prefer-ip: true
     gateway:
       globalcors:
         cors-configurations:
@@ -92,3 +98,26 @@ sa-token:
   is-share: true
   token-style: uuid
   is-log: false
+
+knife4j:
+  gateway:
+    enabled: true
+    strategy: discover
+    discover:
+      enabled: true
+      version: openapi3
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST:localhost}:9411/api/v2/spans

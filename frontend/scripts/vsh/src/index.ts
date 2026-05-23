@@ -1,13 +1,13 @@
-import { colors, consola } from '@vben/node-utils';
+import {colors, consola} from '@vben/node-utils';
 
-import { cac } from 'cac';
+import {cac} from 'cac';
 
-import { version } from '../package.json';
-import { defineCheckCircularCommand } from './check-circular';
-import { defineDepcheckCommand } from './check-dep';
-import { defineCodeWorkspaceCommand } from './code-workspace';
-import { defineLintCommand } from './lint';
-import { definePubLintCommand } from './publint';
+import {version} from '../package.json';
+import {defineCheckCircularCommand} from './check-circular';
+import {defineDepcheckCommand} from './check-dep';
+import {defineCodeWorkspaceCommand} from './code-workspace';
+import {defineLintCommand} from './lint';
+import {definePubLintCommand} from './publint';
 
 // 命令描述
 const COMMAND_DESCRIPTIONS = {

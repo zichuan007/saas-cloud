@@ -1,6 +1,7 @@
 package com.saas.cloud.rbac.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.core.result.PageResult;
@@ -23,12 +25,16 @@ import com.saas.cloud.common.log.annotation.OperationLog;
 import com.saas.cloud.common.security.context.UserContext;
 import com.saas.cloud.rbac.api.dto.UserCreateDTO;
 import com.saas.cloud.rbac.api.dto.UserUpdateDTO;
+import com.saas.cloud.rbac.api.vo.ImportResultVO;
 import com.saas.cloud.rbac.api.vo.UserExportVO;
+import com.saas.cloud.rbac.api.vo.UserImportVO;
 import com.saas.cloud.rbac.api.vo.UserInfoVO;
 import com.saas.cloud.rbac.api.vo.UserPageVO;
 import com.saas.cloud.rbac.entity.User;
 import com.saas.cloud.rbac.service.IUserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +48,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2026-05-18
  */
 @Slf4j
+@Tag(name = "用户管理")
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -57,6 +64,7 @@ public class UserController {
      * @param keyword  搜索关键字（用户名/真实姓名）
      * @return 用户分页数据
      */
+    @Operation(summary = "分页查询用户列表")
     @GetMapping("/list")
     public ApiResult<PageResult<UserPageVO>> list(
             @RequestParam(defaultValue = "1") Integer pageNum,
@@ -71,6 +79,7 @@ public class UserController {
      * @param id 用户ID
      * @return 用户详情信息
      */
+    @Operation(summary = "获取用户详情")
     @GetMapping("/{id}")
     public ApiResult<UserInfoVO> detail(@PathVariable("id") Long id) {
         return ApiResult.ok(userService.getUserDetail(id));
@@ -82,6 +91,7 @@ public class UserController {
      * @param dto 用户创建请求
      * @return 操作结果
      */
+    @Operation(summary = "创建用户")
     @OperationLog(module = "用户管理", operation = "创建用户")
     @PostMapping
     public ApiResult<Void> create(@Valid @RequestBody UserCreateDTO dto) {
@@ -96,6 +106,7 @@ public class UserController {
      * @param dto 用户更新请求
      * @return 操作结果
      */
+    @Operation(summary = "更新用户")
     @OperationLog(module = "用户管理", operation = "更新用户")
     @PutMapping("/{id}")
     public ApiResult<Void> update(@PathVariable("id") Long id, @Valid @RequestBody UserUpdateDTO dto) {
@@ -110,6 +121,7 @@ public class UserController {
      * @param id 用户ID
      * @return 操作结果
      */
+    @Operation(summary = "删除用户")
     @OperationLog(module = "用户管理", operation = "删除用户")
     @DeleteMapping("/{id}")
     public ApiResult<Void> delete(@PathVariable("id") Long id) {
@@ -124,6 +136,8 @@ public class UserController {
      * @param params 包含 status 字段
      * @return 操作结果
      */
+    @Operation(summary = "启用/禁用用户")
+    @OperationLog(module = "用户管理", operation = "启用/禁用用户")
     @PutMapping("/{id}/status")
     public ApiResult<Void> updateStatus(@PathVariable("id") Long id,
                                         @RequestBody Map<String, Object> params) {
@@ -139,6 +153,7 @@ public class UserController {
      * @param params 包含 newPassword 字段
      * @return 操作结果
      */
+    @Operation(summary = "重置用户密码")
     @OperationLog(module = "用户管理", operation = "重置密码")
     @PutMapping("/{id}/reset-password")
     public ApiResult<Void> resetPassword(@PathVariable("id") Long id,
@@ -154,6 +169,7 @@ public class UserController {
      * @param params 包含 realName、phone 字段
      * @return 操作结果
      */
+    @Operation(summary = "更新当前用户个人资料")
     @OperationLog(module = "个人设置", operation = "修改个人资料")
     @PutMapping("/profile")
     public ApiResult<Void> updateProfile(@RequestBody Map<String, String> params) {
@@ -168,6 +184,7 @@ public class UserController {
      * @param params 包含 oldPassword、newPassword 字段
      * @return 操作结果
      */
+    @Operation(summary = "修改当前用户密码")
     @OperationLog(module = "个人设置", operation = "修改密码")
     @PutMapping("/password")
     public ApiResult<Void> changePassword(@RequestBody Map<String, String> params) {
@@ -182,6 +199,7 @@ public class UserController {
      * @param response HTTP 响应
      * @param keyword  搜索关键字（可选）
      */
+    @Operation(summary = "导出用户列表")
     @OperationLog(module = "用户管理", operation = "导出用户")
     @GetMapping("/export")
     public void export(HttpServletResponse response,
@@ -198,5 +216,48 @@ public class UserController {
             return vo;
         }).collect(Collectors.toList());
         ExcelUtils.write(response, "用户列表", "用户", UserExportVO.class, voList);
+    }
+
+    /**
+     * 批量导入用户
+     *
+     * @param file Excel 文件
+     * @return 导入结果
+     */
+    @Operation(summary = "批量导入用户")
+    @OperationLog(module = "用户管理", operation = "导入用户")
+    @PostMapping("/import")
+    public ApiResult<ImportResultVO> importUsers(@RequestParam("file") MultipartFile file) throws IOException {
+        List<UserImportVO> dataList = ExcelUtils.read(file.getInputStream(), UserImportVO.class);
+        int total = dataList.size();
+        int success = 0;
+        int fail = 0;
+        List<String> errorDetails = new ArrayList<>();
+
+        for (int i = 0; i < dataList.size(); i++) {
+            UserImportVO row = dataList.get(i);
+            int rowNum = i + 2;
+            try {
+                if (row.getUsername() == null || row.getUsername().isBlank()) {
+                    throw new IllegalArgumentException("用户名不能为空");
+                }
+                if (row.getPassword() == null || row.getPassword().isBlank()) {
+                    throw new IllegalArgumentException("密码不能为空");
+                }
+                UserCreateDTO dto = new UserCreateDTO();
+                dto.setUsername(row.getUsername().trim());
+                dto.setPassword(row.getPassword().trim());
+                dto.setRealName(row.getRealName());
+                dto.setPhone(row.getPhone());
+                dto.setEmail(row.getEmail());
+                dto.setDeptId(row.getDeptId());
+                userService.createUser(dto);
+                success++;
+            } catch (Exception e) {
+                fail++;
+                errorDetails.add("第" + rowNum + "行: " + e.getMessage());
+            }
+        }
+        return ApiResult.ok(ImportResultVO.of(total, success, fail, errorDetails));
     }
 }

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { VbenFormSchema } from '#/adapter/form';
+import type {VbenFormSchema} from '#/adapter/form';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { ProfilePasswordSetting, z } from '@vben/common-ui';
+import {ProfilePasswordSetting, z} from '@vben/common-ui';
 
-import { message } from 'ant-design-vue';
+import {message} from 'ant-design-vue';
 
 const formSchema = computed((): VbenFormSchema[] => {
   return [

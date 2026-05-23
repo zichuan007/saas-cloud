@@ -1,8 +1,8 @@
-import type { AsTag } from 'reka-ui';
+import type {AsTag} from 'reka-ui';
 
-import type { Component } from 'vue';
+import type {Component} from 'vue';
 
-import type { ButtonVariants, ButtonVariantSize } from '../../ui';
+import type {ButtonVariants, ButtonVariantSize} from '../../ui';
 
 export interface VbenButtonProps {
   /**

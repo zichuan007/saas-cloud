@@ -17,6 +17,8 @@ import com.saas.cloud.notify.api.dto.TemplateCreateDTO;
 import com.saas.cloud.notify.entity.NotifyTemplate;
 import com.saas.cloud.notify.service.INotifyTemplateService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "通知模板管理")
 @Slf4j
 @RestController
 @RequestMapping("/template")
@@ -41,6 +44,7 @@ public class NotifyTemplateController {
      *
      * @return 模板列表
      */
+    @Operation(summary = "查询模板列表")
     @GetMapping("/list")
     public ApiResult<List<NotifyTemplate>> list() {
         return ApiResult.ok(templateService.listTemplates());
@@ -52,6 +56,7 @@ public class NotifyTemplateController {
      * @param dto 模板创建请求
      * @return 操作结果
      */
+    @Operation(summary = "创建模板")
     @PostMapping
     public ApiResult<Void> create(@Valid @RequestBody TemplateCreateDTO dto) {
         templateService.createTemplate(dto);
@@ -65,6 +70,7 @@ public class NotifyTemplateController {
      * @param dto 模板更新请求
      * @return 操作结果
      */
+    @Operation(summary = "更新模板")
     @PutMapping("/{id}")
     public ApiResult<Void> update(@PathVariable("id") Long id, @Valid @RequestBody TemplateCreateDTO dto) {
         templateService.updateTemplate(id, dto);
@@ -77,6 +83,7 @@ public class NotifyTemplateController {
      * @param id 模板ID
      * @return 操作结果
      */
+    @Operation(summary = "删除模板")
     @DeleteMapping("/{id}")
     public ApiResult<Void> delete(@PathVariable("id") Long id) {
         templateService.deleteTemplate(id);

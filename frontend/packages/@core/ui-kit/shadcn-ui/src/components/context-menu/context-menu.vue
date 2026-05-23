@@ -1,17 +1,12 @@
 <script setup lang="ts">
-import type {
-  ContextMenuContentProps,
-  ContextMenuRootEmits,
-  ContextMenuRootProps,
-} from 'reka-ui';
+import type {ContextMenuContentProps, ContextMenuRootEmits, ContextMenuRootProps,} from 'reka-ui';
+import {useForwardPropsEmits} from 'reka-ui';
 
-import type { ClassType } from '@vben-core/typings';
+import type {ClassType} from '@vben-core/typings';
 
-import type { IContextMenuItem } from './interface';
+import type {IContextMenuItem} from './interface';
 
-import { computed, onMounted, onUnmounted, ref } from 'vue';
-
-import { useForwardPropsEmits } from 'reka-ui';
+import {computed, onMounted, onUnmounted, ref} from 'vue';
 
 import {
   ContextMenu,

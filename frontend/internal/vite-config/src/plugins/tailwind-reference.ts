@@ -1,4 +1,4 @@
-import type { Plugin } from 'vite';
+import type {Plugin} from 'vite';
 
 const REFERENCE_LINE = '@reference "@vben/tailwind-config/theme";\n';
 

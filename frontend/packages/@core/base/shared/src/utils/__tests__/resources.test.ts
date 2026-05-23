@@ -1,6 +1,6 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-import { loadScript } from '../resources';
+import {loadScript} from '../resources';
 
 describe('loadScript', () => {
   beforeEach(() => {

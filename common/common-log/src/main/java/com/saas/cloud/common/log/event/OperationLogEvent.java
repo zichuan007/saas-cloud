@@ -52,6 +52,9 @@ public class OperationLogEvent implements Serializable {
     /** 操作 IP 地址 */
     private String ip;
 
+    /** IP 归属地 */
+    private String location;
+
     /** 用户代理 */
     private String userAgent;
 

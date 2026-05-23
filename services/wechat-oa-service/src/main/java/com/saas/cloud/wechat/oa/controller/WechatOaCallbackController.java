@@ -21,6 +21,8 @@ import com.saas.cloud.wechat.oa.service.IWechatOaFanUserService;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "公众号回调")
 @Slf4j
 @RestController
 @RequestMapping("/callback")
@@ -55,6 +58,7 @@ public class WechatOaCallbackController {
      * @param echostr   回声字符串
      * @return 验证通过返回echostr
      */
+    @Operation(summary = "微信验证签名")
     @GetMapping("/{appId}")
     public String verify(@PathVariable("appId") String appId,
                          @RequestParam String signature,
@@ -88,6 +92,7 @@ public class WechatOaCallbackController {
      * @param xmlBody 微信推送的XML消息体
      * @return 回复XML
      */
+    @Operation(summary = "接收微信推送事件")
     @PostMapping("/{appId}")
     public String handleEvent(@PathVariable("appId") String appId,
                               @RequestBody String xmlBody) {

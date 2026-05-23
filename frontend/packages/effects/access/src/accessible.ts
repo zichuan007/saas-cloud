@@ -1,12 +1,7 @@
-import type { Component, DefineComponent } from 'vue';
+import type {Component, DefineComponent} from 'vue';
+import {defineComponent, h} from 'vue';
 
-import type {
-  AccessModeType,
-  GenerateMenuAndRoutesOptions,
-  RouteRecordRaw,
-} from '@vben/types';
-
-import { defineComponent, h } from 'vue';
+import type {AccessModeType, GenerateMenuAndRoutesOptions, RouteRecordRaw,} from '@vben/types';
 
 import {
   cloneDeep,

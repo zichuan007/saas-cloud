@@ -39,13 +39,15 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
             "/api/rbac/auth/refresh",
             "/api/rbac/auth/register",
             "/api/rbac/captcha/**",
+            "/api/rbac/auth/social/**",
             "/api/platform/auth/login",
             "/api/generator/**",
             "/doc.html",
             "/webjars/**",
             "/swagger-resources/**",
             "/v3/api-docs/**",
-            "/actuator/**"
+            "/actuator/**",
+            "/api/rbac/ws/**"
     );
 
     @Override

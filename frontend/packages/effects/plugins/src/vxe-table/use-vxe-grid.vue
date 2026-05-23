@@ -3,17 +3,13 @@ import type {
   VxeGridDefines,
   VxeGridInstance,
   VxeGridListeners,
-  VxeGridPropTypes,
   VxeGridProps as VxeTableGridProps,
+  VxeGridPropTypes,
   VxeToolbarPropTypes,
 } from 'vxe-table';
+import {VxeGrid, VxeUI} from 'vxe-table';
 
-import type { SetupContext } from 'vue';
-
-import type { VbenFormProps } from '@vben-core/form-ui';
-
-import type { ExtendedVxeGridApi, VxeGridProps } from './types';
-
+import type {SetupContext} from 'vue';
 import {
   computed,
   nextTick,
@@ -25,25 +21,22 @@ import {
   watch,
 } from 'vue';
 
-import { usePriorityValues } from '@vben/hooks';
-import { EmptyIcon } from '@vben/icons';
-import { $t } from '@vben/locales';
-import { usePreferences } from '@vben/preferences';
-import {
-  cloneDeep,
-  cn,
-  isBoolean,
-  isEqual,
-  mergeWithArrayOverride,
-} from '@vben/utils';
+import type {VbenFormProps} from '@vben-core/form-ui';
 
-import { VbenHelpTooltip, VbenLoading } from '@vben-core/shadcn-ui';
+import type {ExtendedVxeGridApi, VxeGridProps} from './types';
 
-import { VxeButton } from 'vxe-pc-ui';
-import { VxeGrid, VxeUI } from 'vxe-table';
+import {usePriorityValues} from '@vben/hooks';
+import {EmptyIcon} from '@vben/icons';
+import {$t} from '@vben/locales';
+import {usePreferences} from '@vben/preferences';
+import {cloneDeep, cn, isBoolean, isEqual, mergeWithArrayOverride,} from '@vben/utils';
 
-import { extendProxyOptions } from './extends';
-import { useTableForm } from './init';
+import {VbenHelpTooltip, VbenLoading} from '@vben-core/shadcn-ui';
+
+import {VxeButton} from 'vxe-pc-ui';
+
+import {extendProxyOptions} from './extends';
+import {useTableForm} from './init';
 import {applyViewedRowOptions, useViewedRow} from './use-viewed-row';
 
 import 'vxe-table/styles/cssvar.scss';

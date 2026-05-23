@@ -6,9 +6,9 @@
  3. 支持自定义权限码和角色的判断逻辑
 -->
 <script lang="ts" setup>
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { useAccess } from './use-access';
+import {useAccess} from './use-access';
 
 interface Props {
   /**

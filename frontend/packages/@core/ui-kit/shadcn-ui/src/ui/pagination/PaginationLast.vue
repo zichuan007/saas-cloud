@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { PaginationLastProps } from 'reka-ui';
+import type {PaginationLastProps} from 'reka-ui';
+import {PaginationLast} from 'reka-ui';
 
-import { computed } from 'vue';
+import {computed} from 'vue';
 
-import { cn } from '@vben-core/shared/utils';
+import {cn} from '@vben-core/shared/utils';
 
-import { ChevronsRight } from 'lucide-vue-next';
-import { PaginationLast } from 'reka-ui';
+import {ChevronsRight} from 'lucide-vue-next';
 
-import { Button } from '../button';
+import {Button} from '../button';
 
 const props = withDefaults(
   defineProps<PaginationLastProps & { class?: any }>(),

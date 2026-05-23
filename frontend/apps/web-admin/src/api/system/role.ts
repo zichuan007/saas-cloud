@@ -1,4 +1,4 @@
-import { requestClient } from '#/api/request';
+import {requestClient} from '#/api/request';
 
 export interface RoleRecord {
   createTime?: string;
@@ -42,4 +42,10 @@ export function assignRoleMenus(id: number, menuIds: number[]) {
 
 export function setRoleDataScope(id: number, dataScope: number) {
   return requestClient.put(`/rbac/role/${id}/data-scope`, { dataScope });
+}
+
+export function exportRoles() {
+  return requestClient.download('/rbac/role/export', {
+    responseReturn: 'raw',
+  });
 }

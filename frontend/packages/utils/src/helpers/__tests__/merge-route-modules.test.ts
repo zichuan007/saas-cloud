@@ -1,10 +1,9 @@
-import type { RouteRecordRaw } from 'vue-router';
+import type {RouteRecordRaw} from 'vue-router';
 
-import type { RouteModuleType } from '../merge-route-modules';
+import type {RouteModuleType} from '../merge-route-modules';
+import {mergeRouteModules} from '../merge-route-modules';
 
-import { describe, expect, it } from 'vitest';
-
-import { mergeRouteModules } from '../merge-route-modules';
+import {describe, expect, it} from 'vitest';
 
 describe('mergeRouteModules', () => {
   it('should merge route modules correctly', () => {

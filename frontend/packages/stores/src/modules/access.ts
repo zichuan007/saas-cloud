@@ -1,8 +1,8 @@
-import type { RouteRecordRaw } from 'vue-router';
+import type {RouteRecordRaw} from 'vue-router';
 
-import type { MenuRecordRaw } from '@vben-core/typings';
+import type {MenuRecordRaw} from '@vben-core/typings';
 
-import { acceptHMRUpdate, defineStore } from 'pinia';
+import {acceptHMRUpdate, defineStore} from 'pinia';
 
 type AccessToken = null | string;
 

@@ -1,15 +1,11 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { Page, useVbenModal } from '@vben/common-ui';
+import {Page, useVbenModal} from '@vben/common-ui';
 
-import { Button, message, Popconfirm, Space, Table, Tag } from 'ant-design-vue';
+import {Button, message, Popconfirm, Space, Table, Tag} from 'ant-design-vue';
 
-import {
-  deleteAccount,
-  getAccountList,
-  type WechatAccount,
-} from '#/api/wechat/account';
+import {deleteAccount, getAccountList, type WechatAccount,} from '#/api/wechat/account';
 
 import AccountFormModal from './account-form-modal.vue';
 

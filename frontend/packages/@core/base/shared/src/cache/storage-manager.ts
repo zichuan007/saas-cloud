@@ -1,8 +1,4 @@
-import type {
-  IStorageDriver,
-  StorageItem,
-  StorageManagerOptions,
-} from './types';
+import type {IStorageDriver, StorageItem, StorageManagerOptions,} from './types';
 
 import {LocalStorageDriver} from './local-storage-driver';
 import {MemoryStorageDriver} from './memory-storage-driver';

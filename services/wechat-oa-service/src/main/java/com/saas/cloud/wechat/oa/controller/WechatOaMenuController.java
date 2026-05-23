@@ -17,6 +17,8 @@ import com.saas.cloud.common.log.annotation.OperationLog;
 import com.saas.cloud.wechat.oa.entity.WechatOaMenu;
 import com.saas.cloud.wechat.oa.service.IWechatOaMenuService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -26,6 +28,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "公众号菜单管理")
 @RestController
 @RequestMapping("/menu")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -39,6 +42,7 @@ public class WechatOaMenuController {
      * @param accountId 公众号ID
      * @return 菜单列表
      */
+    @Operation(summary = "当前菜单配置")
     @GetMapping("/list")
     public ApiResult<List<WechatOaMenu>> list(@RequestParam Long accountId) {
         return ApiResult.ok(menuService.listMenus(accountId));
@@ -50,6 +54,7 @@ public class WechatOaMenuController {
      * @param body 包含 accountId 和 buttons 的 JSON
      * @return 操作结果
      */
+    @Operation(summary = "保存菜单配置")
     @OperationLog(module = "菜单管理", operation = "保存菜单配置")
     @PostMapping("/save")
     @SuppressWarnings("unchecked")
@@ -66,6 +71,7 @@ public class WechatOaMenuController {
      * @param body 包含 accountId 的 JSON
      * @return 操作结果
      */
+    @Operation(summary = "发布菜单到微信")
     @OperationLog(module = "菜单管理", operation = "发布菜单到微信")
     @PostMapping("/publish")
     public ApiResult<Void> publish(@RequestBody Map<String, Object> body) {

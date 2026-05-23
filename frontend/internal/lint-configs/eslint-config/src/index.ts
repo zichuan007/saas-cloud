@@ -1,4 +1,4 @@
-import type { Linter } from 'eslint';
+import type {Linter} from 'eslint';
 
 import {
   ignores,
@@ -12,7 +12,7 @@ import {
   vue,
   yaml,
 } from './configs';
-import { customConfig } from './custom-config';
+import {customConfig} from './custom-config';
 
 type FlatConfig = Linter.Config;
 

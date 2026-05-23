@@ -1,7 +1,8 @@
-import type { CAC } from 'cac';
-import type { Result } from 'publint';
+import type {CAC} from 'cac';
+import type {Result} from 'publint';
+import {publint} from 'publint';
 
-import { basename, dirname, join } from 'node:path';
+import {basename, dirname, join} from 'node:path';
 
 import {
   colors,
@@ -14,9 +15,7 @@ import {
   readJSON,
   UNICODE,
 } from '@vben/node-utils';
-
-import { publint } from 'publint';
-import { formatMessage } from 'publint/utils';
+import {formatMessage} from 'publint/utils';
 
 const CACHE_FILE = join(
   'node_modules',

@@ -10,7 +10,7 @@ import ${pkg};
 #end
 
 /**
- * ${table.comment!} 修改参数
+ * $!{table.comment} 修改参数
  *
  * @author ${author}
  * @version V1.0
@@ -27,8 +27,8 @@ public class ${entity}UpdateDTO implements Serializable {
 #foreach($field in ${cfg.businessFields})
 
     /** ${field.comment} */
-#if(${field.propertyType} == "String" && ${field.length} > 0)
-    @Size(max = ${field.length}, message = "${field.comment}长度不能超过${field.length}")
+#if($field.propertyType == "String" && $field.length > 0)
+    @Size(max = $field.length, message = "${field.comment}长度不能超过$field.length")
 #end
     private ${field.propertyType} ${field.propertyName};
 #end

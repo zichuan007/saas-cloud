@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saas.cloud.common.core.exception.BusinessException;
 import com.saas.cloud.common.core.result.ApiResult;
+import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.platform.api.feign.PlatformFeignClient;
 import com.saas.cloud.platform.api.vo.TenantVO;
 import com.saas.cloud.rbac.api.dto.MenuCreateDTO;
@@ -55,7 +56,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
     private static final long ROOT_PARENT_ID = 0L;
 
     @Override
-    public List<MenuTreeVO> buildMenuTree(Long tenantId) {
+    public List<MenuTreeVO> buildMenuTree() {
+        Long tenantId = TenantContext.getTenantId();
         log.info("构建菜单树, tenantId={}", tenantId);
         LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Menu::getStatus, (byte) 1)

@@ -1,18 +1,17 @@
 <script setup lang="ts">
-import type { Component } from 'vue';
+import type {Component} from 'vue';
+import {computed, useTemplateRef, watch} from 'vue';
 
-import type { AnyFunction } from '@vben/types';
+import type {AnyFunction} from '@vben/types';
 
-import { computed, useTemplateRef, watch } from 'vue';
+import {useHoverToggle} from '@vben/hooks';
+import {LockKeyhole, LogOut} from '@vben/icons';
+import {$t} from '@vben/locales';
+import {preferences, usePreferences} from '@vben/preferences';
+import {useAccessStore} from '@vben/stores';
+import {isWindowsOs} from '@vben/utils';
 
-import { useHoverToggle } from '@vben/hooks';
-import { LockKeyhole, LogOut } from '@vben/icons';
-import { $t } from '@vben/locales';
-import { preferences, usePreferences } from '@vben/preferences';
-import { useAccessStore } from '@vben/stores';
-import { isWindowsOs } from '@vben/utils';
-
-import { useVbenModal } from '@vben-core/popup-ui';
+import {useVbenModal} from '@vben-core/popup-ui';
 import {
   Badge,
   DropdownMenu,
@@ -26,9 +25,9 @@ import {
   VbenIcon,
 } from '@vben-core/shadcn-ui';
 
-import { useMagicKeys, whenever } from '@vueuse/core';
+import {useMagicKeys, whenever} from '@vueuse/core';
 
-import { LockScreenModal } from '../lock-screen';
+import {LockScreenModal} from '../lock-screen';
 
 interface Props {
   /**

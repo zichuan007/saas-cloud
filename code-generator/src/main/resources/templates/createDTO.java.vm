@@ -11,7 +11,7 @@ import ${pkg};
 #end
 
 /**
- * ${table.comment!} 新增参数
+ * $!{table.comment} 新增参数
  *
  * @author ${author}
  * @version V1.0
@@ -24,13 +24,13 @@ public class ${entity}CreateDTO implements Serializable {
 #foreach($field in ${cfg.businessFields})
 
     /** ${field.comment} */
-#if(!${field.nullable} && ${field.propertyType} == "String")
+#if(!$field.nullable && $field.propertyType == "String")
     @NotBlank(message = "${field.comment}不能为空")
-#elseif(!${field.nullable})
+#elseif(!$field.nullable)
     @NotNull(message = "${field.comment}不能为空")
 #end
-#if(${field.propertyType} == "String" && ${field.length} > 0)
-    @Size(max = ${field.length}, message = "${field.comment}长度不能超过${field.length}")
+#if($field.propertyType == "String" && $field.length > 0)
+    @Size(max = $field.length, message = "${field.comment}长度不能超过$field.length")
 #end
     private ${field.propertyType} ${field.propertyName};
 #end

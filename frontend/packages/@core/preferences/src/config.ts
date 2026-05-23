@@ -1,4 +1,4 @@
-import type { Preferences } from './types';
+import type {Preferences} from './types';
 
 const defaultPreferences: Preferences = {
   app: {

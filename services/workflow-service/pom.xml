@@ -34,10 +34,6 @@
         </dependency>
         <dependency>
             <groupId>com.saas.cloud</groupId>
-            <artifactId>common-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
             <artifactId>common-redis</artifactId>
         </dependency>
         <dependency>
@@ -46,20 +42,14 @@
         </dependency>
         <dependency>
             <groupId>com.saas.cloud</groupId>
-            <artifactId>common-sentinel</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>common-feign</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
-            <artifactId>common-kafka</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.saas.cloud</groupId>
             <artifactId>notify-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <!-- Sentinel 限流熔断 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
         </dependency>
 
         <!-- Flowable 工作流引擎 -->

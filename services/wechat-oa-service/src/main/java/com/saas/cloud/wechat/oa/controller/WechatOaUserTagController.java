@@ -18,6 +18,8 @@ import com.saas.cloud.common.log.annotation.OperationLog;
 import com.saas.cloud.wechat.oa.entity.WechatOaUserTag;
 import com.saas.cloud.wechat.oa.service.IWechatOaUserTagService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "公众号标签管理")
 @RestController
 @RequestMapping("/tag")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -40,6 +43,7 @@ public class WechatOaUserTagController {
      * @param accountId 公众号ID
      * @return 标签列表
      */
+    @Operation(summary = "标签列表")
     @GetMapping("/list")
     public ApiResult<List<WechatOaUserTag>> list(@RequestParam(required = false) Long accountId) {
         return ApiResult.ok(userTagService.listTags(accountId));
@@ -51,6 +55,7 @@ public class WechatOaUserTagController {
      * @param tag 标签信息
      * @return 操作结果
      */
+    @Operation(summary = "创建标签")
     @OperationLog(module = "粉丝标签", operation = "创建标签")
     @PostMapping
     public ApiResult<Void> create(@RequestBody WechatOaUserTag tag) {
@@ -65,6 +70,7 @@ public class WechatOaUserTagController {
      * @param tag 标签信息
      * @return 操作结果
      */
+    @Operation(summary = "编辑标签")
     @OperationLog(module = "粉丝标签", operation = "编辑标签")
     @PutMapping("/{id}")
     public ApiResult<Void> update(@PathVariable("id") Long id,
@@ -79,6 +85,7 @@ public class WechatOaUserTagController {
      * @param id 标签ID
      * @return 操作结果
      */
+    @Operation(summary = "删除标签")
     @OperationLog(module = "粉丝标签", operation = "删除标签")
     @DeleteMapping("/{id}")
     public ApiResult<Void> delete(@PathVariable("id") Long id) {
@@ -92,6 +99,7 @@ public class WechatOaUserTagController {
      * @param accountId 公众号ID
      * @return 操作结果
      */
+    @Operation(summary = "同步标签到微信")
     @OperationLog(module = "粉丝标签", operation = "同步标签")
     @PostMapping("/sync")
     public ApiResult<Void> syncTags(@RequestParam Long accountId) {

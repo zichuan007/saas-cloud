@@ -16,6 +16,8 @@ import com.saas.cloud.platform.api.dto.PlatformLoginDTO;
 import com.saas.cloud.platform.api.vo.PlatformUserVO;
 import com.saas.cloud.platform.service.IPlatformUserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
  * @version V1.0
  * @since 2026-05-18
  */
+@Tag(name = "平台用户管理")
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -38,6 +41,7 @@ public class PlatformUserController {
      * @param dto 登录请求
      * @return 包含 Token 信息的登录结果
      */
+    @Operation(summary = "平台管理员登录")
     @PostMapping("/login")
     public ApiResult<Map<String, Object>> login(@Validated @RequestBody PlatformLoginDTO dto) {
         Map<String, Object> result = platformUserService.platformLogin(dto.getUsername(), dto.getPassword());
@@ -49,6 +53,7 @@ public class PlatformUserController {
      *
      * @return 操作结果
      */
+    @Operation(summary = "平台管理员登出")
     @PostMapping("/logout")
     public ApiResult<Void> logout() {
         // 当前阶段仅清除用户上下文，后续可扩展 Token 黑名单
@@ -61,6 +66,7 @@ public class PlatformUserController {
      *
      * @return 当前用户信息
      */
+    @Operation(summary = "获取当前登录用户信息")
     @GetMapping("/user-info")
     public ApiResult<PlatformUserVO> getCurrentUserInfo() {
         Long userId = UserContext.getUserId();

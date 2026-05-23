@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 
-import { Page } from '@vben/common-ui';
+import {Page} from '@vben/common-ui';
 
-import { Button, Form, FormItem, Input, message } from 'ant-design-vue';
+import {Button, Form, FormItem, Input, message} from 'ant-design-vue';
 
-import { type ConfigItem, getConfigList, updateConfig } from '#/api/platform/config';
+import {type ConfigItem, getConfigList, updateConfig} from '#/api/platform/config';
 
 defineOptions({ name: 'PlatformConfig' });
 

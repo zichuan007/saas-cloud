@@ -1,9 +1,9 @@
-import { baseRequestClient, requestClient } from '#/api/request';
+import {baseRequestClient, requestClient} from '#/api/request';
 
 export namespace AuthApi {
   export interface LoginParams {
     password: string;
-    tenantCode: string;
+    tenantCode?: string;
     username: string;
   }
 
@@ -73,8 +73,15 @@ export async function getAccessCodesApi() {
 }
 
 /**
- * 发送验证码
+ * 获取滑块验证码
  */
-export async function sendCaptchaApi(phone: string, type: string) {
-  return requestClient.post('/rbac/auth/captcha', { phone, type });
+export async function getCaptchaApi(data: Record<string, any>) {
+  return requestClient.post('/rbac/captcha/get', data);
+}
+
+/**
+ * 校验滑块验证码
+ */
+export async function checkCaptchaApi(data: Record<string, any>) {
+  return requestClient.post('/rbac/captcha/check', data);
 }

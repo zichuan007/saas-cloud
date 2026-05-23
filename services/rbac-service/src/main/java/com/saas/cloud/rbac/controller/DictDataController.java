@@ -18,6 +18,8 @@ import com.saas.cloud.rbac.api.dto.DictDataCreateDTO;
 import com.saas.cloud.rbac.api.vo.DictDataVO;
 import com.saas.cloud.rbac.service.IDictDataService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2026-05-21
  */
 @Slf4j
+@Tag(name = "字典数据管理")
 @RestController
 @RequestMapping("/dict/data")
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -43,6 +46,7 @@ public class DictDataController {
      * @param dictType 字典类型编码
      * @return 字典数据列表
      */
+    @Operation(summary = "根据字典类型查询数据列表")
     @GetMapping("/type/{dictType}")
     public ApiResult<List<DictDataVO>> listByType(@PathVariable("dictType") String dictType) {
         return ApiResult.ok(dictDataService.listByDictType(dictType));
@@ -54,6 +58,7 @@ public class DictDataController {
      * @param dto 创建请求
      * @return 操作结果
      */
+    @Operation(summary = "创建字典数据")
     @OperationLog(module = "字典管理", operation = "创建字典数据")
     @PostMapping
     public ApiResult<Void> create(@Valid @RequestBody DictDataCreateDTO dto) {
@@ -68,6 +73,7 @@ public class DictDataController {
      * @param dto 更新请求
      * @return 操作结果
      */
+    @Operation(summary = "更新字典数据")
     @OperationLog(module = "字典管理", operation = "更新字典数据")
     @PutMapping("/{id}")
     public ApiResult<Void> update(@PathVariable("id") Long id, @Valid @RequestBody DictDataCreateDTO dto) {
@@ -81,6 +87,7 @@ public class DictDataController {
      * @param id 字典数据ID
      * @return 操作结果
      */
+    @Operation(summary = "删除字典数据")
     @OperationLog(module = "字典管理", operation = "删除字典数据")
     @DeleteMapping("/{id}")
     public ApiResult<Void> delete(@PathVariable("id") Long id) {

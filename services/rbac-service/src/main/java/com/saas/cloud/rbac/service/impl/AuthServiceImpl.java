@@ -13,11 +13,14 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.saas.cloud.common.data.tenant.annotation.TenantIgnore;
 import com.saas.cloud.common.core.enums.TenantStatusEnum;
 import com.saas.cloud.common.core.exception.BusinessException;
 import com.saas.cloud.common.core.exception.ForbiddenException;
@@ -32,6 +35,7 @@ import com.saas.cloud.platform.api.feign.PlatformFeignClient;
 import com.saas.cloud.platform.api.vo.TenantVO;
 import com.saas.cloud.rbac.api.dto.RegisterDTO;
 import com.saas.cloud.rbac.api.vo.RegisterVO;
+import com.saas.cloud.rbac.entity.LoginLog;
 import com.saas.cloud.rbac.entity.Menu;
 import com.saas.cloud.rbac.entity.Role;
 import com.saas.cloud.rbac.entity.RoleMenu;
@@ -44,8 +48,14 @@ import com.saas.cloud.rbac.mapper.RoleMenuMapper;
 import com.saas.cloud.rbac.mapper.UserMapper;
 import com.saas.cloud.rbac.mapper.UserRoleMapper;
 import com.saas.cloud.rbac.service.IAuthService;
+import com.saas.cloud.rbac.service.ILoginLogService;
+
+import com.saas.cloud.common.core.util.IpRegionUtils;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.http.useragent.UserAgent;
+import cn.hutool.http.useragent.UserAgentUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,37 +80,76 @@ public class AuthServiceImpl implements IAuthService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final PlatformFeignClient platformFeignClient;
     private final TenantInitializerRegistry tenantInitializerRegistry;
+    private final ILoginLogService loginLogService;
 
     private static final BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
     private static final String REDIS_LOGIN_FAIL = "auth:login_fail:";
     private static final int MAX_LOGIN_ATTEMPTS = 5;
     private static final int LOCK_MINUTES = 30;
 
+    @TenantIgnore
     @Override
     public Map<String, Object> login(String username, String password, String tenantCode) {
-        ApiResult<TenantVO> tenantResult = platformFeignClient.getTenantByCode(tenantCode);
-        if (tenantResult == null || tenantResult.getData() == null) {
-            throw new BusinessException(ResultCode.NOT_FOUND.getCode(), "租户编码不存在: " + tenantCode);
-        }
-        TenantVO tenant = tenantResult.getData();
+        User user;
+        TenantVO tenant;
 
-        // 校验租户状态
-        validateTenantForLogin(tenant);
+        if (tenantCode != null && !tenantCode.isEmpty()) {
+            // 指定租户编码：原逻辑
+            ApiResult<TenantVO> tenantResult = platformFeignClient.getTenantByCode(tenantCode);
+            if (tenantResult == null || tenantResult.getData() == null) {
+                throw new BusinessException(ResultCode.NOT_FOUND.getCode(), "租户编码不存在: " + tenantCode);
+            }
+            tenant = tenantResult.getData();
+            validateTenantForLogin(tenant);
+
+            Long tenantId = tenant.getId();
+            checkLoginAttempts(username, tenantId);
+
+            user = userMapper.selectOne(new LambdaQueryWrapper<User>()
+                    .eq(User::getUsername, username)
+                    .eq(User::getTenantId, tenantId)
+                    .eq(User::getDeleteFlag, 0));
+        } else {
+            // 未指定租户：按用户名或手机号全局查找
+            checkLoginAttemptsByUsername(username);
+
+            List<User> users = userMapper.selectList(new LambdaQueryWrapper<User>()
+                    .and(w -> w.eq(User::getUsername, username).or().eq(User::getPhone, username))
+                    .eq(User::getDeleteFlag, 0));
+
+            if (users.isEmpty()) {
+                recordLoginFailureByUsername(username);
+                asyncRecordLoginLog(null, null, username, 0, 0, "用户名或密码错误");
+                throw new BusinessException(ResultCode.UNAUTHORIZED.getCode(), "用户名或密码错误");
+            }
+            if (users.size() > 1) {
+                throw new BusinessException(ResultCode.BAD_REQUEST.getCode(),
+                        "该账号存在于多个企业，请使用手机号登录");
+            }
+            user = users.get(0);
+
+            ApiResult<TenantVO> tenantResult = platformFeignClient.getTenantInfo(user.getTenantId());
+            if (tenantResult == null || tenantResult.getData() == null) {
+                throw new BusinessException(ResultCode.NOT_FOUND.getCode(), "租户信息异常");
+            }
+            tenant = tenantResult.getData();
+            validateTenantForLogin(tenant);
+        }
 
         Long tenantId = tenant.getId();
 
-        checkLoginAttempts(username, tenantId);
-
-        User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
-                .eq(User::getUsername, username)
-                .eq(User::getTenantId, tenantId));
-
         if (user == null || !PASSWORD_ENCODER.matches(password, user.getPassword())) {
-            recordLoginFailure(username, tenantId);
+            if (tenantCode != null && !tenantCode.isEmpty()) {
+                recordLoginFailure(username, tenantId);
+            } else {
+                recordLoginFailureByUsername(username);
+            }
+            asyncRecordLoginLog(tenantId, null, username, 0, 0, "用户名或密码错误");
             throw new BusinessException(ResultCode.UNAUTHORIZED.getCode(), "用户名或密码错误");
         }
 
         if (user.getStatus() == 0) {
+            asyncRecordLoginLog(tenantId, user.getId(), username, 0, 0, "账号已被禁用");
             throw new ForbiddenException("账号已被禁用");
         }
 
@@ -122,7 +171,12 @@ public class AuthServiceImpl implements IAuthService {
         user.setLastLoginTime(LocalDateTime.now());
         userMapper.updateById(user);
 
-        clearLoginFailures(username, tenantId);
+        if (tenantCode != null && !tenantCode.isEmpty()) {
+            clearLoginFailures(username, tenantId);
+        } else {
+            clearLoginFailuresByUsername(username);
+        }
+        asyncRecordLoginLog(tenantId, user.getId(), username, 1, 0, null);
 
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("accessToken", tokenValue);
@@ -343,6 +397,8 @@ public class AuthServiceImpl implements IAuthService {
         String key = REDIS_LOGIN_FAIL + tenantId + ":" + username;
         Integer attempts = (Integer) redisTemplate.opsForValue().get(key);
         if (attempts != null && attempts >= MAX_LOGIN_ATTEMPTS) {
+            asyncRecordLoginLog(tenantId, null, username, 0, 0,
+                    "登录失败次数过多，账号已锁定" + LOCK_MINUTES + "分钟");
             throw new BusinessException(ResultCode.UNAUTHORIZED.getCode(),
                     "登录失败次数过多，请" + LOCK_MINUTES + "分钟后再试");
         }
@@ -360,6 +416,27 @@ public class AuthServiceImpl implements IAuthService {
         redisTemplate.delete(REDIS_LOGIN_FAIL + tenantId + ":" + username);
     }
 
+    private void checkLoginAttemptsByUsername(String username) {
+        String key = REDIS_LOGIN_FAIL + "global:" + username;
+        Integer attempts = (Integer) redisTemplate.opsForValue().get(key);
+        if (attempts != null && attempts >= MAX_LOGIN_ATTEMPTS) {
+            throw new BusinessException(ResultCode.UNAUTHORIZED.getCode(),
+                    "登录失败次数过多，请" + LOCK_MINUTES + "分钟后再试");
+        }
+    }
+
+    private void recordLoginFailureByUsername(String username) {
+        String key = REDIS_LOGIN_FAIL + "global:" + username;
+        Long count = redisTemplate.opsForValue().increment(key);
+        if (count != null && count == 1) {
+            redisTemplate.expire(key, LOCK_MINUTES, TimeUnit.MINUTES);
+        }
+    }
+
+    private void clearLoginFailuresByUsername(String username) {
+        redisTemplate.delete(REDIS_LOGIN_FAIL + "global:" + username);
+    }
+
     /**
      * 将用户信息存入 Sa-Token Session（使用独立 key，避免跨服务反序列化耦合）
      */
@@ -372,6 +449,55 @@ public class AuthServiceImpl implements IAuthService {
         session.set("roleLevel", userInfo.getRoleLevel());
         session.set("dataScope", userInfo.getDataScope());
         session.set("permissions", userInfo.getPermissions() != null ? String.join(",", userInfo.getPermissions()) : "");
+    }
+
+    /**
+     * 异步记录登录日志
+     */
+    private void asyncRecordLoginLog(Long tenantId, Long userId, String username,
+                                     int status, int loginType, String errorMsg) {
+        try {
+            LoginLog loginLog = new LoginLog();
+            loginLog.setTenantId(tenantId);
+            loginLog.setUserId(userId);
+            loginLog.setUsername(username);
+            loginLog.setStatus(status);
+            loginLog.setLoginType(loginType);
+            loginLog.setErrorMsg(errorMsg);
+            loginLog.setLoginTime(LocalDateTime.now());
+
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest request = attributes.getRequest();
+                String ip = getClientIp(request);
+                String uaStr = request.getHeader("User-Agent");
+                loginLog.setIp(ip);
+                loginLog.setLocation(IpRegionUtils.getRegion(ip));
+                loginLog.setUserAgent(uaStr);
+                if (uaStr != null) {
+                    UserAgent ua = UserAgentUtil.parse(uaStr);
+                    loginLog.setBrowser(ua.getBrowser().getName() + " " + ua.getVersion());
+                    loginLog.setOs(ua.getOs().getName());
+                }
+            }
+            loginLogService.recordLoginLog(loginLog);
+        } catch (Exception e) {
+            log.warn("构建登录日志失败: {}", e.getMessage());
+        }
+    }
+
+    /**
+     * 获取客户端真实IP
+     */
+    private String getClientIp(HttpServletRequest request) {
+        String[] headers = {"X-Forwarded-For", "X-Real-IP", "Proxy-Client-IP", "WL-Proxy-Client-IP"};
+        for (String header : headers) {
+            String ip = request.getHeader(header);
+            if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+                return ip.contains(",") ? ip.split(",")[0].trim() : ip;
+            }
+        }
+        return request.getRemoteAddr();
     }
 
     /**

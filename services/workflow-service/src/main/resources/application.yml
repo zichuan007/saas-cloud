@@ -31,6 +31,12 @@ spring:
         server-addr: ${NACOS_ADDR:localhost:8848}
         namespace: ${NACOS_NAMESPACE:e96d2e6b-7bf3-4a42-973a-e020a213cde2}
         file-extension: yml
+  boot:
+    admin:
+      client:
+        url: http://${SBA_HOST:localhost}:9090
+        instance:
+          prefer-ip: true
 
 mybatis-plus:
   mapper-locations: classpath*:mapper/**/*.xml
@@ -50,3 +56,29 @@ flowable:
   process:
     # 禁止自动部署 classpath 下的流程定义文件（由业务接口手动部署）
     deploy-resources: false
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,env,loggers
+  endpoint:
+    health:
+      show-details: when-authorized
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://${ZIPKIN_HOST:localhost}:9411/api/v2/spans
