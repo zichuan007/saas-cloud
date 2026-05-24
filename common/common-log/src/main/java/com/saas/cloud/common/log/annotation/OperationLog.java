@@ -19,4 +19,9 @@ public @interface OperationLog {
     String module() default "";
 
     String operation() default "";
+
+    /**
+     * 操作类型
+     */
+    OperateType type() default OperateType.OTHER;
 }

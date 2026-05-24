@@ -3,6 +3,7 @@ package com.saas.cloud.rbac.job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.saas.cloud.common.data.tenant.job.TenantJob;
 import com.saas.cloud.rbac.service.IExportTaskService;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
@@ -29,6 +30,7 @@ public class CleanExpiredExportTaskJobHandler {
      * 清理过期导出任务
      * <p>建议 Cron: 0 0 3 * * ? (每天凌晨 3:00)</p>
      */
+    @TenantJob
     @XxlJob("cleanExpiredExportTaskJob")
     public void execute() {
         log.info("[XXL-Job] 开始清理过期导出任务");

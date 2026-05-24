@@ -1,3 +1,4 @@
 com.saas.cloud.common.log.aspect.OperationLogAspect
 com.saas.cloud.common.log.trace.TraceAutoConfiguration
+com.saas.cloud.common.log.apilog.ApiLogAutoConfiguration
 com.saas.cloud.common.kafka.config.KafkaConfig

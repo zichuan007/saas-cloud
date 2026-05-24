@@ -271,3 +271,51 @@ INSERT INTO `sys_menu` (`id`, `menu_name`, `parent_id`, `menu_type`, `permission
 -- 系统管理 - 代码生成器
 INSERT INTO `sys_menu` (`id`, `menu_name`, `parent_id`, `menu_type`, `path`, `component`, `icon`, `sort_order`, `status`, `visible`, `module`) VALUES
 (206, '代码生成', 2, 1, '/system/generator', '/views/tool/generator/index', 'lucide:code', 6, 1, 1, 'RBAC');
+
+-- ============================================================
+-- API 访问日志表
+-- ============================================================
+CREATE TABLE `sys_api_access_log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '日志ID',
+  `tenant_id` bigint(20) DEFAULT NULL COMMENT '租户ID',
+  `user_id` bigint(20) DEFAULT NULL COMMENT '用户ID',
+  `username` varchar(64) DEFAULT NULL COMMENT '用户名',
+  `trace_id` varchar(64) DEFAULT NULL COMMENT '链路追踪ID',
+  `request_url` varchar(512) NOT NULL COMMENT '请求URL',
+  `request_method` varchar(10) NOT NULL COMMENT 'HTTP方法',
+  `query_string` varchar(1024) DEFAULT NULL COMMENT '查询参数',
+  `ip` varchar(64) DEFAULT NULL COMMENT '请求IP',
+  `user_agent` varchar(512) DEFAULT NULL COMMENT '用户代理',
+  `http_status` int(11) NOT NULL COMMENT 'HTTP响应状态码',
+  `duration` bigint(20) NOT NULL COMMENT '执行耗时(毫秒)',
+  `request_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '请求时间',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_tenant_request_time` (`tenant_id`, `request_time`),
+  KEY `idx_trace_id` (`trace_id`),
+  KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='API访问日志表';
+
+-- ============================================================
+-- API 错误日志表
+-- ============================================================
+CREATE TABLE `sys_api_error_log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '日志ID',
+  `tenant_id` bigint(20) DEFAULT NULL COMMENT '租户ID',
+  `user_id` bigint(20) DEFAULT NULL COMMENT '用户ID',
+  `username` varchar(64) DEFAULT NULL COMMENT '用户名',
+  `trace_id` varchar(64) DEFAULT NULL COMMENT '链路追踪ID',
+  `request_url` varchar(512) NOT NULL COMMENT '请求URL',
+  `request_method` varchar(10) NOT NULL COMMENT 'HTTP方法',
+  `query_string` varchar(1024) DEFAULT NULL COMMENT '查询参数',
+  `ip` varchar(64) DEFAULT NULL COMMENT '请求IP',
+  `user_agent` varchar(512) DEFAULT NULL COMMENT '用户代理',
+  `exception_name` varchar(256) NOT NULL COMMENT '异常类名',
+  `exception_message` varchar(1024) DEFAULT NULL COMMENT '异常信息',
+  `exception_stack_trace` text DEFAULT NULL COMMENT '异常堆栈',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_tenant_create_time` (`tenant_id`, `create_time`),
+  KEY `idx_trace_id` (`trace_id`),
+  KEY `idx_exception_name` (`exception_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='API错误日志表';

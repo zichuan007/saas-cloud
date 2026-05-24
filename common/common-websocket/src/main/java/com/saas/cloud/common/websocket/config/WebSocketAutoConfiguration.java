@@ -1,0 +1,107 @@
+package com.saas.cloud.common.websocket.config;
+
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.web.socket.config.annotation.EnableWebSocket;
+import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.saas.cloud.common.websocket.handler.JsonWebSocketHandler;
+import com.saas.cloud.common.websocket.handler.WebSocketMessageListener;
+import com.saas.cloud.common.websocket.interceptor.LoginUserHandshakeInterceptor;
+import com.saas.cloud.common.websocket.interceptor.WebSocketTokenResolver;
+import com.saas.cloud.common.websocket.sender.KafkaWebSocketMessageSender;
+import com.saas.cloud.common.websocket.sender.LocalWebSocketMessageSender;
+import com.saas.cloud.common.websocket.sender.WebSocketMessageSender;
+import com.saas.cloud.common.websocket.session.WebSocketSessionManager;
+
+/**
+ * WebSocket 自动配置
+ * <p>当应用提供了 {@link WebSocketTokenResolver} Bean 时自动激活。
+ * 有 Kafka 时使用集群广播实现，否则使用本地发送。</p>
+ *
+ * @author saas-cloud
+ * @version V1.0
+ * @since 2026-05-24
+ */
+@Configuration
+@EnableWebSocket
+@ConditionalOnBean(WebSocketTokenResolver.class)
+public class WebSocketAutoConfiguration implements WebSocketConfigurer {
+
+    private final WebSocketTokenResolver tokenResolver;
+
+    private final WebSocketSessionManager sessionManager;
+
+    private final WebSocketMessageListener messageListener;
+
+    public WebSocketAutoConfiguration(WebSocketTokenResolver tokenResolver,
+                                       WebSocketSessionManager sessionManager,
+                                       ObjectProvider<WebSocketMessageListener> messageListenerProvider) {
+        this.tokenResolver = tokenResolver;
+        this.sessionManager = sessionManager;
+        this.messageListener = messageListenerProvider.getIfAvailable();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public WebSocketSessionManager webSocketSessionManager() {
+        return new WebSocketSessionManager();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public JsonWebSocketHandler jsonWebSocketHandler() {
+        return new JsonWebSocketHandler(sessionManager, messageListener);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public LoginUserHandshakeInterceptor loginUserHandshakeInterceptor() {
+        return new LoginUserHandshakeInterceptor(tokenResolver);
+    }
+
+    @Override
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        registry.addHandler(jsonWebSocketHandler(), "/ws")
+                .addInterceptors(loginUserHandshakeInterceptor())
+                .setAllowedOriginPatterns("*");
+    }
+
+    /**
+     * Kafka 集群广播模式
+     */
+    @Configuration
+    @ConditionalOnClass(KafkaTemplate.class)
+    @ConditionalOnBean(KafkaTemplate.class)
+    static class KafkaSenderConfig {
+
+        @Bean
+        @ConditionalOnMissingBean(WebSocketMessageSender.class)
+        public KafkaWebSocketMessageSender kafkaWebSocketMessageSender(
+                KafkaTemplate<String, String> kafkaTemplate,
+                WebSocketSessionManager sessionManager,
+                ObjectMapper objectMapper) {
+            return new KafkaWebSocketMessageSender(kafkaTemplate, sessionManager, objectMapper);
+        }
+    }
+
+    /**
+     * 本地发送模式（无 Kafka 时降级）
+     */
+    @Configuration
+    static class LocalSenderConfig {
+
+        @Bean
+        @ConditionalOnMissingBean(WebSocketMessageSender.class)
+        public LocalWebSocketMessageSender localWebSocketMessageSender(WebSocketSessionManager sessionManager) {
+            return new LocalWebSocketMessageSender(sessionManager);
+        }
+    }
+}

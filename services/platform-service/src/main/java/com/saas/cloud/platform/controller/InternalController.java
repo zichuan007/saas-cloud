@@ -14,6 +14,7 @@ import com.saas.cloud.common.core.exception.BusinessException;
 import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.core.result.ResultCode;
 import com.saas.cloud.common.security.annotation.InnerApi;
+import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.platform.api.dto.TenantCreateDTO;
 import com.saas.cloud.platform.api.vo.TenantVO;
 import com.saas.cloud.platform.entity.Package;
@@ -21,6 +22,9 @@ import com.saas.cloud.platform.entity.Tenant;
 import com.saas.cloud.platform.service.IPackageService;
 import com.saas.cloud.platform.service.ITenantService;
 import com.saas.cloud.platform.service.impl.TenantCacheService;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -187,6 +191,32 @@ public class InternalController {
         }
 
         return ApiResult.ok(vo);
+    }
+
+    /**
+     * 获取所有启用状态的租户ID列表
+     * <p>供 @TenantJob 定时任务遍历租户使用</p>
+     *
+     * @return 启用租户ID列表
+     */
+    @Operation(summary = "获取启用租户ID列表")
+    @GetMapping("/tenant/active-ids")
+    public ApiResult<List<Long>> getActiveTenantIds() {
+        TenantContext.setIgnoreTenant(true);
+        try {
+            List<Tenant> tenants = tenantService.lambdaQuery()
+                    .select(Tenant::getId)
+                    .in(Tenant::getStatus,
+                            (byte) TenantStatusEnum.TRIAL.getCode(),
+                            (byte) TenantStatusEnum.ACTIVE.getCode())
+                    .list();
+            List<Long> ids = tenants.stream()
+                    .map(Tenant::getId)
+                    .collect(Collectors.toList());
+            return ApiResult.ok(ids);
+        } finally {
+            TenantContext.clearIgnoreTenant();
+        }
     }
 
     /**

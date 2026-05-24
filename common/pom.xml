@@ -21,6 +21,7 @@
         <module>common-log</module>
         <module>common-storage</module>
         <module>common-excel</module>
+        <module>common-websocket</module>
     </modules>
 
 </project>

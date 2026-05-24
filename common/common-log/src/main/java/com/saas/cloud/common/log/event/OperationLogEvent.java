@@ -31,6 +31,9 @@ public class OperationLogEvent implements Serializable {
     /** 操作描述 */
     private String operation;
 
+    /** 操作类型 */
+    private String operateType;
+
     /** 类名.方法名 */
     private String method;
 

@@ -5,3 +5,4 @@ com.saas.cloud.common.security.interceptor.PermissionAspect
 com.saas.cloud.common.security.satoken.StpInterfaceImpl
 com.saas.cloud.common.security.satoken.SaTokenAutoConfiguration
 com.saas.cloud.common.feign.interceptor.TenantFeignInterceptor
+com.saas.cloud.common.data.tenant.job.TenantJobAspect

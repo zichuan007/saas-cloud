@@ -1,48 +1,34 @@
 package com.saas.cloud.rbac.websocket;
 
-import java.io.IOException;
-import java.util.concurrent.ConcurrentHashMap;
-
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnError;
-import jakarta.websocket.OnOpen;
-import jakarta.websocket.Session;
-import jakarta.websocket.server.PathParam;
-import jakarta.websocket.server.ServerEndpoint;
-import lombok.extern.slf4j.Slf4j;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.saas.cloud.common.websocket.sender.WebSocketMessageSender;
+import com.saas.cloud.common.websocket.session.WebSocketSessionManager;
+
+import lombok.extern.slf4j.Slf4j;
+
 /**
- * WebSocket 服务端，按用户ID维护连接
+ * WebSocket 服务端门面
+ * <p>委托 common-websocket 框架的 SessionManager 和 MessageSender 实现。
+ * 提供静态方法保持对外接口兼容。</p>
  *
  * @author saas-cloud
  * @version V1.0
- * @since 2026-05-23
+ * @since 2026-05-24
  */
 @Slf4j
 @Component
-@ServerEndpoint("/ws/{userId}")
 public class WebSocketServer {
 
-    private static final ConcurrentHashMap<String, Session> SESSIONS = new ConcurrentHashMap<>();
+    private static WebSocketMessageSender messageSender;
 
-    @OnOpen
-    public void onOpen(Session session, @PathParam("userId") String userId) {
-        SESSIONS.put(userId, session);
-        log.info("[WebSocket] 用户连接: userId={}, 在线人数={}", userId, SESSIONS.size());
-    }
+    private static WebSocketSessionManager sessionManager;
 
-    @OnClose
-    public void onClose(@PathParam("userId") String userId) {
-        SESSIONS.remove(userId);
-        log.info("[WebSocket] 用户断开: userId={}, 在线人数={}", userId, SESSIONS.size());
-    }
-
-    @OnError
-    public void onError(@PathParam("userId") String userId, Throwable error) {
-        SESSIONS.remove(userId);
-        log.error("[WebSocket] 连接异常: userId={}", userId, error);
+    @Autowired
+    public void init(WebSocketMessageSender sender, WebSocketSessionManager manager) {
+        WebSocketServer.messageSender = sender;
+        WebSocketServer.sessionManager = manager;
     }
 
     /**
@@ -52,14 +38,11 @@ public class WebSocketServer {
      * @param message 消息内容（JSON 字符串）
      */
     public static void sendTo(String userId, String message) {
-        Session session = SESSIONS.get(userId);
-        if (session != null && session.isOpen()) {
-            try {
-                session.getBasicRemote().sendText(message);
-            } catch (IOException e) {
-                log.error("[WebSocket] 发送消息失败: userId={}", userId, e);
-            }
+        if (messageSender == null) {
+            log.warn("[WebSocket] MessageSender 未初始化");
+            return;
         }
+        messageSender.sendToUser(Long.parseLong(userId), message);
     }
 
     /**
@@ -68,15 +51,11 @@ public class WebSocketServer {
      * @param message 消息内容（JSON 字符串）
      */
     public static void broadcast(String message) {
-        SESSIONS.forEach((userId, session) -> {
-            if (session.isOpen()) {
-                try {
-                    session.getBasicRemote().sendText(message);
-                } catch (IOException e) {
-                    log.error("[WebSocket] 广播消息失败: userId={}", userId, e);
-                }
-            }
-        });
+        if (messageSender == null) {
+            log.warn("[WebSocket] MessageSender 未初始化");
+            return;
+        }
+        messageSender.broadcast(message);
     }
 
     /**
@@ -85,6 +64,6 @@ public class WebSocketServer {
      * @return 在线人数
      */
     public static int getOnlineCount() {
-        return SESSIONS.size();
+        return sessionManager != null ? sessionManager.getOnlineCount() : 0;
     }
 }

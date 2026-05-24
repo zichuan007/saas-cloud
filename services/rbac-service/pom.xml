@@ -111,8 +111,8 @@
 
         <!-- WebSocket -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
+            <groupId>com.saas.cloud</groupId>
+            <artifactId>common-websocket</artifactId>
         </dependency>
     </dependencies>
 

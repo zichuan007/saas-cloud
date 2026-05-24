@@ -143,6 +143,11 @@
                 <artifactId>common-excel</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.saas.cloud</groupId>
+                <artifactId>common-websocket</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- 业务服务 API -->
             <dependency>

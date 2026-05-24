@@ -35,6 +35,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
+        <!-- 多租户缓存隔离（TenantContext），optional 不传递 -->
+        <dependency>
+            <groupId>com.saas.cloud</groupId>
+            <artifactId>common-data</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
 </project>

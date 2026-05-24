@@ -62,4 +62,13 @@ public interface PlatformFeignClient {
      */
     @PostMapping("/internal/tenant/create")
     ApiResult<TenantVO> createTenant(@RequestBody TenantCreateDTO dto);
+
+    /**
+     * 获取所有启用状态的租户ID列表
+     * <p>供 @TenantJob 定时任务遍历租户使用</p>
+     *
+     * @return 启用租户ID列表
+     */
+    @GetMapping("/internal/tenant/active-ids")
+    ApiResult<java.util.List<Long>> getActiveTenantIds();
 }

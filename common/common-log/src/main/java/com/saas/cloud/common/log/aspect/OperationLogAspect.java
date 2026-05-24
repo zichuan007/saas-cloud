@@ -85,6 +85,7 @@ public class OperationLogAspect {
         OperationLogEvent event = new OperationLogEvent();
         event.setModule(opLog.module());
         event.setOperation(opLog.operation());
+        event.setOperateType(opLog.type().name());
         event.setDuration(duration);
         event.setTimestamp(System.currentTimeMillis());
 

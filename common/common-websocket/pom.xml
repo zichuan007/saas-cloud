@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.saas.cloud</groupId>
+        <artifactId>common</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>common-websocket</artifactId>
+    <name>Common WebSocket</name>
+    <description>WebSocket：会话管理、集群广播、认证握手拦截</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.saas.cloud</groupId>
+            <artifactId>common-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <!-- 用户上下文（Token 解析） -->
+        <dependency>
+            <groupId>com.saas.cloud</groupId>
+            <artifactId>common-data</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!-- Kafka 集群广播（可选） -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+</project>
