@@ -19,6 +19,8 @@ import com.saas.cloud.common.core.util.IpRegionUtils;
 import com.saas.cloud.common.kafka.config.KafkaConfig;
 import com.saas.cloud.common.kafka.producer.KafkaProducerService;
 import com.saas.cloud.common.log.annotation.OperationLog;
+import com.saas.cloud.common.log.diff.DiffUtil;
+import com.saas.cloud.common.log.diff.OperationLogContext;
 import com.saas.cloud.common.log.event.OperationLogEvent;
 import com.saas.cloud.common.security.context.UserContext;
 
@@ -73,6 +75,8 @@ public class OperationLogAspect {
                 sendOperationLog(pjp, opLog, duration, error);
             } catch (Exception ex) {
                 log.warn("[操作日志] 发送日志事件失败: {}", ex.getMessage());
+            } finally {
+                OperationLogContext.clear();
             }
         }
     }
@@ -118,6 +122,19 @@ public class OperationLogAspect {
 
         // 序列化请求参数（跳过不可序列化的类型）
         event.setRequestParams(serializeArgs(pjp.getArgs()));
+
+        // 字段变更 Diff
+        if (opLog.recordDiff()) {
+            try {
+                Object before = OperationLogContext.getBeforeData();
+                Object after = OperationLogContext.getAfterData();
+                if (before != null && after != null) {
+                    event.setChangeDiff(DiffUtil.diff(before, after));
+                }
+            } catch (Exception e) {
+                log.warn("[操作日志] Diff 计算失败: {}", e.getMessage());
+            }
+        }
 
         // 响应状态
         if (error != null) {

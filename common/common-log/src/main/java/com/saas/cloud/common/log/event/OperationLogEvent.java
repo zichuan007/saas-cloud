@@ -64,6 +64,9 @@ public class OperationLogEvent implements Serializable {
     /** 执行耗时（毫秒） */
     private Long duration;
 
+    /** 字段变更内容（Diff） */
+    private String changeDiff;
+
     /** 事件发生时间戳 */
     private Long timestamp;
 }

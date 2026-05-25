@@ -1,79 +1,114 @@
 <script lang="ts" setup>
-import type {AnalysisOverviewItem} from '@vben/common-ui';
-import {AnalysisChartCard, AnalysisChartsTabs, AnalysisOverview,} from '@vben/common-ui';
-import type {TabOption} from '@vben/types';
-import {SvgBellIcon, SvgCakeIcon, SvgCardIcon, SvgDownloadIcon,} from '@vben/icons';
+import type { AnalysisOverviewItem } from '@vben/common-ui';
+import type {
+  OverviewData,
+  PackageDistItem,
+  TopTenantItem,
+  TrendItem,
+} from '#/api/platform/dashboard';
 
+import { onMounted, ref } from 'vue';
+
+import {
+  AnalysisChartCard,
+  AnalysisChartsTabs,
+  AnalysisOverview,
+} from '@vben/common-ui';
+import type { TabOption } from '@vben/types';
+import {
+  SvgBellIcon,
+  SvgCakeIcon,
+  SvgCardIcon,
+  SvgDownloadIcon,
+} from '@vben/icons';
+
+import {
+  getDashboardOverview,
+  getPackageDistribution,
+  getTenantTrend,
+  getTopTenants,
+} from '#/api/platform/dashboard';
+
+import AnalyticsPackageDist from './analytics-package-dist.vue';
+import AnalyticsTopTenants from './analytics-top-tenants.vue';
 import AnalyticsTrends from './analytics-trends.vue';
-import AnalyticsVisitsData from './analytics-visits-data.vue';
-import AnalyticsVisitsSales from './analytics-visits-sales.vue';
-import AnalyticsVisitsSource from './analytics-visits-source.vue';
-import AnalyticsVisits from './analytics-visits.vue';
 
-const overviewItems: AnalysisOverviewItem[] = [
-  {
-    icon: SvgCardIcon,
-    title: '用户量',
-    totalTitle: '总用户量',
-    totalValue: 120_000,
-    value: 2000,
-  },
-  {
-    icon: SvgCakeIcon,
-    title: '访问量',
-    totalTitle: '总访问量',
-    totalValue: 500_000,
-    value: 20_000,
-  },
-  {
-    icon: SvgDownloadIcon,
-    title: '下载量',
-    totalTitle: '总下载量',
-    totalValue: 120_000,
-    value: 8000,
-  },
-  {
-    icon: SvgBellIcon,
-    title: '使用量',
-    totalTitle: '总使用量',
-    totalValue: 50_000,
-    value: 5000,
-  },
-];
+const overviewItems = ref<AnalysisOverviewItem[]>([]);
+const trendData = ref<TrendItem[]>([]);
+const packageDistData = ref<PackageDistItem[]>([]);
+const topTenantsData = ref<TopTenantItem[]>([]);
 
 const chartTabs: TabOption[] = [
-  {
-    label: '流量趋势',
-    value: 'trends',
-  },
-  {
-    label: '月访问量',
-    value: 'visits',
-  },
+  { label: '租户注册趋势', value: 'trends' },
+  { label: '套餐分布', value: 'package' },
 ];
+
+function buildOverviewItems(data: OverviewData): AnalysisOverviewItem[] {
+  return [
+    {
+      icon: SvgCardIcon,
+      title: '本月新增',
+      totalTitle: '租户总数',
+      totalValue: data.totalTenants,
+      value: data.newTenantsThisMonth,
+    },
+    {
+      icon: SvgCakeIcon,
+      title: '活跃租户',
+      totalTitle: '租户总数',
+      totalValue: data.totalTenants,
+      value: data.activeTenants,
+    },
+    {
+      icon: SvgDownloadIcon,
+      title: '总收入(元)',
+      totalTitle: '总收入',
+      totalValue: data.totalRevenue,
+      value: data.totalRevenue,
+    },
+    {
+      icon: SvgBellIcon,
+      title: '租户总数',
+      totalTitle: '活跃占比(%)',
+      totalValue:
+        data.totalTenants > 0
+          ? Math.round((data.activeTenants / data.totalTenants) * 100)
+          : 0,
+      value: data.totalTenants,
+    },
+  ];
+}
+
+onMounted(async () => {
+  const [overview, trend, dist, top] = await Promise.all([
+    getDashboardOverview(),
+    getTenantTrend(30),
+    getPackageDistribution(),
+    getTopTenants(10),
+  ]);
+  overviewItems.value = buildOverviewItems(overview as OverviewData);
+  trendData.value = (trend as TrendItem[]) || [];
+  packageDistData.value = (dist as PackageDistItem[]) || [];
+  topTenantsData.value = (top as TopTenantItem[]) || [];
+});
 </script>
 
 <template>
   <div class="p-5">
     <AnalysisOverview :items="overviewItems" />
+
     <AnalysisChartsTabs :tabs="chartTabs" class="mt-5">
       <template #trends>
-        <AnalyticsTrends />
+        <AnalyticsTrends :data="trendData" />
       </template>
-      <template #visits>
-        <AnalyticsVisits />
+      <template #package>
+        <AnalyticsPackageDist :data="packageDistData" />
       </template>
     </AnalysisChartsTabs>
 
-    <div class="mt-5 w-full md:flex">
-      <AnalysisChartCard class="mt-5 md:mt-0 md:mr-4 md:w-1/3" title="访问数量">
-        <AnalyticsVisitsData />
-      </AnalysisChartCard>
-      <AnalysisChartCard class="mt-5 md:mt-0 md:mr-4 md:w-1/3" title="访问来源">
-        <AnalyticsVisitsSource />
-      </AnalysisChartCard>
-      <AnalysisChartCard class="mt-5 md:mt-0 md:w-1/3" title="访问来源">
-        <AnalyticsVisitsSales />
+    <div class="mt-5 w-full">
+      <AnalysisChartCard title="活跃度 TOP 租户">
+        <AnalyticsTopTenants :data="topTenantsData" />
       </AnalysisChartCard>
     </div>
   </div>

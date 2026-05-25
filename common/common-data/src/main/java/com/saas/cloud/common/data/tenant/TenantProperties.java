@@ -39,6 +39,7 @@ public class TenantProperties {
             "sys_announcement",
             "sys_global_config",
             "notify_template",
-            "sys_area"
+            "sys_area",
+            "sys_order"
     );
 }

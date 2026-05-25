@@ -1,3 +1,4 @@
 com.saas.cloud.common.redis.config.RedisConfig
 com.saas.cloud.common.redis.lock.DistributedLockAspect
 com.saas.cloud.common.redis.idempotent.IdempotentAspect
+com.saas.cloud.common.redis.cache.TwoLevelCacheAutoConfiguration

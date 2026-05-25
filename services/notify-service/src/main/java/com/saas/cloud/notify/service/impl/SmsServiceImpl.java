@@ -72,6 +72,46 @@ public class SmsServiceImpl implements ISmsService {
     }
 
     @Override
+    public void sendSms(String phone, String templateCode, Map<String, String> params, String channelId) {
+
+        SmsBlend smsBlend = SmsFactory.getSmsBlend(channelId);
+        if (smsBlend == null) {
+            log.warn("[短信] 指定通道不存在: channelId={}, phone={}", channelId, phone);
+            return;
+        }
+
+        SmsLog smsLog = new SmsLog();
+        smsLog.setPhone(phone);
+        smsLog.setTemplateCode(templateCode);
+        smsLog.setChannel(channelId);
+        smsLog.setContent(params != null ? params.toString() : "");
+        smsLog.setSendTime(LocalDateTime.now());
+
+        try {
+            LinkedHashMap<String, String> templateParams =
+                    params != null ? new LinkedHashMap<>(params) : new LinkedHashMap<>();
+            SmsResponse response = smsBlend.sendMessage(phone, templateCode, templateParams);
+
+            if (response.isSuccess()) {
+                smsLog.setStatus((byte) 1);
+                smsLog.setBizId(String.valueOf(response.getData()));
+                log.info("[短信] 发送成功, phone={}, templateCode={}, channel={}", phone, templateCode, channelId);
+            } else {
+                smsLog.setStatus((byte) 0);
+                smsLog.setErrorMsg(String.valueOf(response.getData()));
+                log.warn("[短信] 发送失败, phone={}, templateCode={}, channel={}, data={}",
+                        phone, templateCode, channelId, response.getData());
+            }
+        } catch (Exception e) {
+            smsLog.setStatus((byte) 0);
+            smsLog.setErrorMsg(e.getMessage());
+            log.error("[短信] 发送异常, phone={}, templateCode={}, channel={}", phone, templateCode, channelId, e);
+        }
+
+        smsLogMapper.insert(smsLog);
+    }
+
+    @Override
     public void sendSmsContent(String phone, String content) {
 
         SmsBlend smsBlend = SmsFactory.getSmsBlend();

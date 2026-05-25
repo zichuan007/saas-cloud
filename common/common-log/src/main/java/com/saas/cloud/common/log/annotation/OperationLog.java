@@ -24,4 +24,12 @@ public @interface OperationLog {
      * 操作类型
      */
     OperateType type() default OperateType.OTHER;
+
+    /**
+     * 是否记录字段变更 Diff
+     * <p>设为 true 时，切面会从 {@link com.saas.cloud.common.log.diff.OperationLogContext}
+     * 读取修改前后的对象并计算差异。需要在 Service 层手动调用
+     * {@code OperationLogContext.setBeforeData/setAfterData} 设置。</p>
+     */
+    boolean recordDiff() default false;
 }

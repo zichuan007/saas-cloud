@@ -12,6 +12,7 @@ import {defineStore} from 'pinia';
 
 import {type AuthApi, getUserInfoApi, loginApi, logoutApi} from '#/api';
 import {$t} from '#/locales';
+import {connectWebSocket, disconnectWebSocket} from '#/utils/websocket';
 
 export const useAuthStore = defineStore('auth', () => {
   const accessStore = useAccessStore();
@@ -34,6 +35,7 @@ export const useAuthStore = defineStore('auth', () => {
       if (accessToken) {
         accessStore.setAccessToken(accessToken);
         localStorage.setItem('refreshToken', refreshToken);
+        connectWebSocket(accessToken);
 
         const fetchedUserInfo = await fetchUserInfo();
         userInfo = fetchedUserInfo;
@@ -76,6 +78,7 @@ export const useAuthStore = defineStore('auth', () => {
     } catch {
       // 不做任何处理
     }
+    disconnectWebSocket();
     localStorage.removeItem('refreshToken');
     resetAllStores();
     accessStore.setLoginExpired(false);

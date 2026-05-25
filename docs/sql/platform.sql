@@ -126,6 +126,32 @@ CREATE TABLE `sys_global_config` (
   UNIQUE KEY `uk_config_key` (`config_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='全局配置表';
 
+CREATE TABLE `sys_order` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '订单ID',
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `package_id` bigint(20) NOT NULL COMMENT '套餐ID',
+  `order_no` varchar(64) NOT NULL COMMENT '订单编号',
+  `order_type` tinyint(4) NOT NULL DEFAULT 0 COMMENT '订单类型 0-新购 1-续费 2-升级',
+  `amount` decimal(10,2) NOT NULL DEFAULT 0.00 COMMENT '订单金额',
+  `pay_status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '支付状态 0-待支付 1-已支付 2-已取消',
+  `pay_channel` varchar(32) DEFAULT NULL COMMENT '支付渠道 alipay/wechat/manual',
+  `pay_time` datetime DEFAULT NULL COMMENT '支付时间',
+  `expire_time` datetime DEFAULT NULL COMMENT '服务到期时间',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
+  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_order_no` (`order_no`),
+  KEY `idx_tenant_id` (`tenant_id`),
+  KEY `idx_pay_status` (`pay_status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单表';
+
 -- ========== 初始数据 ==========
 
 -- 默认套餐

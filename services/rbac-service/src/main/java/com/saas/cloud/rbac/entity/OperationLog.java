@@ -45,6 +45,12 @@ public class OperationLog extends TenantBaseEntity {
     private String operation;
 
     /**
+     * 操作类型（CREATE/UPDATE/DELETE 等）
+     */
+    @TableField("operate_type")
+    private String operateType;
+
+    /**
      * 请求方法
      */
     @TableField("method")
@@ -67,6 +73,12 @@ public class OperationLog extends TenantBaseEntity {
      */
     @TableField("request_params")
     private String requestParams;
+
+    /**
+     * 变更内容（字段 Diff）
+     */
+    @TableField("change_diff")
+    private String changeDiff;
 
     /**
      * 响应状态码

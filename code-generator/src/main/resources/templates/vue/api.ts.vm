@@ -1,0 +1,45 @@
+import { requestClient } from '#/api/request';
+
+/** ${table.comment}记录 */
+export interface ${entity}Record {
+#foreach($field in $cfg.businessFields)
+  /** ${field.comment} */
+  ${field.propertyName}?: #if($field.propertyType == 'Long' || $field.propertyType == 'Integer' || $field.propertyType == 'BigDecimal' || $field.propertyType == 'Double' || $field.propertyType == 'Float')number#elseif($field.propertyType == 'Boolean')boolean#else string#end;
+#end
+  id: number;
+}
+
+/** ${table.comment}查询参数 */
+export interface ${entity}Query {
+  pageNum: number;
+  pageSize: number;
+#foreach($field in $cfg.queryFields)
+  /** ${field.comment} */
+  ${field.propertyName}?: #if($field.propertyType == 'Long' || $field.propertyType == 'Integer')number#else string#end;
+#end
+}
+
+/** 分页查询${table.comment} */
+export function get${entity}List(params: ${entity}Query) {
+  return requestClient.get('/${cfg.entityLowerFirst}/page', { params });
+}
+
+/** 查询${table.comment}详情 */
+export function get${entity}Detail(id: number) {
+  return requestClient.get<${entity}Record>(`/${cfg.entityLowerFirst}/${id}`);
+}
+
+/** 新增${table.comment} */
+export function create${entity}(data: Partial<${entity}Record>) {
+  return requestClient.post('/${cfg.entityLowerFirst}', data);
+}
+
+/** 修改${table.comment} */
+export function update${entity}(id: number, data: Partial<${entity}Record>) {
+  return requestClient.put(`/${cfg.entityLowerFirst}/${id}`, data);
+}
+
+/** 删除${table.comment} */
+export function delete${entity}(id: number) {
+  return requestClient.delete(`/${cfg.entityLowerFirst}/${id}`);
+}

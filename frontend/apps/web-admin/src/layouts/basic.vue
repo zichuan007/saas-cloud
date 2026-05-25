@@ -2,7 +2,7 @@
 import type {NotificationItem} from '@vben/layouts';
 import {BasicLayout, LockScreen, Notification, UserDropdown,} from '@vben/layouts';
 
-import {computed, onMounted, ref, watch} from 'vue';
+import {computed, onMounted, onUnmounted, ref, watch} from 'vue';
 import {useRouter} from 'vue-router';
 
 import {AuthenticationLoginExpiredModal} from '@vben/common-ui';
@@ -10,10 +10,13 @@ import {useWatermark} from '@vben/hooks';
 import {preferences, usePreferences} from '@vben/preferences';
 import {useAccessStore, useUserStore} from '@vben/stores';
 
+import {notification as antNotification} from 'ant-design-vue';
+
 import {$t} from '#/locales';
 import {useAuthStore} from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';
 import {deleteMessage, getMessageList, markAllRead, markMessageRead,} from '#/api/notify';
+import {onWebSocketMessage} from '#/utils/websocket';
 
 const notifications = ref<NotificationItem[]>([]);
 
@@ -33,8 +36,30 @@ async function loadNotifications() {
   }
 }
 
+const unsubscribeWs = onWebSocketMessage((data: any) => {
+  if (data.type === 'notification' && data.payload) {
+    const item: NotificationItem = {
+      id: data.payload.id,
+      date: data.payload.createTime ?? '',
+      isRead: false,
+      message: data.payload.content ?? '',
+      title: data.payload.title ?? '',
+    };
+    notifications.value.unshift(item);
+    antNotification.info({
+      description: item.message,
+      duration: 4,
+      message: item.title,
+    });
+  }
+});
+
 onMounted(() => {
   loadNotifications();
+});
+
+onUnmounted(() => {
+  unsubscribeWs();
 });
 
 const router = useRouter();

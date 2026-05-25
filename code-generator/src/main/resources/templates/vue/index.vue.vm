@@ -1,0 +1,94 @@
+<script lang="ts" setup>
+import type { VxeGridProps } from '#/adapter/vxe-table';
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
+
+import { Page, useVbenModal } from '@vben/common-ui';
+
+import { Button, message, Popconfirm, Space } from 'ant-design-vue';
+
+import { delete${entity}, get${entity}List } from './api';
+import ${entity}FormModal from './${cfg.entityLowerFirst}-form-modal.vue';
+
+defineOptions({ name: '${entity}' });
+
+const [FormModal, formModalApi] = useVbenModal({
+  connectedComponent: ${entity}FormModal,
+});
+
+const gridOptions: VxeGridProps = {
+  columns: [
+#foreach($field in $cfg.businessFields)
+#if($field.propertyType == 'LocalDateTime' || $field.propertyType == 'LocalDate')
+    { field: '${field.propertyName}', title: '${field.comment}', minWidth: 160 },
+#else
+    { field: '${field.propertyName}', title: '${field.comment}', minWidth: 120 },
+#end
+#end
+    {
+      field: 'action',
+      fixed: 'right',
+      title: '操作',
+      width: 160,
+      slots: { default: 'action' },
+    },
+  ],
+  proxyConfig: {
+    ajax: {
+      query: async ({ page }) => {
+        return await get${entity}List({
+          pageNum: page.currentPage,
+          pageSize: page.pageSize,
+        });
+      },
+    },
+  },
+  pagerConfig: { enabled: true },
+  toolbarConfig: { slots: { buttons: 'toolbar-btns' } },
+};
+
+const [Grid, gridApi] = useVbenVxeGrid({ gridOptions });
+
+function handleAdd() {
+  formModalApi.setData({ mode: 'add' });
+  formModalApi.open();
+}
+
+function handleEdit(row: any) {
+  formModalApi.setData({ id: row.id, mode: 'edit' });
+  formModalApi.open();
+}
+
+async function handleDelete(id: number) {
+  await delete${entity}(id);
+  message.success('删除成功');
+  gridApi.reload();
+}
+
+function handleFormSuccess() {
+  gridApi.reload();
+}
+</script>
+
+<template>
+  <Page auto-content-height>
+    <FormModal @success="handleFormSuccess" />
+    <Grid>
+      <template #toolbar-btns>
+        <Button type="primary" @click="handleAdd">新增${table.comment}</Button>
+      </template>
+      <template #action="{ row }">
+        <Space>
+          <Button size="small" type="link" @click="handleEdit(row)">
+            编辑
+          </Button>
+          <Popconfirm
+            title="确定删除该记录？"
+            @confirm="handleDelete(row.id)"
+          >
+            <Button danger size="small" type="link">删除</Button>
+          </Popconfirm>
+        </Space>
+      </template>
+    </Grid>
+  </Page>
+</template>

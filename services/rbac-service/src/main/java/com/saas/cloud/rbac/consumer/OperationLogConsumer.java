@@ -61,10 +61,12 @@ public class OperationLogConsumer {
         entity.setTenantId(event.getTenantId());
         entity.setModule(event.getModule());
         entity.setOperation(event.getOperation());
+        entity.setOperateType(event.getOperateType());
         entity.setMethod(event.getMethod());
         entity.setRequestUrl(event.getRequestUrl());
         entity.setRequestMethod(event.getRequestMethod());
         entity.setRequestParams(event.getRequestParams());
+        entity.setChangeDiff(event.getChangeDiff());
         entity.setResponseCode(event.getResponseCode());
         entity.setErrorMsg(event.getErrorMsg());
         entity.setIp(event.getIp());

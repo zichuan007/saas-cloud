@@ -41,6 +41,11 @@
             <artifactId>common-data</artifactId>
             <optional>true</optional>
         </dependency>
+        <!-- 二级缓存：本地缓存层 -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

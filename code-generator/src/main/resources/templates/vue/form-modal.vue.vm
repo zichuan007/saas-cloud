@@ -1,0 +1,95 @@
+<script lang="ts" setup>
+import { ref } from 'vue';
+
+import { useVbenModal } from '@vben/common-ui';
+
+import { Form, FormItem, Input, InputNumber, DatePicker, Switch, message } from 'ant-design-vue';
+
+import { create${entity}, get${entity}Detail, update${entity} } from './api';
+
+defineOptions({ name: '${entity}FormModal' });
+
+const emit = defineEmits<{ success: [] }>();
+
+const formData = ref<Record<string, any>>({});
+const mode = ref<'add' | 'edit'>('add');
+const formRef = ref();
+
+const rules = {
+#set($ruleCount = 0)
+#foreach($field in $cfg.businessFields)
+#if(!$field.nullable && $field.propertyType == 'String')
+#if($ruleCount > 0)
+#end
+  ${field.propertyName}: [{ message: '请输入${field.comment}', required: true, trigger: 'blur' }],
+#set($ruleCount = $ruleCount + 1)
+#end
+#end
+};
+
+const [Modal, modalApi] = useVbenModal({
+  async onOpenChange(isOpen) {
+    if (!isOpen) return;
+
+    const data = modalApi.getData<{ id?: number; mode: 'add' | 'edit' }>();
+    mode.value = data.mode;
+    modalApi.setState({ title: data.mode === 'add' ? '新增${table.comment}' : '编辑${table.comment}' });
+
+    if (data.mode === 'edit' && data.id) {
+      const detail = await get${entity}Detail(data.id);
+      formData.value = { ...detail };
+    } else {
+      formData.value = {};
+    }
+  },
+  async onConfirm() {
+    try {
+      await formRef.value?.validate();
+    } catch {
+      return false;
+    }
+    if (mode.value === 'add') {
+      await create${entity}(formData.value as any);
+      message.success('新增成功');
+    } else {
+      await update${entity}(formData.value.id, formData.value);
+      message.success('编辑成功');
+    }
+    emit('success');
+    modalApi.close();
+  },
+  title: '新增${table.comment}',
+});
+</script>
+
+<template>
+  <Modal>
+    <Form
+      ref="formRef"
+      :label-col="{ span: 5 }"
+      :model="formData"
+      :rules="rules"
+      :wrapper-col="{ span: 18 }"
+    >
+#foreach($field in $cfg.businessFields)
+#if($field.propertyType == 'Boolean')
+      <FormItem label="${field.comment}" name="${field.propertyName}">
+        <Switch v-model:checked="formData.${field.propertyName}" />
+      </FormItem>
+#elseif($field.propertyType == 'Integer' || $field.propertyType == 'Long' || $field.propertyType == 'BigDecimal' || $field.propertyType == 'Double' || $field.propertyType == 'Float')
+      <FormItem label="${field.comment}" name="${field.propertyName}">
+        <InputNumber v-model:value="formData.${field.propertyName}" placeholder="请输入${field.comment}" style="width: 100%" />
+      </FormItem>
+#elseif($field.propertyType == 'LocalDateTime' || $field.propertyType == 'LocalDate')
+      <FormItem label="${field.comment}" name="${field.propertyName}">
+        <DatePicker v-model:value="formData.${field.propertyName}" placeholder="请选择${field.comment}" style="width: 100%"#if($field.propertyType == 'LocalDateTime') show-time#end />
+      </FormItem>
+#else
+      <FormItem label="${field.comment}" name="${field.propertyName}">
+        <Input v-model:value="formData.${field.propertyName}" placeholder="请输入${field.comment}" />
+      </FormItem>
+#end
+#end
+    </Form>
+  </Modal>
+</template>

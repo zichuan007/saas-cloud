@@ -155,7 +155,7 @@ public class GeneratorEngine {
 
         for (TableMeta table : tables) {
             generateTableFiles(config, table, javaRoot, resourceRoot);
-            System.out.println("  [生成] " + table.getEntityName() + ": Entity + Mapper + Controller + Service + 3个DTO + VO + Converter");
+            System.out.println("  [生成] " + table.getEntityName() + ": Entity + Mapper + Controller + Service + 3个DTO + VO + Converter + Vue(index + form-modal + api)");
         }
         System.out.println("\n========== 完成！共生成 " + tables.size() + " 张表 ==========");
     }
@@ -204,6 +204,11 @@ public class GeneratorEngine {
         files.put("dto/" + e + "QueryDTO.java", renderToString("templates/queryDTO.java.vm", ctx));
         files.put("vo/" + e + "VO.java", renderToString("templates/vo.java.vm", ctx));
         files.put("converter/" + e + "Converter.java", renderToString("templates/converter.java.vm", ctx));
+
+        String lowerFirst = table.getEntityLowerFirst();
+        files.put("vue/" + lowerFirst + "/index.vue", renderToString("templates/vue/index.vue.vm", ctx));
+        files.put("vue/" + lowerFirst + "/" + lowerFirst + "-form-modal.vue", renderToString("templates/vue/form-modal.vue.vm", ctx));
+        files.put("vue/" + lowerFirst + "/api.ts", renderToString("templates/vue/api.ts.vm", ctx));
 
         return files;
     }
@@ -270,6 +275,11 @@ public class GeneratorEngine {
         renderToFile("templates/queryDTO.java.vm", ctx, javaRoot + "/dto", e + "QueryDTO.java");
         renderToFile("templates/vo.java.vm", ctx, javaRoot + "/vo", e + "VO.java");
         renderToFile("templates/converter.java.vm", ctx, javaRoot + "/converter", e + "Converter.java");
+
+        String vueDir = javaRoot + "/../../vue/" + table.getEntityLowerFirst();
+        renderToFile("templates/vue/index.vue.vm", ctx, vueDir, "index.vue");
+        renderToFile("templates/vue/form-modal.vue.vm", ctx, vueDir, table.getEntityLowerFirst() + "-form-modal.vue");
+        renderToFile("templates/vue/api.ts.vm", ctx, vueDir, "api.ts");
     }
 
     private VelocityContext buildContext(GeneratorConfig config, TableMeta table) {

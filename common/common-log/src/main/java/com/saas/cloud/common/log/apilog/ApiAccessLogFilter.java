@@ -4,8 +4,12 @@ import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerExecutionChain;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.saas.cloud.common.log.annotation.ApiAccessLog;
 import com.saas.cloud.common.kafka.config.KafkaConfig;
 import com.saas.cloud.common.kafka.producer.KafkaProducerService;
 import com.saas.cloud.common.security.context.UserContext;
@@ -38,6 +42,9 @@ public class ApiAccessLogFilter extends OncePerRequestFilter {
     @Autowired(required = false)
     private Tracer tracer;
 
+    @Autowired(required = false)
+    private RequestMappingHandlerMapping handlerMapping;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
@@ -47,18 +54,24 @@ public class ApiAccessLogFilter extends OncePerRequestFilter {
         } finally {
             long duration = System.currentTimeMillis() - startTime;
             try {
-                recordAccessLog(request, response, duration);
+                ApiAccessLog annotation = getApiAccessLogAnnotation(request);
+                if (annotation != null && !annotation.enable()) {
+                    return;
+                }
+                boolean logArgs = annotation == null || annotation.logArgs();
+                recordAccessLog(request, response, duration, logArgs);
             } catch (Exception e) {
                 log.warn("[API访问日志] 记录失败: {}", e.getMessage());
             }
         }
     }
 
-    private void recordAccessLog(HttpServletRequest request, HttpServletResponse response, long duration) {
+    private void recordAccessLog(HttpServletRequest request, HttpServletResponse response,
+                                long duration, boolean logArgs) {
         ApiAccessLogEvent event = new ApiAccessLogEvent();
         event.setRequestUrl(request.getRequestURI());
         event.setRequestMethod(request.getMethod());
-        event.setQueryString(truncate(request.getQueryString(), 500));
+        event.setQueryString(logArgs ? truncate(request.getQueryString(), 500) : null);
         event.setIp(getClientIp(request));
         event.setUserAgent(truncate(request.getHeader("User-Agent"), 500));
         event.setHttpStatus(response.getStatus());
@@ -111,5 +124,24 @@ public class ApiAccessLogFilter extends OncePerRequestFilter {
         String uri = request.getRequestURI();
         return uri.startsWith("/actuator") || uri.endsWith(".css") || uri.endsWith(".js")
                 || uri.endsWith(".ico") || uri.endsWith(".png") || uri.endsWith(".jpg");
+    }
+
+    /**
+     * 获取当前请求 HandlerMethod 上的 @ApiAccessLog 注解
+     */
+    private ApiAccessLog getApiAccessLogAnnotation(HttpServletRequest request) {
+        if (handlerMapping == null) {
+            return null;
+        }
+        try {
+            HandlerExecutionChain chain = handlerMapping.getHandler(request);
+            if (chain != null && chain.getHandler() instanceof HandlerMethod) {
+                HandlerMethod method = (HandlerMethod) chain.getHandler();
+                return method.getMethodAnnotation(ApiAccessLog.class);
+            }
+        } catch (Exception e) {
+            log.debug("[API访问日志] 获取 HandlerMethod 失败: {}", e.getMessage());
+        }
+        return null;
     }
 }
