@@ -38,6 +38,17 @@ const coreRoutes: RouteRecordRaw[] = [
     redirect: preferences.app.defaultHomePath,
     children: [
       {
+        name: 'Dashboard',
+        path: 'dashboard',
+        component: () => import('#/views/dashboard/index.vue'),
+        meta: {
+          hideInMenu: true,
+          hideInTab: false,
+          icon: 'lucide:layout-dashboard',
+          title: '仪表盘',
+        },
+      },
+      {
         name: 'WorkflowDesigner',
         path: 'workflow/designer/:id',
         component: () => import('#/views/workflow/designer/index.vue'),

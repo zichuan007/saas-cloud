@@ -77,17 +77,23 @@ public class MenuController {
     @GetMapping("/user-tree")
     public ApiResult<List<Map<String, Object>>> userTree() {
         Long userId = UserContext.getUserId();
+        UserContext.UserInfo userInfo = UserContext.get();
+        boolean isSuperAdmin = userInfo != null && userInfo.getRoleLevel() != null
+                && userInfo.getRoleLevel() == 0;
         List<MenuTreeVO> menuTree = menuService.getMenusByUserId(userId);
         List<Map<String, Object>> routeList = menuTree.stream()
-                .map(this::convertToVbenRoute)
+                .map(menu -> convertToVbenRoute(menu, isSuperAdmin))
                 .collect(Collectors.toList());
         return ApiResult.ok(routeList);
     }
 
     /**
      * 将 MenuTreeVO 转换为 Vben Admin 路由格式
+     *
+     * @param menu         菜单树节点
+     * @param isSuperAdmin 超管忽略 hideInMenu，防止隐藏菜单后无法恢复
      */
-    private Map<String, Object> convertToVbenRoute(MenuTreeVO menu) {
+    private Map<String, Object> convertToVbenRoute(MenuTreeVO menu, boolean isSuperAdmin) {
         Map<String, Object> route = new LinkedHashMap<>();
         route.put("name", menu.getName());
         route.put("path", menu.getPath());
@@ -104,14 +110,14 @@ public class MenuController {
             meta.put("icon", menu.getIcon());
         }
         meta.put("order", menu.getSortOrder());
-        if (menu.getVisible() != null && !menu.getVisible()) {
+        if (!isSuperAdmin && menu.getVisible() != null && !menu.getVisible()) {
             meta.put("hideInMenu", true);
         }
         route.put("meta", meta);
 
         if (menu.getChildren() != null && !menu.getChildren().isEmpty()) {
             List<Map<String, Object>> children = menu.getChildren().stream()
-                    .map(this::convertToVbenRoute)
+                    .map(child -> convertToVbenRoute(child, isSuperAdmin))
                     .collect(Collectors.toList());
             route.put("children", children);
         }

@@ -141,7 +141,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 
         tenant.setPackageId(order.getPackageId());
         tenant.setPaidExpireTime(expireTime);
-        tenant.setStatus(1);
+        tenant.setStatus((byte) 1);
         tenantService.updateById(tenant);
 
         order.setExpireTime(expireTime);

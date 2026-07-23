@@ -80,16 +80,20 @@ function buildOverviewItems(data: OverviewData): AnalysisOverviewItem[] {
 }
 
 onMounted(async () => {
-  const [overview, trend, dist, top] = await Promise.all([
-    getDashboardOverview(),
-    getTenantTrend(30),
-    getPackageDistribution(),
-    getTopTenants(10),
-  ]);
-  overviewItems.value = buildOverviewItems(overview as OverviewData);
-  trendData.value = (trend as TrendItem[]) || [];
-  packageDistData.value = (dist as PackageDistItem[]) || [];
-  topTenantsData.value = (top as TopTenantItem[]) || [];
+  try {
+    const [overview, trend, dist, top] = await Promise.all([
+      getDashboardOverview(),
+      getTenantTrend(30),
+      getPackageDistribution(),
+      getTopTenants(10),
+    ]);
+    overviewItems.value = buildOverviewItems(overview as OverviewData);
+    trendData.value = (trend as TrendItem[]) || [];
+    packageDistData.value = (dist as PackageDistItem[]) || [];
+    topTenantsData.value = (top as TopTenantItem[]) || [];
+  } catch {
+    // 统计接口尚未实现，使用默认空数据
+  }
 });
 </script>
 

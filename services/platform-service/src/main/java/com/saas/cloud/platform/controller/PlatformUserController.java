@@ -1,5 +1,6 @@
 package com.saas.cloud.platform.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.security.context.UserContext;
 import com.saas.cloud.platform.api.dto.PlatformLoginDTO;
 import com.saas.cloud.platform.api.vo.PlatformUserVO;
+import com.saas.cloud.platform.service.IPlatformMenuService;
 import com.saas.cloud.platform.service.IPlatformUserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class PlatformUserController {
 
     private final IPlatformUserService platformUserService;
+    private final IPlatformMenuService platformMenuService;
 
     /**
      * 平台管理员登录
@@ -72,5 +75,16 @@ public class PlatformUserController {
         Long userId = UserContext.getUserId();
         PlatformUserVO userVO = platformUserService.getCurrentUser(userId);
         return ApiResult.ok(userVO);
+    }
+
+    /**
+     * 获取平台管理端菜单（Vben Admin RouteRecord 格式，数据库驱动）
+     *
+     * @return Vben 路由配置列表
+     */
+    @Operation(summary = "获取平台管理端菜单")
+    @GetMapping("/menus")
+    public ApiResult<List<Map<String, Object>>> menus() {
+        return ApiResult.ok(platformMenuService.buildVbenRoutes());
     }
 }

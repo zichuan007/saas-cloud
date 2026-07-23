@@ -34,3 +34,7 @@ dist/
 
 # Claude
 .claude/
+
+# sh 崩溃转储
+sh.exe.stackdump
+*.stackdump

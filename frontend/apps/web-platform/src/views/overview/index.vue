@@ -21,7 +21,11 @@ const data = ref<OverviewData>({
 });
 
 onMounted(async () => {
-  data.value = (await getOverview()) as OverviewData;
+  try {
+    data.value = (await getOverview()) as OverviewData;
+  } catch {
+    // 统计接口尚未实现，使用默认值
+  }
 });
 </script>
 

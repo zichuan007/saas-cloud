@@ -1,4 +1,5 @@
-import type Sortable, {SortableOptions} from 'sortablejs';
+import type Sortable from 'sortablejs';
+import type { SortableOptions } from 'sortablejs';
 
 function useSortable<T extends HTMLElement>(
   sortableContainer: T,

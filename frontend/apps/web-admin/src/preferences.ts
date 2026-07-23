@@ -1,7 +1,7 @@
 import {defineOverridesPreferences, definePreferencesExtension,} from '@vben/preferences';
 
 /**
- * AI Cloud Plus 项目配置
+ * SaaS Cloud 项目配置
  */
 export const overridesPreferences = defineOverridesPreferences({
   app: {
@@ -14,6 +14,6 @@ export const overridesPreferences = defineOverridesPreferences({
 
 export const preferencesExtension = definePreferencesExtension({
   fields: [],
-  tabLabel: 'AI Cloud Plus',
-  title: 'AI Cloud Plus',
+  tabLabel: 'SaaS Cloud',
+  title: 'SaaS Cloud',
 });

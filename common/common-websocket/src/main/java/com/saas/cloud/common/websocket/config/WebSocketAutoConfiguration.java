@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saas.cloud.common.websocket.handler.JsonWebSocketHandler;
@@ -33,21 +32,7 @@ import com.saas.cloud.common.websocket.session.WebSocketSessionManager;
 @Configuration
 @EnableWebSocket
 @ConditionalOnBean(WebSocketTokenResolver.class)
-public class WebSocketAutoConfiguration implements WebSocketConfigurer {
-
-    private final WebSocketTokenResolver tokenResolver;
-
-    private final WebSocketSessionManager sessionManager;
-
-    private final WebSocketMessageListener messageListener;
-
-    public WebSocketAutoConfiguration(WebSocketTokenResolver tokenResolver,
-                                       WebSocketSessionManager sessionManager,
-                                       ObjectProvider<WebSocketMessageListener> messageListenerProvider) {
-        this.tokenResolver = tokenResolver;
-        this.sessionManager = sessionManager;
-        this.messageListener = messageListenerProvider.getIfAvailable();
-    }
+public class WebSocketAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
@@ -57,20 +42,22 @@ public class WebSocketAutoConfiguration implements WebSocketConfigurer {
 
     @Bean
     @ConditionalOnMissingBean
-    public JsonWebSocketHandler jsonWebSocketHandler() {
-        return new JsonWebSocketHandler(sessionManager, messageListener);
+    public JsonWebSocketHandler jsonWebSocketHandler(WebSocketSessionManager sessionManager,
+                                                      ObjectProvider<WebSocketMessageListener> listenerProvider) {
+        return new JsonWebSocketHandler(sessionManager, listenerProvider.getIfAvailable());
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public LoginUserHandshakeInterceptor loginUserHandshakeInterceptor() {
+    public LoginUserHandshakeInterceptor loginUserHandshakeInterceptor(WebSocketTokenResolver tokenResolver) {
         return new LoginUserHandshakeInterceptor(tokenResolver);
     }
 
-    @Override
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(jsonWebSocketHandler(), "/ws")
-                .addInterceptors(loginUserHandshakeInterceptor())
+    @Bean
+    public WebSocketConfigurer webSocketConfigurer(JsonWebSocketHandler handler,
+                                                    LoginUserHandshakeInterceptor interceptor) {
+        return registry -> registry.addHandler(handler, "/ws")
+                .addInterceptors(interceptor)
                 .setAllowedOriginPatterns("*");
     }
 

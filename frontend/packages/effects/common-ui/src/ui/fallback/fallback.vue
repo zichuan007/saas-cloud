@@ -9,6 +9,8 @@ import {$t} from '@vben/locales';
 
 import {VbenButton} from '@vben-core/shadcn-ui';
 
+import {ParticleNetwork} from '../particle-network';
+
 interface Props extends FallbackProps {}
 
 defineOptions({
@@ -128,14 +130,23 @@ function refresh() {
 </script>
 
 <template>
-  <div class="flex-col-center size-full duration-300">
-    <img v-if="image" :src="image" class="md:1/3 w-1/2 lg:w-1/4" />
+  <div class="flex-col-center relative size-full duration-300">
+    <div class="absolute inset-0 size-full opacity-40">
+      <ParticleNetwork
+        :interactive="false"
+        :max-distance="100"
+        :opacity="0.3"
+        :particle-count="25"
+        :speed="0.2"
+      />
+    </div>
+    <img v-if="image" :src="image" class="md:1/3 relative z-10 w-1/2 lg:w-1/4" />
     <component
       :is="fallbackIcon"
       v-else-if="fallbackIcon"
-      class="md:1/3 h-1/3 w-1/2 lg:w-1/4"
+      class="md:1/3 relative z-10 h-1/3 w-1/2 lg:w-1/4"
     />
-    <div class="flex-col-center">
+    <div class="flex-col-center relative z-10">
       <slot v-if="$slots.title" name="title"></slot>
       <p
         v-else-if="titleText"

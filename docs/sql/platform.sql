@@ -152,7 +152,52 @@ CREATE TABLE `sys_order` (
   KEY `idx_pay_status` (`pay_status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单表';
 
+-- 平台菜单表
+CREATE TABLE `sys_platform_menu` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '菜单ID',
+  `menu_name` varchar(64) NOT NULL COMMENT '菜单名称',
+  `parent_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '父菜单ID 0-顶级',
+  `menu_type` tinyint(4) NOT NULL COMMENT '类型 0-目录 1-菜单 2-按钮',
+  `path` varchar(256) DEFAULT NULL COMMENT '路由路径',
+  `component` varchar(256) DEFAULT NULL COMMENT '组件路径',
+  `permission` varchar(128) DEFAULT NULL COMMENT '权限标识',
+  `icon` varchar(128) DEFAULT NULL COMMENT '图标',
+  `sort_order` int(11) NOT NULL DEFAULT 0 COMMENT '排序',
+  `status` tinyint(4) NOT NULL DEFAULT 1 COMMENT '状态 0-禁用 1-启用',
+  `visible` tinyint(4) NOT NULL DEFAULT 1 COMMENT '是否可见 0-隐藏 1-显示',
+  `is_external` tinyint(4) NOT NULL DEFAULT 0 COMMENT '是否外链',
+  `is_cached` tinyint(4) NOT NULL DEFAULT 0 COMMENT '是否缓存',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
+  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`),
+  KEY `idx_parent` (`parent_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='平台菜单表';
+
 -- ========== 初始数据 ==========
+
+-- 平台菜单
+INSERT INTO `sys_platform_menu` (`id`, `menu_name`, `parent_id`, `menu_type`, `path`, `component`, `icon`, `sort_order`) VALUES
+(1,  '平台概览', 0,  0, '/overview',              NULL,                          'lucide:layout-dashboard', 1),
+(2,  '概览首页', 1,  1, '/overview/index',         '/overview/index',             NULL, 1),
+(3,  '租户管理', 0,  0, '/tenant',                 NULL,                          'lucide:building-2', 2),
+(4,  '租户列表', 3,  1, '/tenant/index',           '/tenant/index',               NULL, 1),
+(5,  '套餐管理', 0,  0, '/package',                NULL,                          'lucide:package', 3),
+(6,  '套餐列表', 5,  1, '/package/index',          '/package/index',              NULL, 1),
+(7,  '订单管理', 0,  0, '/order',                  NULL,                          'lucide:receipt', 4),
+(8,  '订单列表', 7,  1, '/order/index',            '/order/index',                NULL, 1),
+(9,  '公告管理', 0,  0, '/announcement',           NULL,                          'lucide:megaphone', 5),
+(10, '公告列表', 9,  1, '/announcement/index',     '/announcement/index',         NULL, 1),
+(11, '数据分析', 0,  0, '/dashboard',              NULL,                          'lucide:bar-chart-3', 6),
+(12, '统计分析', 11, 1, '/dashboard/analytics',    '/dashboard/analytics/index',  NULL, 1),
+(13, '系统配置', 0,  0, '/config',                 NULL,                          'lucide:settings', 7),
+(14, '配置管理', 13, 1, '/config/index',           '/config/index',               NULL, 1);
 
 -- 默认套餐
 INSERT INTO `sys_package` (`id`, `package_name`, `package_code`, `price_monthly`, `price_yearly`, `max_users`, `max_roles`, `max_depts`, `max_process_definitions`, `max_wechat_accounts`, `max_storage_mb`, `menu_ids`, `sort_order`, `status`, `remark`) VALUES

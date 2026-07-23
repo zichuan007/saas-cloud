@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,6 @@ import com.saas.cloud.platform.entity.Tenant;
 import com.saas.cloud.platform.service.IPackageService;
 import com.saas.cloud.platform.service.ITenantService;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -35,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class TenantCacheService {
 
     private final RedisTemplate<String, Object> redisTemplate;
@@ -45,6 +44,17 @@ public class TenantCacheService {
     private final IPackageService packageService;
 
     private final ObjectMapper objectMapper;
+
+    @Autowired
+    public TenantCacheService(RedisTemplate<String, Object> redisTemplate,
+                               @Lazy ITenantService tenantService,
+                               IPackageService packageService,
+                               ObjectMapper objectMapper) {
+        this.redisTemplate = redisTemplate;
+        this.tenantService = tenantService;
+        this.packageService = packageService;
+        this.objectMapper = objectMapper;
+    }
 
     private static final String CACHE_KEY = "tenant:cache";
 

@@ -19,7 +19,7 @@ CREATE DATABASE IF NOT EXISTS `workflow` DEFAULT CHARACTER SET utf8mb4 COLLATE u
 CREATE DATABASE IF NOT EXISTS `xxl_job` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- =====================================================================
--- 2. platform 库 - 平台管理（5 张表）
+-- 2. platform 库 - 平台管理（6 张表）
 -- =====================================================================
 USE `platform`;
 
@@ -155,30 +155,32 @@ CREATE TABLE `sys_global_config` (
   UNIQUE KEY `uk_config_key` (`config_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='全局配置表';
 
--- 租户订阅订单表（设计预留）
-CREATE TABLE IF NOT EXISTS `sys_tenant_order` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+-- 订单表
+CREATE TABLE IF NOT EXISTS `sys_order` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '订单ID',
   `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
   `package_id` bigint(20) NOT NULL COMMENT '套餐ID',
-  `order_no` varchar(64) NOT NULL COMMENT '订单号',
-  `amount` decimal(10,2) NOT NULL COMMENT '金额（元）',
-  `pay_type` tinyint(4) DEFAULT NULL COMMENT '支付方式 1-微信 2-支付宝',
-  `status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '状态 0-待支付 1-已支付 2-已取消 3-已退款',
+  `order_no` varchar(64) NOT NULL COMMENT '订单编号',
+  `order_type` tinyint(4) NOT NULL DEFAULT 0 COMMENT '订单类型 0-新购 1-续费 2-升级',
+  `amount` decimal(10,2) NOT NULL DEFAULT 0.00 COMMENT '订单金额',
+  `pay_status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '支付状态 0-待支付 1-已支付 2-已取消',
+  `pay_channel` varchar(32) DEFAULT NULL COMMENT '支付渠道 alipay/wechat/manual',
   `pay_time` datetime DEFAULT NULL COMMENT '支付时间',
-  `expire_time` datetime DEFAULT NULL COMMENT '订阅到期时间',
-  `create_user_id` varchar(64) DEFAULT NULL,
-  `create_user_name` varchar(64) DEFAULT NULL,
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_user_id` varchar(64) DEFAULT NULL,
-  `update_user_name` varchar(64) DEFAULT NULL,
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `delete_flag` int(11) NOT NULL DEFAULT 0,
-  `data_version` int(11) NOT NULL DEFAULT 0,
-  `remark` varchar(512) DEFAULT NULL,
+  `expire_time` datetime DEFAULT NULL COMMENT '服务到期时间',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
+  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_order_no` (`order_no`),
-  KEY `idx_tenant` (`tenant_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='租户订阅订单表';
+  KEY `idx_tenant_id` (`tenant_id`),
+  KEY `idx_pay_status` (`pay_status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单表';
 
 -- API开放平台客户端表（设计预留）
 CREATE TABLE IF NOT EXISTS `sys_api_client` (
@@ -203,6 +205,35 @@ CREATE TABLE IF NOT EXISTS `sys_api_client` (
   UNIQUE KEY `uk_api_key` (`api_key`),
   KEY `idx_tenant` (`tenant_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='API开放平台客户端表';
+
+-- 平台菜单表
+DROP TABLE IF EXISTS `sys_platform_menu`;
+CREATE TABLE `sys_platform_menu` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '菜单ID',
+  `menu_name` varchar(64) NOT NULL COMMENT '菜单名称',
+  `parent_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '父菜单ID 0-顶级',
+  `menu_type` tinyint(4) NOT NULL COMMENT '类型 0-目录 1-菜单 2-按钮',
+  `path` varchar(256) DEFAULT NULL COMMENT '路由路径',
+  `component` varchar(256) DEFAULT NULL COMMENT '组件路径',
+  `permission` varchar(128) DEFAULT NULL COMMENT '权限标识',
+  `icon` varchar(128) DEFAULT NULL COMMENT '图标',
+  `sort_order` int(11) NOT NULL DEFAULT 0 COMMENT '排序',
+  `status` tinyint(4) NOT NULL DEFAULT 1 COMMENT '状态 0-禁用 1-启用',
+  `visible` tinyint(4) NOT NULL DEFAULT 1 COMMENT '是否可见 0-隐藏 1-显示',
+  `is_external` tinyint(4) NOT NULL DEFAULT 0 COMMENT '是否外链',
+  `is_cached` tinyint(4) NOT NULL DEFAULT 0 COMMENT '是否缓存',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
+  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`),
+  KEY `idx_parent` (`parent_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='平台菜单表';
 
 -- =====================================================================
 -- 3. rbac 库 - 权限管理（9 张表）
@@ -979,6 +1010,23 @@ INSERT INTO `sys_global_config` (`config_key`, `config_value`, `config_type`, `d
 ('password_min_length',  '8',   'NUMBER',  '密码最小长度'),
 ('login_lock_minutes',   '30',  'NUMBER',  '登录锁定时长(分钟)');
 
+-- 7.5 平台菜单（7 个目录 + 7 个菜单页面）
+INSERT INTO `sys_platform_menu` (`id`, `menu_name`, `parent_id`, `menu_type`, `path`, `component`, `icon`, `sort_order`, `status`, `visible`) VALUES
+(1,  '平台概览', 0,  0, '/overview',            NULL,                          'lucide:layout-dashboard', 1,  1, 1),
+(2,  '概览首页', 1,  1, '/overview/index',      '/overview/index',             NULL,                      1,  1, 1),
+(3,  '租户管理', 0,  0, '/tenant',              NULL,                          'lucide:building-2',       2,  1, 1),
+(4,  '租户列表', 3,  1, '/tenant/index',        '/tenant/index',               NULL,                      1,  1, 1),
+(5,  '套餐管理', 0,  0, '/package',             NULL,                          'lucide:package',          3,  1, 1),
+(6,  '套餐列表', 5,  1, '/package/index',       '/package/index',              NULL,                      1,  1, 1),
+(7,  '订单管理', 0,  0, '/order',               NULL,                          'lucide:receipt',          4,  1, 1),
+(8,  '订单列表', 7,  1, '/order/index',         '/order/index',                NULL,                      1,  1, 1),
+(9,  '公告管理', 0,  0, '/announcement',        NULL,                          'lucide:megaphone',        5,  1, 1),
+(10, '公告列表', 9,  1, '/announcement/index',  '/announcement/index',         NULL,                      1,  1, 1),
+(11, '数据分析', 0,  0, '/dashboard',           NULL,                          'lucide:bar-chart-3',      6,  1, 1),
+(12, '统计分析', 11, 1, '/dashboard/analytics', '/dashboard/analytics/index',  NULL,                      1,  1, 1),
+(13, '系统配置', 0,  0, '/config',              NULL,                          'lucide:settings',         7,  1, 1),
+(14, '配置管理', 13, 1, '/config/index',        '/config/index',               NULL,                      1,  1, 1);
+
 -- =====================================================================
 -- 8. rbac 种子数据
 -- =====================================================================
@@ -1640,7 +1688,7 @@ UPDATE `sys_tenant` SET `admin_user_id` = 201 WHERE `id` = 3;
 -- 初始化完成
 -- =====================================================================
 -- 数据库总览:
---   platform  : sys_package, sys_tenant, sys_platform_user, sys_announcement, sys_global_config, sys_tenant_order(预留), sys_api_client(预留)
+--   platform  : sys_package, sys_tenant, sys_platform_user, sys_announcement, sys_global_config, sys_order, sys_platform_menu, sys_api_client(预留)
 --   rbac      : sys_user, sys_role, sys_dept, sys_menu, sys_user_role, sys_role_menu, sys_role_dept, sys_operation_log, sys_password_history, sys_login_log, sys_post, sys_user_post, sys_export_task, sys_social_user, sys_area, sys_sensitive_word, sys_notice, sys_notice_read
 --   wechat_oa : wechat_oa_account, wechat_oa_material, wechat_oa_article, wechat_oa_fan_user, wechat_oa_user_tag, wechat_oa_auto_reply_rule, wechat_oa_menu
 --   notify    : notify_message, notify_template, notify_channel_config

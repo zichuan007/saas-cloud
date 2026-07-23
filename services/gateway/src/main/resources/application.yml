@@ -14,6 +14,12 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:123456}
+  boot:
+    admin:
+      client:
+        url: http://${SBA_HOST:localhost}:9090
+        instance:
+          prefer-ip: true
   cloud:
     nacos:
       discovery:
@@ -23,26 +29,7 @@ spring:
         server-addr: ${NACOS_ADDR:localhost:8848}
         namespace: ${NACOS_NAMESPACE:e96d2e6b-7bf3-4a42-973a-e020a213cde2}
         file-extension: yml
-  boot:
-    admin:
-      client:
-        url: http://${SBA_HOST:localhost}:9090
-        instance:
-          prefer-ip: true
     gateway:
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOriginPatterns: "*"
-            allowedHeaders: "*"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-            allowCredentials: true
-            maxAge: 3600
       discovery:
         locator:
           enabled: false
