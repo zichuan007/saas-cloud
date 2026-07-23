@@ -40,6 +40,9 @@ public class TenantProperties {
             "sys_global_config",
             "notify_template",
             "sys_area",
-            "sys_order"
+            "sys_order",
+            "sys_platform_menu",
+            // 公告已读记录：按 (notice_id, user_id) 全局唯一，通过 notice_id 隐式隔离，表本身无 tenant_id 列
+            "sys_notice_read"
     );
 }

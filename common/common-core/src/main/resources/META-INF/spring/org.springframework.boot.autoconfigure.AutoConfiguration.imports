@@ -1,5 +1,6 @@
 com.saas.cloud.common.core.exception.GlobalExceptionHandler
 com.saas.cloud.common.core.config.JacksonConfig
+com.saas.cloud.common.core.security.SignatureAutoConfiguration
 com.saas.cloud.common.core.xss.XssAutoConfiguration
 com.saas.cloud.common.sentinel.SentinelAutoConfiguration
 com.saas.cloud.common.job.XxlJobAutoConfiguration

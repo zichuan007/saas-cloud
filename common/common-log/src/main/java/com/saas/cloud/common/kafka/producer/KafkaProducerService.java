@@ -22,12 +22,20 @@ public class KafkaProducerService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void send(String topic, Object message) {
-        kafkaTemplate.send(topic, message);
+        kafkaTemplate.send(topic, message).whenComplete((result, ex) -> {
+            if (ex != null) {
+                log.error("[Kafka] 发送失败 topic={}, error={}", topic, ex.getMessage(), ex);
+            }
+        });
         log.debug("[Kafka] 发送消息到 topic={}", topic);
     }
 
     public void send(String topic, String key, Object message) {
-        kafkaTemplate.send(topic, key, message);
+        kafkaTemplate.send(topic, key, message).whenComplete((result, ex) -> {
+            if (ex != null) {
+                log.error("[Kafka] 发送失败 topic={}, key={}, error={}", topic, key, ex.getMessage(), ex);
+            }
+        });
         log.debug("[Kafka] 发送消息到 topic={}, key={}", topic, key);
     }
 }

@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.saas.cloud.common.core.exception.BusinessException;
 import com.saas.cloud.common.core.result.ApiResult;
+import com.saas.cloud.common.data.tenant.annotation.TenantIgnore;
 import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.platform.api.feign.PlatformFeignClient;
 import com.saas.cloud.wechat.oa.client.WechatApiClient;
@@ -112,6 +113,7 @@ public class WechatOaAccountServiceImpl
         log.info("解绑公众号成功, id={}, appId={}", id, existing.getAppId());
     }
 
+    @TenantIgnore
     @Override
     public WechatOaAccount getByAppId(String appId) {
         return lambdaQuery()

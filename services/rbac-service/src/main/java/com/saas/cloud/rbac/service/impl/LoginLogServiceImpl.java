@@ -14,6 +14,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.saas.cloud.common.core.result.PageResult;
 import com.saas.cloud.common.data.annotation.DataScope;
+import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.rbac.api.dto.LoginLogQueryDTO;
 import com.saas.cloud.rbac.entity.LoginLog;
 import com.saas.cloud.rbac.mapper.LoginLogMapper;
@@ -51,9 +52,18 @@ public class LoginLogServiceImpl extends ServiceImpl<LoginLogMapper, LoginLog> i
     @Override
     public void recordLoginLog(LoginLog loginLog) {
         try {
+            // @Async 线程未经 TtlExecutors 包装，上下文不会透传；
+            // 从实体 tenantId 还原上下文，避免 INSERT 被 MyBatis-Plus 追加 tenant_id=-1
+            if (loginLog.getTenantId() != null) {
+                TenantContext.TenantInfo info = new TenantContext.TenantInfo();
+                info.setTenantId(loginLog.getTenantId());
+                TenantContext.set(info);
+            }
             baseMapper.insert(loginLog);
         } catch (Exception e) {
             log.error("记录登录日志失败: {}", e.getMessage(), e);
+        } finally {
+            TenantContext.clear();
         }
     }
 

@@ -82,11 +82,14 @@ public class WfTaskExtServiceImpl
             throw new BusinessException("无法获取当前用户信息");
         }
 
-        // 从 Flowable 查待办任务ID列表
-        List<Task> flowableTasks = taskService.createTaskQuery()
-                .taskAssignee(String.valueOf(userId))
-                .orderByTaskCreateTime().desc()
-                .list();
+        // 从 Flowable 查待办任务ID列表，按租户隔离避免跨租户扫描 ACT_RU_TASK
+        Long tenantId = TenantContext.getTenantId();
+        var taskQuery = taskService.createTaskQuery()
+                .taskAssignee(String.valueOf(userId));
+        if (tenantId != null) {
+            taskQuery.tenantId(String.valueOf(tenantId));
+        }
+        List<Task> flowableTasks = taskQuery.orderByTaskCreateTime().desc().list();
 
         if (flowableTasks.isEmpty()) {
             return PageResult.of(List.of(), 0, query.getPageNum(), query.getPageSize());

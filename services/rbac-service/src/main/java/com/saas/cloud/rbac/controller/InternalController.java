@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.saas.cloud.common.core.result.ApiResult;
+import com.saas.cloud.common.data.tenant.annotation.TenantIgnore;
 import com.saas.cloud.common.security.annotation.InnerApi;
 import com.saas.cloud.rbac.api.vo.UserInfoVO;
 import com.saas.cloud.rbac.entity.Dept;
@@ -46,6 +47,7 @@ public class InternalController {
      * @return 用户信息
      */
     @Operation(summary = "根据用户ID获取用户信息")
+    @TenantIgnore
     @GetMapping("/user/{id}")
     public ApiResult<UserInfoVO> getUserById(@PathVariable("id") Long id) {
         log.info("内部接口: 获取用户信息, userId={}", id);
@@ -60,6 +62,7 @@ public class InternalController {
      * @return 用户数量
      */
     @Operation(summary = "获取指定租户的用户数量")
+    @TenantIgnore
     @GetMapping("/user/count")
     public ApiResult<Long> getUserCount(@RequestParam("tenantId") Long tenantId) {
         log.info("内部接口: 获取租户用户数, tenantId={}", tenantId);
@@ -75,6 +78,7 @@ public class InternalController {
      * @return 部门负责人用户信息
      */
     @Operation(summary = "获取部门负责人信息")
+    @TenantIgnore
     @GetMapping("/dept/{id}/leader")
     public ApiResult<UserInfoVO> getDeptLeader(@PathVariable("id") Long id) {
         log.info("内部接口: 获取部门负责人, deptId={}", id);

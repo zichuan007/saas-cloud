@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.wechat.oa.client.WechatApiClient;
 import com.saas.cloud.wechat.oa.entity.WechatOaAccount;
 import com.saas.cloud.wechat.oa.service.IWechatOaAccountService;
@@ -38,29 +39,32 @@ public class AccessTokenRefreshTask {
      */
     @XxlJob("refreshWechatAccessTokenJob")
     public void refreshAccessTokens() {
-        List<WechatOaAccount> accounts = accountService.listAccounts();
-        int successCount = 0;
-        int skipCount = 0;
+        // 定时任务线程无租户上下文，平台级遍历所有租户公众号刷新 token
+        TenantContext.executeWithoutTenant(() -> {
+            List<WechatOaAccount> accounts = accountService.listAccounts();
+            int successCount = 0;
+            int skipCount = 0;
 
-        for (WechatOaAccount account : accounts) {
-            if (account.getStatus() == null || account.getStatus() != 1) {
-                continue;
-            }
-            try {
-                if (refreshSingleAccount(account)) {
-                    successCount++;
-                } else {
-                    skipCount++;
+            for (WechatOaAccount account : accounts) {
+                if (account.getStatus() == null || account.getStatus() != 1) {
+                    continue;
                 }
-            } catch (Exception e) {
-                log.error("刷新AccessToken失败, appId={}, error={}",
-                        account.getAppId(), e.getMessage());
+                try {
+                    if (refreshSingleAccount(account)) {
+                        successCount++;
+                    } else {
+                        skipCount++;
+                    }
+                } catch (Exception e) {
+                    log.error("刷新AccessToken失败, appId={}, error={}",
+                            account.getAppId(), e.getMessage());
+                }
             }
-        }
 
-        String msg = "刷新完成, 成功: " + successCount + " 个, 跳过(未过期): " + skipCount + " 个";
-        log.info("[XXL-Job] {}", msg);
-        XxlJobHelper.handleSuccess(msg);
+            String msg = "刷新完成, 成功: " + successCount + " 个, 跳过(未过期): " + skipCount + " 个";
+            log.info("[XXL-Job] {}", msg);
+            XxlJobHelper.handleSuccess(msg);
+        });
     }
 
     /**

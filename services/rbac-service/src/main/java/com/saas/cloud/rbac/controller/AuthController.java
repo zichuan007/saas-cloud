@@ -65,7 +65,8 @@ public class AuthController {
         String username = (String) params.get("username");
         String password = (String) params.get("password");
         String tenantCode = (String) params.get("tenantCode");
-        return ApiResult.ok(authService.login(username, password, tenantCode));
+        String captchaVerification = (String) params.get("captchaVerification");
+        return ApiResult.ok(authService.login(username, password, tenantCode, captchaVerification));
     }
 
     /**

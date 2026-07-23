@@ -1,4 +1,5 @@
 com.saas.cloud.common.data.config.MybatisPlusConfig
+com.saas.cloud.common.data.config.AsyncConfig
 com.saas.cloud.common.data.handler.AuditFieldHandler
 com.saas.cloud.common.security.filter.TenantContextFilter
 com.saas.cloud.common.security.interceptor.PermissionAspect

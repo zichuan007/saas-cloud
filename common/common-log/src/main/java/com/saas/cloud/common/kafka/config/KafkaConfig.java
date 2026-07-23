@@ -11,7 +11,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.ContainerCustomizer;
 import org.springframework.kafka.config.TopicBuilder;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
+import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.util.backoff.FixedBackOff;
 
 import com.saas.cloud.common.kafka.interceptor.TenantKafkaListenerInterceptor;
 import com.saas.cloud.common.kafka.interceptor.TenantKafkaProducerInterceptor;
@@ -64,7 +68,7 @@ public class KafkaConfig {
     }
 
     /**
-     * 注册 Producer 端租户拦截器
+     * 注册 Producer 端租户拦截器 + 可靠投递参数
      */
     @Bean
     public DefaultKafkaProducerFactoryCustomizer tenantProducerCustomizer() {
@@ -72,6 +76,11 @@ public class KafkaConfig {
             Map<String, Object> config = new HashMap<>();
             config.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG,
                     TenantKafkaProducerInterceptor.class.getName());
+            // 可靠投递：全部副本确认 + 幂等生产者 + 失败重试，防止消息丢失与重复
+            config.put(ProducerConfig.ACKS_CONFIG, "all");
+            config.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+            config.put(ProducerConfig.RETRIES_CONFIG, 3);
+            config.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
             producerFactory.updateConfigs(config);
         };
     }
@@ -82,5 +91,16 @@ public class KafkaConfig {
     @Bean
     public ContainerCustomizer<Object, Object, ConcurrentMessageListenerContainer<Object, Object>> tenantConsumerCustomizer() {
         return container -> container.setRecordInterceptor(new TenantKafkaListenerInterceptor());
+    }
+
+    /**
+     * 消费端错误处理：消费失败重试 3 次（1 秒间隔），仍失败则投递到死信队列（topic + ".DLT"）。
+     * <p>Spring Boot 自动将其装配到所有 @KafkaListener 容器。</p>
+     */
+    @Bean
+    public DefaultErrorHandler kafkaErrorHandler(
+            KafkaTemplate<Object, Object> template) {
+        DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(template);
+        return new DefaultErrorHandler(recoverer, new FixedBackOff(1000L, 3));
     }
 }

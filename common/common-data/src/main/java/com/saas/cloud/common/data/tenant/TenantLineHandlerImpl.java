@@ -36,8 +36,11 @@ public class TenantLineHandlerImpl implements TenantLineHandler {
         if (tenantId != null) {
             return new LongValue(tenantId);
         }
-        // 未登录或平台管理端请求，返回不存在的值防止数据泄露
-        log.debug("租户上下文为空，返回默认值 -1，将无法查询到任何数据");
+        // fail-closed：无租户上下文返回不存在的值，防止跨租户数据泄露。
+        // 走到这里说明有未标注 @TenantIgnore 的合法跨租户操作在无上下文线程上查租户维度表，
+        // 以 warn 暴露以便定位（正常请求/启动预热不应命中此处）。
+        log.warn("租户上下文为空，返回默认值 -1，查询租户维度表将返回空。需排查是否遗漏 @TenantIgnore",
+                new IllegalStateException("tenant context missing"));
         return new LongValue(-1L);
     }
 
@@ -48,23 +51,21 @@ public class TenantLineHandlerImpl implements TenantLineHandler {
 
     @Override
     public boolean ignoreTable(String tableName) {
-        // 1. 编程式忽略（超级管理员/跨租户操作）
+        // 1. 编程式显式忽略（平台管理端 / 跨租户初始化 / @TenantIgnore）
         if (TenantContext.isIgnoreTenant()) {
             log.debug("忽略租户过滤（编程式），表: {}", tableName);
             return true;
         }
 
-        // 2. 未登录时不注入租户条件（平台管理端请求）
-        if (TenantContext.getTenantId() == null) {
-            return true;
-        }
+        // 2. fail-closed：无租户上下文时不再放行全表，交由 getTenantId() 返回 -1L，
+        //    使租户维度查询查不到任何数据，防止绕过网关的流量全量可见。
+        //    平台级查询必须通过 @TenantIgnore 或 executeWithoutTenant 显式提权。
 
-        // 3. 配置的忽略表
+        // 3. 配置的忽略表（平台级共享表）
         boolean ignore = ignoreTableSet.contains(tableName.toLowerCase());
         if (ignore) {
             log.debug("表 {} 在忽略列表中，不进行租户过滤", tableName);
         }
-
         return ignore;
     }
 }

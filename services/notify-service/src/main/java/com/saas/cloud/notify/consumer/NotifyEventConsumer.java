@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saas.cloud.common.kafka.config.KafkaConfig;
+import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.notify.api.enums.NotifyChannelType;
 import com.saas.cloud.notify.api.event.NotifyEvent;
 import com.saas.cloud.notify.entity.NotifyChannelConfig;
@@ -68,6 +69,13 @@ public class NotifyEventConsumer {
                 return;
             }
 
+            // 从事件体兜底还原租户上下文（Kafka header 缺失时，避免写库 tenant_id 丢失）
+            if (event.getTenantId() != null) {
+                TenantContext.TenantInfo info = new TenantContext.TenantInfo();
+                info.setTenantId(event.getTenantId());
+                TenantContext.set(info);
+            }
+
             // 1. 站内信（必发）
             messageService.createMessage(event);
 
@@ -107,6 +115,8 @@ public class NotifyEventConsumer {
             }
         } catch (Exception e) {
             log.error("[通知中心] 处理通知事件失败, message={}", message, e);
+        } finally {
+            TenantContext.clear();
         }
     }
 

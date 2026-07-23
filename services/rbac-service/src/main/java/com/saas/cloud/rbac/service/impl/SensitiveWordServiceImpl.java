@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.saas.cloud.common.core.result.PageResult;
 import com.saas.cloud.common.core.util.DfaFilter;
+import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.rbac.entity.SensitiveWord;
 import com.saas.cloud.rbac.mapper.SensitiveWordMapper;
 import com.saas.cloud.rbac.service.ISensitiveWordService;
@@ -76,8 +77,10 @@ public class SensitiveWordServiceImpl extends ServiceImpl<SensitiveWordMapper, S
 
     private void rebuildDfa() {
         try {
-            List<SensitiveWord> words = this.list(new LambdaQueryWrapper<SensitiveWord>()
-                    .eq(SensitiveWord::getStatus, (byte) 1));
+            // 敏感词库为平台级共享数据，跨租户加载全部启用词条
+            List<SensitiveWord> words = TenantContext.executeWithoutTenant(() ->
+                    this.list(new LambdaQueryWrapper<SensitiveWord>()
+                            .eq(SensitiveWord::getStatus, (byte) 1)));
             List<String> wordList = words.stream()
                     .map(SensitiveWord::getWord)
                     .collect(Collectors.toList());

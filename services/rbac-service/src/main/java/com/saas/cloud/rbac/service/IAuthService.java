@@ -15,7 +15,8 @@ import com.saas.cloud.rbac.api.vo.RegisterVO;
  */
 public interface IAuthService {
 
-    Map<String, Object> login(String username, String password, String tenantCode);
+    Map<String, Object> login(String username, String password, String tenantCode,
+                              String captchaVerification);
 
     Map<String, Object> refreshToken(String refreshToken);
 

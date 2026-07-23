@@ -5,6 +5,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.common.websocket.interceptor.LoginUserHandshakeInterceptor;
 import com.saas.cloud.common.websocket.session.WebSocketSessionManager;
 
@@ -41,10 +42,27 @@ public class JsonWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
-        if (messageListener != null) {
-            Long userId = getUserId(session);
-            messageListener.onMessage(userId, message.getPayload(), session);
+        if (messageListener == null) {
+            return;
         }
+        Long userId = getUserId(session);
+        // WebSocket 消息线程无 HTTP 上下文，从握手属性还原租户上下文，
+        // 避免消息处理逻辑查租户维度表时丢失租户隔离
+        Long tenantId = getTenantId(session);
+        if (tenantId != null) {
+            TenantContext.TenantInfo info = new TenantContext.TenantInfo();
+            info.setTenantId(tenantId);
+            TenantContext.set(info);
+        }
+        try {
+            messageListener.onMessage(userId, message.getPayload(), session);
+        } finally {
+            TenantContext.clear();
+        }
+    }
+
+    private Long getTenantId(WebSocketSession session) {
+        return (Long) session.getAttributes().get(LoginUserHandshakeInterceptor.ATTR_TENANT_ID);
     }
 
     @Override

@@ -19,6 +19,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.saas.cloud.common.core.exception.BusinessException;
 import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.core.result.PageResult;
+import com.saas.cloud.common.data.tenant.annotation.TenantIgnore;
 import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.platform.api.feign.PlatformFeignClient;
 import com.saas.cloud.workflow.api.dto.ProcessDefinitionCreateDTO;
@@ -349,6 +350,7 @@ public class WfProcessDefinitionExtServiceImpl
         log.info("保存 BPMN 设计成功, id={}, modelId={}", id, ext.getModelId());
     }
 
+    @TenantIgnore
     @Override
     public List<ProcessDefinitionVO> listTemplates() {
         LambdaQueryWrapper<WfProcessDefinitionExt> wrapper = new LambdaQueryWrapper<>();
@@ -366,7 +368,8 @@ public class WfProcessDefinitionExtServiceImpl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void importTemplate(Long templateId) {
-        WfProcessDefinitionExt template = getById(templateId);
+        // 平台模板跨租户共享，读取时临时忽略租户过滤；后续去重检查仍按当前租户
+        WfProcessDefinitionExt template = TenantContext.executeWithoutTenant(() -> getById(templateId));
         if (template == null) {
             throw new BusinessException("模板不存在");
         }

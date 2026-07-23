@@ -1,5 +1,5 @@
 -- 短信发送日志表（notify 库）
-USE `saas_notify`;
+USE `notify`;
 
 CREATE TABLE IF NOT EXISTS `sys_sms_log` (
     `id`               bigint(20)   NOT NULL AUTO_INCREMENT COMMENT '主键',

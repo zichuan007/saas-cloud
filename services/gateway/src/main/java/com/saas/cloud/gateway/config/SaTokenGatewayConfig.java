@@ -6,11 +6,13 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import cn.dev33.satoken.reactor.filter.SaReactorFilter;
+import cn.dev33.satoken.router.SaHttpMethod;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpUtil;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +44,7 @@ public class SaTokenGatewayConfig {
                         "/api/rbac/captcha/**",
                         "/api/rbac/auth/social/**",
                         "/api/platform/auth/login",
+                        "/api/wechat-oa/callback/**",
                         "/api/generator/**",
                         "/doc.html",
                         "/webjars/**",
@@ -52,7 +55,14 @@ public class SaTokenGatewayConfig {
                         "/favicon.ico"
                 )
                 .setAuth(obj -> {
-                    SaRouter.match("/**", r -> StpUtil.checkLogin());
+                    SaRouter.match("/**")
+                            .notMatch(SaHttpMethod.OPTIONS)
+                            .check(r -> StpUtil.checkLogin());
+                })
+                .setBeforeAuth(obj -> {
+                    SaRouter.match(SaHttpMethod.OPTIONS)
+                            .free(r -> {})
+                            .back();
                 })
                 .setError(e -> {
                     log.warn("Sa-Token 认证失败: {}", e.getMessage());

@@ -30,7 +30,8 @@ public class ApiLogAutoConfiguration {
         registration.setFilter(new ApiErrorLogFilter(kafkaProducerService, objectMapper));
         registration.addUrlPatterns("/*");
         registration.setName("apiErrorLogFilter");
-        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
+        // 置于 TenantContextFilter(+10) 之内，异常捕获时 UserContext 尚未 clear
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 11);
         return registration;
     }
 
@@ -41,7 +42,8 @@ public class ApiLogAutoConfiguration {
         registration.setFilter(new ApiAccessLogFilter(kafkaProducerService, objectMapper));
         registration.addUrlPatterns("/*");
         registration.setName("apiAccessLogFilter");
-        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 2);
+        // 置于 TenantContextFilter(+10) 之内，finally 记录时 UserContext 尚未 clear
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 12);
         return registration;
     }
 }

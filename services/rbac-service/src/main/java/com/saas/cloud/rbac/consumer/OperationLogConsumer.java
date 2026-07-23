@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saas.cloud.common.kafka.config.KafkaConfig;
+import com.saas.cloud.common.data.tenant.annotation.TenantIgnore;
 import com.saas.cloud.common.log.event.OperationLogEvent;
 import com.saas.cloud.rbac.entity.OperationLog;
 import com.saas.cloud.rbac.mapper.OperationLogMapper;
@@ -31,21 +32,18 @@ public class OperationLogConsumer {
 
     /**
      * 消费操作日志事件
+     * <p>异常向上抛出，由 DefaultErrorHandler 重试 3 次后投递死信队列，避免审计日志静默丢失。</p>
      *
      * @param message Kafka 消息（JSON 字符串）
      */
     @KafkaListener(topics = KafkaConfig.TOPIC_OPERATION_LOG, groupId = "rbac-service")
-    public void onMessage(String message) {
-        try {
-            OperationLogEvent event = objectMapper.readValue(message, OperationLogEvent.class);
-            OperationLog entity = convertToEntity(event);
-            operationLogMapper.insert(entity);
-            log.debug("[操作日志消费] 入库成功: module={}, operation={}, userId={}",
-                    event.getModule(), event.getOperation(), event.getUserId());
-        } catch (Exception e) {
-            // 单条消息失败不影响后续消费，仅记录错误日志
-            log.error("[操作日志消费] 处理失败, message={}, error={}", message, e.getMessage(), e);
-        }
+    @TenantIgnore
+    public void onMessage(String message) throws Exception {
+        OperationLogEvent event = objectMapper.readValue(message, OperationLogEvent.class);
+        OperationLog entity = convertToEntity(event);
+        operationLogMapper.insert(entity);
+        log.debug("[操作日志消费] 入库成功: module={}, operation={}, userId={}",
+                event.getModule(), event.getOperation(), event.getUserId());
     }
 
     /**

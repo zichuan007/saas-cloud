@@ -144,6 +144,7 @@ public class SocialLoginServiceImpl implements ISocialLoginService {
         log.info("[社交登录] 绑定成功, userId={}, socialType={}, socialId={}", userId, socialType, socialId);
     }
 
+    @TenantIgnore
     @Override
     public void unbindSocial(Long userId, String socialType) {
         socialUserMapper.delete(new LambdaQueryWrapper<SocialUser>()
@@ -152,6 +153,7 @@ public class SocialLoginServiceImpl implements ISocialLoginService {
         log.info("[社交登录] 解绑成功, userId={}, socialType={}", userId, socialType);
     }
 
+    @TenantIgnore
     @Override
     public List<SocialUser> listBoundSocials(Long userId) {
         return socialUserMapper.selectList(

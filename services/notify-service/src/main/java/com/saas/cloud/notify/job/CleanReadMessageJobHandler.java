@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.notify.entity.NotifyMessage;
 import com.saas.cloud.notify.service.INotifyMessageService;
 import com.xxl.job.core.context.XxlJobHelper;
@@ -42,14 +43,17 @@ public class CleanReadMessageJobHandler {
 
         LocalDateTime threshold = LocalDateTime.now().minusDays(RETENTION_DAYS);
 
-        LambdaQueryWrapper<NotifyMessage> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(NotifyMessage::getIsRead, (byte) 1)
-                .le(NotifyMessage::getReadTime, threshold);
-
-        long count = messageService.count(wrapper);
-        if (count > 0) {
-            messageService.remove(wrapper);
-        }
+        // 定时任务线程无租户上下文，平台级清理需跨租户执行
+        long count = TenantContext.executeWithoutTenant(() -> {
+            LambdaQueryWrapper<NotifyMessage> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(NotifyMessage::getIsRead, (byte) 1)
+                    .le(NotifyMessage::getReadTime, threshold);
+            long c = messageService.count(wrapper);
+            if (c > 0) {
+                messageService.remove(wrapper);
+            }
+            return c;
+        });
 
         String msg = "清理完成, 删除已读消息: " + count + " 条";
         log.info("[XXL-Job] {}", msg);

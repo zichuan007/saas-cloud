@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.saas.cloud.common.data.tenant.annotation.TenantIgnore;
+import com.saas.cloud.common.core.enums.DataScopeEnum;
 import com.saas.cloud.common.core.enums.TenantStatusEnum;
 import com.saas.cloud.common.core.exception.BusinessException;
 import com.saas.cloud.common.core.exception.ForbiddenException;
@@ -52,6 +53,10 @@ import com.saas.cloud.rbac.service.ILoginLogService;
 
 import com.saas.cloud.common.core.util.IpRegionUtils;
 
+import com.anji.captcha.model.common.ResponseModel;
+import com.anji.captcha.model.vo.CaptchaVO;
+import com.anji.captcha.service.CaptchaService;
+
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
@@ -81,6 +86,15 @@ public class AuthServiceImpl implements IAuthService {
     private final PlatformFeignClient platformFeignClient;
     private final TenantInitializerRegistry tenantInitializerRegistry;
     private final ILoginLogService loginLogService;
+    private final CaptchaService captchaService;
+
+    /** Sa-Token 绝对超时时间（秒），刷新时据此滑动续期 */
+    @org.springframework.beans.factory.annotation.Value("${sa-token.timeout:604800}")
+    private long saTokenTimeout;
+
+    /** 是否启用登录验证码校验（前端联调后将 saas.captcha.enabled 置 true 启用） */
+    @org.springframework.beans.factory.annotation.Value("${saas.captcha.enabled:false}")
+    private boolean captchaEnabled;
 
     private static final BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
     private static final String REDIS_LOGIN_FAIL = "auth:login_fail:";
@@ -89,7 +103,13 @@ public class AuthServiceImpl implements IAuthService {
 
     @TenantIgnore
     @Override
-    public Map<String, Object> login(String username, String password, String tenantCode) {
+    public Map<String, Object> login(String username, String password, String tenantCode,
+                                     String captchaVerification) {
+        // 登录验证码校验（前端联调后将 saas.captcha.enabled 置 true 启用）
+        if (captchaEnabled) {
+            verifyCaptcha(captchaVerification);
+        }
+
         User user;
         TenantVO tenant;
 
@@ -191,6 +211,7 @@ public class AuthServiceImpl implements IAuthService {
         return result;
     }
 
+    @TenantIgnore
     @Override
     public Map<String, Object> refreshToken(String refreshToken) {
         Object loginId = StpUtil.getLoginIdByToken(refreshToken);
@@ -207,7 +228,8 @@ public class AuthServiceImpl implements IAuthService {
         Set<String> latestPermissions = loadPermissions(userId);
         session.set("permissions", String.join(",", latestPermissions));
 
-        StpUtil.renewTimeout(StpUtil.getTokenTimeout());
+        // 滑动续期：刷新时把绝对超时推回完整周期，活跃用户不会被硬截止踢出
+        StpUtil.renewTimeout(saTokenTimeout);
 
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("accessToken", refreshToken);
@@ -319,7 +341,7 @@ public class AuthServiceImpl implements IAuthService {
         result.put("avatar", user.getAvatar() != null ? user.getAvatar() : "");
         result.put("roles", roleCodes);
         result.put("desc", "");
-        result.put("homePath", "/dashboard/analytics");
+        result.put("homePath", "/system/user");
         result.put("token", "");
         return result;
     }
@@ -387,10 +409,36 @@ public class AuthServiceImpl implements IAuthService {
         List<UserRole> userRoles = userRoleMapper.selectList(
                 new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, userId));
         if (userRoles.isEmpty()) {
-            return 4;
+            return DataScopeEnum.SELF.getCode();
         }
-        // TODO: 从 sys_role 查 data_scope，取最大权限（最小值）
-        return 4;
+        List<Long> roleIds = userRoles.stream()
+                .map(UserRole::getRoleId)
+                .collect(Collectors.toList());
+        List<Role> roles = roleMapper.selectBatchIds(roleIds);
+        // 取所有角色中数据范围最宽的（枚举值最小=权限最大）
+        return roles.stream()
+                .map(Role::getDataScope)
+                .filter(Objects::nonNull)
+                .mapToInt(Byte::intValue)
+                .min()
+                .orElse(DataScopeEnum.SELF.getCode());
+    }
+
+    /**
+     * 校验滑块验证码二次 token（AJ-Captcha verification 阶段）
+     *
+     * @param captchaVerification 前端经 /captcha/check 获取的二次校验 token
+     */
+    private void verifyCaptcha(String captchaVerification) {
+        if (captchaVerification == null || captchaVerification.isBlank()) {
+            throw new BusinessException(ResultCode.BAD_REQUEST.getCode(), "验证码不能为空");
+        }
+        CaptchaVO vo = new CaptchaVO();
+        vo.setCaptchaVerification(captchaVerification);
+        ResponseModel result = captchaService.verification(vo);
+        if (result == null || !"0000".equals(result.getRepCode())) {
+            throw new BusinessException("验证码错误或已过期");
+        }
     }
 
     private void checkLoginAttempts(String username, Long tenantId) {

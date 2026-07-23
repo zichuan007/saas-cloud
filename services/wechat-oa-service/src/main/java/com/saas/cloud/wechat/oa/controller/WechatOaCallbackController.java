@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.wechat.oa.entity.WechatOaAccount;
 import com.saas.cloud.wechat.oa.entity.WechatOaAutoReplyRule;
 import com.saas.cloud.wechat.oa.entity.WechatOaFanUser;
@@ -104,21 +105,29 @@ public class WechatOaCallbackController {
             return "success";
         }
 
-        String msgType = extractXmlValue(xmlBody, "MsgType");
-        String fromUser = extractXmlValue(xmlBody, "FromUserName");
-        String toUser = extractXmlValue(xmlBody, "ToUserName");
+        // 微信回调无登录态，按公众号所属租户定位上下文，后续规则/粉丝操作自动隔离
+        TenantContext.TenantInfo tenantInfo = new TenantContext.TenantInfo();
+        tenantInfo.setTenantId(account.getTenantId());
+        TenantContext.set(tenantInfo);
+        try {
+            String msgType = extractXmlValue(xmlBody, "MsgType");
+            String fromUser = extractXmlValue(xmlBody, "FromUserName");
+            String toUser = extractXmlValue(xmlBody, "ToUserName");
 
-        if ("event".equals(msgType)) {
-            String event = extractXmlValue(xmlBody, "Event");
-            return handleWechatEvent(account, event, fromUser, toUser);
+            if ("event".equals(msgType)) {
+                String event = extractXmlValue(xmlBody, "Event");
+                return handleWechatEvent(account, event, fromUser, toUser);
+            }
+
+            if ("text".equals(msgType)) {
+                String content = extractXmlValue(xmlBody, "Content");
+                return handleTextMessage(account, content, fromUser, toUser);
+            }
+
+            return "success";
+        } finally {
+            TenantContext.clear();
         }
-
-        if ("text".equals(msgType)) {
-            String content = extractXmlValue(xmlBody, "Content");
-            return handleTextMessage(account, content, fromUser, toUser);
-        }
-
-        return "success";
     }
 
     private String handleWechatEvent(WechatOaAccount account, String event,

@@ -1,5 +1,5 @@
 -- 文件管理表（platform 库）
-USE `saas_platform`;
+USE `platform`;
 
 CREATE TABLE IF NOT EXISTS `sys_file` (
     `id`               bigint(20)    NOT NULL AUTO_INCREMENT COMMENT '主键',

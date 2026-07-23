@@ -32,4 +32,10 @@ public class TraceAutoConfiguration {
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 5);
         return registration;
     }
+
+    @Bean
+    @ConditionalOnBean(Tracer.class)
+    public ApiResultTraceIdAdvice apiResultTraceIdAdvice(Tracer tracer) {
+        return new ApiResultTraceIdAdvice(tracer);
+    }
 }
