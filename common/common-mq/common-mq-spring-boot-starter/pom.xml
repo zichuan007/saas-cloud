@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.saas.cloud</groupId>
+        <artifactId>common-mq</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>common-mq-spring-boot-starter</artifactId>
+    <name>Common MQ Spring Boot Starter</name>
+    <description>按 saas.mq.type 装配对应适配器，注册 MessageSender</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.saas.cloud</groupId>
+            <artifactId>common-mq-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- Kafka 适配器默认引入（最常见底座）；Rabbit/Rocket 适配器后续按需引入 -->
+        <dependency>
+            <groupId>com.saas.cloud</groupId>
+            <artifactId>common-mq-kafka</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- RabbitMQ 适配器（optional：切 saas.mq.type=rabbit 的服务显式引入） -->
+        <dependency>
+            <groupId>com.saas.cloud</groupId>
+            <artifactId>common-mq-rabbit</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <!-- 可靠性模式：outbox + 消费幂等 -->
+        <dependency>
+            <groupId>com.saas.cloud</groupId>
+            <artifactId>common-mq-reliability</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+</project>

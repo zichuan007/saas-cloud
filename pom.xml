@@ -56,6 +56,9 @@
         <!-- 任务调度 -->
         <xxl-job.version>3.1.1</xxl-job.version>
 
+        <!-- MQ -->
+        <rocketmq-spring.version>2.3.3</rocketmq-spring.version>
+
         <!-- 短信 -->
         <sms4j.version>3.3.3</sms4j.version>
 
@@ -147,6 +150,43 @@
                 <groupId>com.saas.cloud</groupId>
                 <artifactId>common-websocket</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.saas.cloud</groupId>
+                <artifactId>common-mq-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.saas.cloud</groupId>
+                <artifactId>common-mq-kafka</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.saas.cloud</groupId>
+                <artifactId>common-mq-reliability</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.saas.cloud</groupId>
+                <artifactId>common-mq-rabbit</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.saas.cloud</groupId>
+                <artifactId>common-mq-rocket</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.saas.cloud</groupId>
+                <artifactId>common-mq-spring-boot-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- RocketMQ (Spring Boot 3) -->
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq-spring.version}</version>
             </dependency>
 
             <!-- 业务服务 API -->

@@ -3,14 +3,18 @@ package com.saas.cloud.notify.consumer;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.saas.cloud.common.kafka.config.KafkaConfig;
+import com.saas.cloud.common.mq.MessageConsumer;
+import com.saas.cloud.common.mq.MessageEnvelope;
+import com.saas.cloud.common.mq.MessageListener;
+import com.saas.cloud.common.mq.MqConst;
+import com.saas.cloud.common.mq.annotation.MqConsumer;
+import com.saas.cloud.common.mq.annotation.MqIdempotent;
 import com.saas.cloud.common.security.context.TenantContext;
 import com.saas.cloud.notify.api.enums.NotifyChannelType;
 import com.saas.cloud.notify.api.event.NotifyEvent;
@@ -28,8 +32,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 通知事件 Kafka 消费者
- * <p>监听通知事件 Topic，创建站内消息并根据租户渠道配置路由到邮件/飞书/钉钉/企微等渠道。</p>
+ * 通知事件消费者（原 @KafkaListener，现 @MqConsumer 统一消费）
+ * <p>监听通知事件 Topic，创建站内消息并根据租户渠道配置路由到邮件/飞书/钉钉/企微等渠道。
+ * 异常内部吞掉并记录日志（不触发重试/死信），保证消费进度推进。</p>
  *
  * @author saas-cloud
  * @version V1.0
@@ -38,7 +43,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class NotifyEventConsumer {
+@MqConsumer(topic = MqConst.TOPIC_NOTIFY_EVENT, group = "notify-service")
+public class NotifyEventConsumer implements MessageListener<NotifyEvent> {
 
     private final INotifyMessageService messageService;
     private final INotifyChannelConfigService channelConfigService;
@@ -51,26 +57,40 @@ public class NotifyEventConsumer {
     private final ObjectMapper objectMapper;
 
     /**
+     * 负载类型，供适配器反序列化
+     *
+     * @return NotifyEvent
+     */
+    @Override
+    public Class<NotifyEvent> payloadType() {
+        return NotifyEvent.class;
+    }
+
+    /**
      * 消费通知事件消息
      *
-     * @param message Kafka 消息（JSON 字符串）
+     * @param msg 消息信封（data 已反序列化为 NotifyEvent）
+     * @param ctx 消费上下文
      */
-    @KafkaListener(topics = KafkaConfig.TOPIC_NOTIFY_EVENT, groupId = "notify-service")
-    public void onMessage(String message) {
-        log.info("[通知中心] 收到通知事件消息: {}", message);
+    @Override
+    @MqIdempotent
+    public void onMessage(MessageEnvelope<NotifyEvent> msg, MessageConsumer ctx) {
+        NotifyEvent event = msg.getData();
+        log.info("[通知中心] 收到通知事件消息: msgId={}, receiverId={}",
+                msg.getMsgId(), event == null ? null : event.getReceiverId());
         try {
-            NotifyEvent event = objectMapper.readValue(message, NotifyEvent.class);
             if (event == null) {
-                log.warn("[通知中心] 通知事件反序列化结果为空, message={}", message);
+                log.warn("[通知中心] 通知事件为空, msgId={}", msg.getMsgId());
                 return;
             }
             if (event.getReceiverId() == null) {
-                log.warn("[通知中心] 通知事件缺少接收人ID, message={}", message);
+                log.warn("[通知中心] 通知事件缺少接收人ID, msgId={}", msg.getMsgId());
                 return;
             }
 
-            // 从事件体兜底还原租户上下文（Kafka header 缺失时，避免写库 tenant_id 丢失）
-            if (event.getTenantId() != null) {
+            // 从事件体兜底还原租户上下文（header 缺失时，避免写库 tenant_id 丢失）
+            // header 还原由 MQ 适配器完成；此处仅在 header 缺失时用事件体补齐
+            if (TenantContext.getTenantId() == null && event.getTenantId() != null) {
                 TenantContext.TenantInfo info = new TenantContext.TenantInfo();
                 info.setTenantId(event.getTenantId());
                 TenantContext.set(info);
@@ -114,10 +134,9 @@ public class NotifyEventConsumer {
                 }
             }
         } catch (Exception e) {
-            log.error("[通知中心] 处理通知事件失败, message={}", message, e);
-        } finally {
-            TenantContext.clear();
+            log.error("[通知中心] 处理通知事件失败, msgId={}", msg.getMsgId(), e);
         }
+        // 租户上下文清理由 MQ 适配器统一完成
     }
 
     /**

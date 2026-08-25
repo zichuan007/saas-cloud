@@ -1,13 +1,17 @@
 package com.saas.cloud.rbac.consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.saas.cloud.common.kafka.config.KafkaConfig;
 import com.saas.cloud.common.data.tenant.annotation.TenantIgnore;
 import com.saas.cloud.common.log.event.OperationLogEvent;
+import com.saas.cloud.common.mq.MessageConsumer;
+import com.saas.cloud.common.mq.MessageEnvelope;
+import com.saas.cloud.common.mq.MessageListener;
+import com.saas.cloud.common.mq.MqConst;
+import com.saas.cloud.common.mq.annotation.MqConsumer;
+import com.saas.cloud.common.mq.annotation.MqIdempotent;
 import com.saas.cloud.rbac.entity.OperationLog;
 import com.saas.cloud.rbac.mapper.OperationLogMapper;
 
@@ -15,8 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 操作日志 Kafka 消费者
- * 消费 Kafka 操作日志事件并写入 sys_operation_log 表
+ * 操作日志消费者（原 @KafkaListener，现 @MqConsumer 统一消费）
+ * <p>消费操作日志事件并写入 sys_operation_log 表，跨租户审计（@TenantIgnore）。
+ * 异常向上抛出，由容器错误处理器重试 3 次后投递死信队列，避免审计日志静默丢失。</p>
  *
  * @author saas-cloud
  * @version V1.0
@@ -25,21 +30,34 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
-public class OperationLogConsumer {
+@MqConsumer(topic = MqConst.TOPIC_OPERATION_LOG, group = "rbac-service")
+public class OperationLogConsumer implements MessageListener<OperationLogEvent> {
 
     private final OperationLogMapper operationLogMapper;
+
     private final ObjectMapper objectMapper;
 
     /**
-     * 消费操作日志事件
-     * <p>异常向上抛出，由 DefaultErrorHandler 重试 3 次后投递死信队列，避免审计日志静默丢失。</p>
+     * 负载类型，供适配器反序列化
      *
-     * @param message Kafka 消息（JSON 字符串）
+     * @return OperationLogEvent
      */
-    @KafkaListener(topics = KafkaConfig.TOPIC_OPERATION_LOG, groupId = "rbac-service")
+    @Override
+    public Class<OperationLogEvent> payloadType() {
+        return OperationLogEvent.class;
+    }
+
+    /**
+     * 消费操作日志事件
+     *
+     * @param msg 消息信封（data 已反序列化为 OperationLogEvent）
+     * @param ctx 消费上下文
+     */
+    @Override
     @TenantIgnore
-    public void onMessage(String message) throws Exception {
-        OperationLogEvent event = objectMapper.readValue(message, OperationLogEvent.class);
+    @MqIdempotent
+    public void onMessage(MessageEnvelope<OperationLogEvent> msg, MessageConsumer ctx) {
+        OperationLogEvent event = msg.getData();
         OperationLog entity = convertToEntity(event);
         operationLogMapper.insert(entity);
         log.debug("[操作日志消费] 入库成功: module={}, operation={}, userId={}",

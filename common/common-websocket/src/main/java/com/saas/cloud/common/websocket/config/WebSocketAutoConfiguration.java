@@ -2,21 +2,20 @@ package com.saas.cloud.common.websocket.config;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.saas.cloud.common.mq.MessageSender;
 import com.saas.cloud.common.websocket.handler.JsonWebSocketHandler;
 import com.saas.cloud.common.websocket.handler.WebSocketMessageListener;
 import com.saas.cloud.common.websocket.interceptor.LoginUserHandshakeInterceptor;
 import com.saas.cloud.common.websocket.interceptor.WebSocketTokenResolver;
-import com.saas.cloud.common.websocket.sender.KafkaWebSocketMessageSender;
 import com.saas.cloud.common.websocket.sender.LocalWebSocketMessageSender;
+import com.saas.cloud.common.websocket.sender.MqWebSocketMessageSender;
 import com.saas.cloud.common.websocket.sender.WebSocketMessageSender;
 import com.saas.cloud.common.websocket.session.WebSocketSessionManager;
 
@@ -62,25 +61,24 @@ public class WebSocketAutoConfiguration {
     }
 
     /**
-     * Kafka 集群广播模式
+     * MQ 集群广播模式
      */
     @Configuration
-    @ConditionalOnClass(KafkaTemplate.class)
-    @ConditionalOnBean(KafkaTemplate.class)
-    static class KafkaSenderConfig {
+    @ConditionalOnBean(MessageSender.class)
+    static class MqSenderConfig {
 
         @Bean
         @ConditionalOnMissingBean(WebSocketMessageSender.class)
-        public KafkaWebSocketMessageSender kafkaWebSocketMessageSender(
-                KafkaTemplate<String, String> kafkaTemplate,
+        public MqWebSocketMessageSender mqWebSocketMessageSender(
+                MessageSender messageSender,
                 WebSocketSessionManager sessionManager,
                 ObjectMapper objectMapper) {
-            return new KafkaWebSocketMessageSender(kafkaTemplate, sessionManager, objectMapper);
+            return new MqWebSocketMessageSender(messageSender, sessionManager, objectMapper);
         }
     }
 
     /**
-     * 本地发送模式（无 Kafka 时降级）
+     * 本地发送模式（无 MQ 时降级）
      */
     @Configuration
     static class LocalSenderConfig {

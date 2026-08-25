@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.saas.cloud</groupId>
+        <artifactId>common-mq</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>common-mq-kafka</artifactId>
+    <name>Common MQ Kafka Adapter</name>
+    <description>Kafka 适配器：MessageSender 实现 + 租户头传播</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.saas.cloud</groupId>
+            <artifactId>common-mq-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- 多租户上下文（生产者侧注入 X-Tenant-Id 头） -->
+        <dependency>
+            <groupId>com.saas.cloud</groupId>
+            <artifactId>common-data</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

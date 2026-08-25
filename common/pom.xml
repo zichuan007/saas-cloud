@@ -22,6 +22,7 @@
         <module>common-storage</module>
         <module>common-excel</module>
         <module>common-websocket</module>
+        <module>common-mq</module>
     </modules>
 
 </project>

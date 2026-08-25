@@ -39,6 +39,11 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
         </dependency>
+        <!-- 统一 MQ 抽象：MessageSender SPI + Kafka 适配器 -->
+        <dependency>
+            <groupId>com.saas.cloud</groupId>
+            <artifactId>common-mq-spring-boot-starter</artifactId>
+        </dependency>
 
         <!-- Micrometer Tracing + Brave + Zipkin -->
         <dependency>

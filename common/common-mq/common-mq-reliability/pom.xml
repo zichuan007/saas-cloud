@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.saas.cloud</groupId>
+        <artifactId>common-mq</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>common-mq-reliability</artifactId>
+    <name>Common MQ Reliability</name>
+    <description>MQ 可靠性模式：Outbox 本地消息表 + 补偿重试 + 消费幂等</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.saas.cloud</groupId>
+            <artifactId>common-mq-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- MyBatis-Plus（mapper + entity） -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+        </dependency>
+        <!-- 租户上下文（幂等 DB 操作需绕过租户过滤，mq_consume_log 无 tenant_id 列） -->
+        <dependency>
+            <groupId>com.saas.cloud</groupId>
+            <artifactId>common-data</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!-- AOP（幂等切面） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

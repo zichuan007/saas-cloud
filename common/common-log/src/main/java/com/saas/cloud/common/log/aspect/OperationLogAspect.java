@@ -16,12 +16,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saas.cloud.common.core.util.IpRegionUtils;
-import com.saas.cloud.common.kafka.config.KafkaConfig;
-import com.saas.cloud.common.kafka.producer.KafkaProducerService;
 import com.saas.cloud.common.log.annotation.OperationLog;
 import com.saas.cloud.common.log.diff.DiffUtil;
 import com.saas.cloud.common.log.diff.OperationLogContext;
 import com.saas.cloud.common.log.event.OperationLogEvent;
+import com.saas.cloud.common.mq.MessageEnvelope;
+import com.saas.cloud.common.mq.MessageSender;
+import com.saas.cloud.common.mq.MqConst;
 import com.saas.cloud.common.security.context.UserContext;
 
 import jakarta.servlet.ServletRequest;
@@ -47,10 +48,10 @@ public class OperationLogAspect {
     private static final int MAX_PARAMS_LENGTH = 2000;
 
     /**
-     * 条件注入：Kafka 不可用时为 null，降级为日志打印
+     * 条件注入：MQ 不可用时为 null，降级为日志打印
      */
     @Autowired(required = false)
-    private KafkaProducerService kafkaProducerService;
+    private MessageSender messageSender;
 
     @Autowired(required = false)
     private ObjectMapper objectMapper;
@@ -148,20 +149,20 @@ public class OperationLogAspect {
             event.setResponseCode(200);
         }
 
-        // 通过 Kafka 发送，不可用时通过 Spring 事件同步入库
-        if (kafkaProducerService != null && objectMapper != null) {
+        // 通过 MQ 发送，不可用时通过 Spring 事件同步入库
+        if (messageSender != null && objectMapper != null) {
             try {
                 String json = objectMapper.writeValueAsString(event);
-                kafkaProducerService.send(KafkaConfig.TOPIC_OPERATION_LOG, json);
-                log.debug("[操作日志] 已发送到 Kafka: module={}, operation={}, duration={}ms",
+                messageSender.send(MessageEnvelope.of(MqConst.TOPIC_OPERATION_LOG, json));
+                log.debug("[操作日志] 已发送到 MQ: module={}, operation={}, duration={}ms",
                         opLog.module(), opLog.operation(), duration);
             } catch (Exception e) {
-                log.warn("[操作日志] Kafka 发送失败，降级到 Spring 事件: {}", e.getMessage());
+                log.warn("[操作日志] MQ 发送失败，降级到 Spring 事件: {}", e.getMessage());
                 eventPublisher.publishEvent(event);
             }
         } else {
             eventPublisher.publishEvent(event);
-            log.debug("[操作日志] Kafka 不可用，通过 Spring 事件同步入库: module={}, operation={}, duration={}ms",
+            log.debug("[操作日志] MQ 不可用，通过 Spring 事件同步入库: module={}, operation={}, duration={}ms",
                     opLog.module(), opLog.operation(), duration);
         }
     }

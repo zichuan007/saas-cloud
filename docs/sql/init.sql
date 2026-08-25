@@ -1708,3 +1708,59 @@ UPDATE `sys_tenant` SET `admin_user_id` = 201 WHERE `id` = 3;
 --   管理员(ADMIN)           - 系统管理 + 流程查看 + 通知管理
 --   普通用户(USER)          - 仪表盘 + 个人设置 + 流程使用 + 消息查看
 -- =====================================================================
+-- 11. common-mq 可靠性模式表（mq_outbox 生产本地消息表 / mq_consume_log 消费幂等日志）
+-- 启用 saas.mq.outbox.enabled 或 saas.mq.idempotent.enabled 的服务需在其库内存在对应表。
+-- 为便于任意服务按需开启，统一在 5 个业务库均创建。
+-- =====================================================================
+
+-- ---------- platform ----------
+USE `platform`;
+CREATE TABLE IF NOT EXISTS `mq_outbox` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `msg_id` varchar(64) NOT NULL COMMENT '消息唯一ID(幂等键)',
+  `biz_id` varchar(64) DEFAULT NULL COMMENT '业务标识',
+  `topic` varchar(128) NOT NULL COMMENT '主题',
+  `msg_key` varchar(128) DEFAULT NULL COMMENT '分区/路由键',
+  `payload` text NOT NULL COMMENT '序列化报文',
+  `msg_status` int(11) NOT NULL DEFAULT 0 COMMENT '0 INIT 1 SEND_SUCCESS 2 SEND_FAIL 3 SEND_GIVE_UP',
+  `retry_count` int(11) NOT NULL DEFAULT 0 COMMENT '已重试次数',
+  `next_retry_time` timestamp NULL DEFAULT NULL COMMENT '下次重试时间',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_msg_id` (`msg_id`),
+  KEY `idx_status_retry` (`msg_status`, `next_retry_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='MQ 生产 outbox 本地消息表';
+
+CREATE TABLE IF NOT EXISTS `mq_consume_log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `msg_id` varchar(64) NOT NULL COMMENT '消息唯一ID(幂等键)',
+  `topic` varchar(128) NOT NULL COMMENT '主题',
+  `group_id` varchar(128) NOT NULL COMMENT '消费组',
+  `consume_status` int(11) NOT NULL DEFAULT 0 COMMENT '0 INIT 1 CONSUME_SUCCESS 2 CONSUME_FAIL',
+  `error_msg` text COMMENT '失败原因',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_msg_group` (`msg_id`, `group_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='MQ 消费幂等日志';
+
+-- ---------- rbac ----------
+USE `rbac`;
+CREATE TABLE IF NOT EXISTS `mq_outbox` LIKE platform.`mq_outbox`;
+CREATE TABLE IF NOT EXISTS `mq_consume_log` LIKE platform.`mq_consume_log`;
+
+-- ---------- wechat_oa ----------
+USE `wechat_oa`;
+CREATE TABLE IF NOT EXISTS `mq_outbox` LIKE platform.`mq_outbox`;
+CREATE TABLE IF NOT EXISTS `mq_consume_log` LIKE platform.`mq_consume_log`;
+
+-- ---------- notify ----------
+USE `notify`;
+CREATE TABLE IF NOT EXISTS `mq_outbox` LIKE platform.`mq_outbox`;
+CREATE TABLE IF NOT EXISTS `mq_consume_log` LIKE platform.`mq_consume_log`;
+
+-- ---------- workflow ----------
+USE `workflow`;
+CREATE TABLE IF NOT EXISTS `mq_outbox` LIKE platform.`mq_outbox`;
+CREATE TABLE IF NOT EXISTS `mq_consume_log` LIKE platform.`mq_consume_log`;

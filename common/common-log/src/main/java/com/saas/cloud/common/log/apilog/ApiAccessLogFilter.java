@@ -10,8 +10,9 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saas.cloud.common.log.annotation.ApiAccessLog;
-import com.saas.cloud.common.kafka.config.KafkaConfig;
-import com.saas.cloud.common.kafka.producer.KafkaProducerService;
+import com.saas.cloud.common.mq.MessageEnvelope;
+import com.saas.cloud.common.mq.MessageSender;
+import com.saas.cloud.common.mq.MqConst;
 import com.saas.cloud.common.security.context.UserContext;
 
 import io.micrometer.tracing.Span;
@@ -35,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ApiAccessLogFilter extends OncePerRequestFilter {
 
-    private final KafkaProducerService kafkaProducerService;
+    private final MessageSender messageSender;
 
     private final ObjectMapper objectMapper;
 
@@ -94,9 +95,9 @@ public class ApiAccessLogFilter extends OncePerRequestFilter {
 
         try {
             String json = objectMapper.writeValueAsString(event);
-            kafkaProducerService.send(KafkaConfig.TOPIC_API_ACCESS_LOG, json);
+            messageSender.send(MessageEnvelope.of(MqConst.TOPIC_API_ACCESS_LOG, json));
         } catch (Exception e) {
-            log.debug("[API访问日志] Kafka 发送失败: {}", e.getMessage());
+            log.debug("[API访问日志] MQ 发送失败: {}", e.getMessage());
         }
     }
 

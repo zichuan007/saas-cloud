@@ -8,8 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.saas.cloud.common.kafka.config.KafkaConfig;
-import com.saas.cloud.common.kafka.producer.KafkaProducerService;
+import com.saas.cloud.common.mq.MessageEnvelope;
+import com.saas.cloud.common.mq.MessageSender;
+import com.saas.cloud.common.mq.MqConst;
 import com.saas.cloud.common.security.context.UserContext;
 
 import io.micrometer.tracing.Span;
@@ -37,7 +38,7 @@ public class ApiErrorLogFilter extends OncePerRequestFilter {
     /** 异常堆栈最大保留长度 */
     private static final int MAX_STACK_TRACE_LENGTH = 4000;
 
-    private final KafkaProducerService kafkaProducerService;
+    private final MessageSender messageSender;
 
     private final ObjectMapper objectMapper;
 
@@ -84,7 +85,7 @@ public class ApiErrorLogFilter extends OncePerRequestFilter {
             }
 
             String json = objectMapper.writeValueAsString(event);
-            kafkaProducerService.send(KafkaConfig.TOPIC_API_ERROR_LOG, json);
+            messageSender.send(MessageEnvelope.of(MqConst.TOPIC_API_ERROR_LOG, json));
         } catch (Exception e) {
             log.warn("[API错误日志] 记录失败: {}", e.getMessage());
         }
