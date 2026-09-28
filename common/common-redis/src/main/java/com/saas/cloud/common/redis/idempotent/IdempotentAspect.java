@@ -50,11 +50,15 @@ public class IdempotentAspect {
         }
 
         try {
-            return joinPoint.proceed();
-        } finally {
+            Object result = joinPoint.proceed();
+            // 成功：不主动释放锁，让其在 timeout 内自动过期，形成真正的幂等窗口防重复提交
+            return result;
+        } catch (Throwable t) {
+            // 失败：释放锁，允许客户端在窗口内重试
             if (lock.isHeldByCurrentThread()) {
                 lock.unlock();
             }
+            throw t;
         }
     }
 

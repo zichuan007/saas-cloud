@@ -29,9 +29,9 @@ public @interface DistributedLock {
     long waitTime() default 3;
 
     /**
-     * 持有锁的最大时间（自动释放），默认 10 秒
+     * 持有锁的最大时间，-1 表示启用 Redisson 看门狗自动续期，避免长业务锁提前释放
      */
-    long leaseTime() default 10;
+    long leaseTime() default -1;
 
     /**
      * 时间单位
