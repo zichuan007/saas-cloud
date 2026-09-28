@@ -29,6 +29,11 @@ spring:
         server-addr: ${NACOS_ADDR:localhost:8848}
         namespace: ${NACOS_NAMESPACE:e96d2e6b-7bf3-4a42-973a-e020a213cde2}
         file-extension: yml
+      sentinel:
+        transport:
+          dashboard: ${SENTINEL_DASHBOARD:localhost:8080}
+        filter:
+          enabled: false
     gateway:
       discovery:
         locator:
