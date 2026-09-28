@@ -57,7 +57,7 @@ public class TenantSecurityFilter implements GlobalFilter, Ordered {
             "/doc.html",
             "/webjars/**",
             "/swagger-resources/**",
-            "/v2/api-docs/**"
+            "/v3/api-docs/**"
     );
 
     @Override
