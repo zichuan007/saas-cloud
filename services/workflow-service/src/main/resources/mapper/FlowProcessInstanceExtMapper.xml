@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.saas.cloud.workflow.tunnel.mapper.FlowProcessInstanceExtMapper">
+    <sql id="allColumns">id, tenant_id, process_instance_id, process_definition_id,
+        process_key, process_name, title, initiator_id, initiator_name, initiator_dept_id,
+        business_key, flow_type, form_data, status, result, end_time, duration,
+        create_user_id, create_user_name, create_time, update_user_id, update_user_name,
+        update_time, delete_flag, data_version, remark</sql>
+
+    <select id="selectById" resultType="com.saas.cloud.workflow.tunnel.dataobject.FlowProcessInstanceExtDO">
+        SELECT <include refid="allColumns"/> FROM wf_process_instance_ext
+        WHERE id = #{id} AND delete_flag = 0
+    </select>
+
+    <select id="selectByProcessInstanceId" resultType="com.saas.cloud.workflow.tunnel.dataobject.FlowProcessInstanceExtDO">
+        SELECT <include refid="allColumns"/> FROM wf_process_instance_ext
+        WHERE process_instance_id = #{processInstanceId} AND delete_flag = 0
+    </select>
+    <select id="selectList" resultType="com.saas.cloud.workflow.tunnel.dataobject.FlowProcessInstanceExtDO">
+        SELECT <include refid="allColumns"/> FROM wf_process_instance_ext WHERE delete_flag = 0
+    </select>
+<select id="selectByInitiatorId" resultType="com.saas.cloud.workflow.tunnel.dataobject.FlowProcessInstanceExtDO">
+        SELECT <include refid="allColumns"/> FROM wf_process_instance_ext
+        WHERE initiator_id = #{initiatorId} AND delete_flag = 0 ORDER BY create_time DESC
+    </select>
+    <select id="selectByStatus" resultType="com.saas.cloud.workflow.tunnel.dataobject.FlowProcessInstanceExtDO">
+        SELECT <include refid="allColumns"/> FROM wf_process_instance_ext
+        WHERE status = #{status} AND delete_flag = 0 ORDER BY create_time DESC
+    </select>
+    <select id="countByStatus" resultType="int">
+        SELECT COUNT(1) FROM wf_process_instance_ext WHERE status = #{status} AND delete_flag = 0
+    </select>
+</mapper>

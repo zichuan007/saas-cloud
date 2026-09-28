@@ -821,20 +821,259 @@ CREATE TABLE `notify_channel_config` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='租户通知渠道配置表';
 
 -- =====================================================================
--- 6. workflow 库 - 流程管理（5 张表）
+-- 6. workflow 库 - 流程管理（9 张表）
+-- 包含: 6 张新表 + 3 张存量改造表 (wf_process_definition_ext, wf_process_instance_ext, wf_copy 保留)
+-- 旧表 wf_task_ext 保留作兼容，wf_node_config 替换为新的 design
 -- =====================================================================
 USE `workflow`;
 
+-- 旧表先删（按依赖顺序）
+DROP TABLE IF EXISTS `wf_node_candidate`;
 DROP TABLE IF EXISTS `wf_node_config`;
+DROP TABLE IF EXISTS `wf_approval_record`;
+DROP TABLE IF EXISTS `wf_task_relation`;
+DROP TABLE IF EXISTS `wf_urge_log`;
+DROP TABLE IF EXISTS `wf_draft`;
+DROP TABLE IF EXISTS `wf_approval_statistics`;
 DROP TABLE IF EXISTS `wf_copy`;
 DROP TABLE IF EXISTS `wf_task_ext`;
 DROP TABLE IF EXISTS `wf_process_instance_ext`;
 DROP TABLE IF EXISTS `wf_process_definition_ext`;
 
+-- ============================================================
+-- 6.1 审批操作记录表 (核心审计表 — 替代 wf_task_ext 的审计职责)
+-- ============================================================
+CREATE TABLE `wf_approval_record` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `process_instance_id` varchar(64) NOT NULL COMMENT 'Flowable流程实例ID',
+  `process_def_key` varchar(128) DEFAULT NULL COMMENT '流程定义Key (冗余)',
+  `process_name` varchar(256) DEFAULT NULL COMMENT '流程名称',
+  `task_id` varchar(64) DEFAULT NULL COMMENT 'Flowable任务ID',
+  `task_def_key` varchar(128) DEFAULT NULL COMMENT '节点定义Key',
+  `task_name` varchar(256) DEFAULT NULL COMMENT '节点名称',
+  `operator_id` bigint(20) NOT NULL COMMENT '操作人ID',
+  `operator_name` varchar(64) DEFAULT NULL COMMENT '操作人姓名',
+  `operator_dept_id` bigint(20) DEFAULT NULL COMMENT '操作人部门ID',
+  `action` varchar(32) NOT NULL COMMENT '操作动作: APPROVED/REJECTED/RETURNED/TRANSFER/DELEGATE/ADD_SIGN/RECALL/CANCEL/RESUBMIT/URGE/AUTO_SUBMIT/AUTO_SKIP',
+  `operator_type` varchar(16) NOT NULL DEFAULT 'USER' COMMENT '操作来源: USER/SYSTEM',
+  `comment` varchar(1024) DEFAULT NULL COMMENT '审批意见',
+  `system_reason` varchar(255) DEFAULT NULL COMMENT '系统判定原因',
+  `action_time` datetime NOT NULL COMMENT '操作时间',
+  `flow_type` varchar(32) NOT NULL DEFAULT 'NORMAL' COMMENT '流转分类: NORMAL/REJECT/AUTO_SUBMIT',
+  `source_node_key` varchar(128) DEFAULT NULL COMMENT '来源节点Key',
+  `target_node_key` varchar(128) DEFAULT NULL COMMENT '目标节点Key',
+  `parent_task_id` varchar(64) DEFAULT NULL COMMENT '父任务ID',
+  `approve_strategy` varchar(32) DEFAULT NULL COMMENT '审批策略: ANY/ALL/SEQUENTIAL',
+  `is_final_decision` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否终态决定',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
+  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`),
+  KEY `idx_tenant_operator` (`tenant_id`, `operator_id`),
+  KEY `idx_tenant_operator_action` (`tenant_id`, `operator_id`, `action`),
+  KEY `idx_process_instance` (`process_instance_id`),
+  KEY `idx_task_id` (`task_id`),
+  KEY `idx_action_time` (`tenant_id`, `action_time`),
+  KEY `idx_operator_action_time` (`operator_id`, `action_time`, `delete_flag`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='审批操作记录表';
+
+-- ============================================================
+-- 6.2 流程节点配置表 (改造: process_def_key + node_def_key 替代旧的 process_definition_id + node_id)
+-- ============================================================
+CREATE TABLE `wf_node_config` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `process_def_key` varchar(128) NOT NULL COMMENT '流程定义Key',
+  `node_def_key` varchar(128) NOT NULL COMMENT '节点定义Key',
+  `node_name` varchar(256) NOT NULL COMMENT '节点名称',
+  `approve_mode` varchar(16) NOT NULL DEFAULT 'ANY' COMMENT '审批模式: ANY/ALL/SEQUENTIAL',
+  `pass_threshold` int(11) DEFAULT NULL COMMENT '通过阈值',
+  `sequential_order` int(11) NOT NULL DEFAULT 0 COMMENT '顺签顺序',
+  `timeout_enabled` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否启用超时',
+  `timeout_hours` int(11) DEFAULT NULL COMMENT '超时小时数',
+  `timeout_strategy` varchar(16) DEFAULT NULL COMMENT '超时策略: APPROVE/REJECT/TRANSFER/REMIND',
+  `timeout_transfer_user_id` bigint(20) DEFAULT NULL COMMENT '超时转办人ID',
+  `reject_mode` varchar(32) DEFAULT 'BPMN' COMMENT '驳回模式: BPMN/INITIATOR/PREVIOUS/CUSTOM',
+  `custom_target_node` varchar(128) DEFAULT NULL COMMENT '自定义驳回目标节点Key',
+  `same_approver_skip` tinyint(1) NOT NULL DEFAULT 1 COMMENT '同审批人自动跳过',
+  `enabled` tinyint(1) NOT NULL DEFAULT 1 COMMENT '是否启用',
+  `sort_order` int(11) NOT NULL DEFAULT 0 COMMENT '排序',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
+  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_process_node` (`process_def_key`, `node_def_key`, `delete_flag`),
+  KEY `idx_tenant` (`tenant_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='流程节点配置表';
+
+-- ============================================================
+-- 6.3 节点候选人来源表
+-- ============================================================
+CREATE TABLE `wf_node_candidate` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `node_config_id` bigint(20) NOT NULL COMMENT '节点配置ID',
+  `process_def_key` varchar(128) NOT NULL COMMENT '流程定义Key (冗余)',
+  `node_def_key` varchar(128) NOT NULL COMMENT '节点定义Key (冗余)',
+  `assign_type` varchar(32) NOT NULL COMMENT '分配策略: USER/ROLE/DEPT/GROUP/EXPRESSION/API/INITIATOR',
+  `assign_value` varchar(500) NOT NULL COMMENT '策略值',
+  `sort_order` int(11) NOT NULL DEFAULT 0 COMMENT '排序',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
+  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`),
+  KEY `idx_node_config` (`node_config_id`),
+  KEY `idx_process_node` (`process_def_key`, `node_def_key`, `delete_flag`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='节点候选人来源表';
+
+-- ============================================================
+-- 6.4 任务关联关系表
+-- ============================================================
+CREATE TABLE `wf_task_relation` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `process_instance_id` varchar(64) NOT NULL COMMENT '流程实例ID',
+  `task_id` varchar(64) NOT NULL COMMENT '当前任务ID',
+  `parent_task_id` varchar(64) DEFAULT NULL COMMENT '父任务ID',
+  `relation_type` varchar(32) NOT NULL COMMENT '关系类型: TRANSFER/DELEGATE/COUNTER_SIGN',
+  `operator_id` bigint(20) NOT NULL COMMENT '操作人ID',
+  `operator_name` varchar(64) DEFAULT NULL COMMENT '操作人姓名',
+  `target_user_id` bigint(20) NOT NULL COMMENT '目标用户ID',
+  `target_user_name` varchar(64) DEFAULT NULL COMMENT '目标用户姓名',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
+  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`),
+  KEY `idx_task_id` (`task_id`),
+  KEY `idx_parent` (`parent_task_id`),
+  KEY `idx_process_instance` (`process_instance_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='任务关联关系表';
+
+-- ============================================================
+-- 6.5 催办记录表
+-- ============================================================
+CREATE TABLE `wf_urge_log` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `process_instance_id` varchar(64) NOT NULL COMMENT '流程实例ID',
+  `task_id` varchar(64) NOT NULL COMMENT '催办任务ID',
+  `urge_user_id` bigint(20) NOT NULL COMMENT '催办人ID',
+  `urge_user_name` varchar(64) DEFAULT NULL COMMENT '催办人姓名',
+  `target_user_id` bigint(20) NOT NULL COMMENT '被催办人ID',
+  `target_user_name` varchar(64) DEFAULT NULL COMMENT '被催办人姓名',
+  `urge_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '催办时间',
+  `channel` varchar(32) NOT NULL DEFAULT 'IN_APP' COMMENT '催办渠道: IN_APP/SMS/EMAIL',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
+  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`),
+  KEY `idx_task` (`task_id`),
+  KEY `idx_urge_user` (`urge_user_id`),
+  KEY `idx_target_user` (`target_user_id`, `urge_time`),
+  KEY `idx_proc_inst` (`process_instance_id`, `delete_flag`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='催办记录表';
+
+-- ============================================================
+-- 6.6 流程草稿表
+-- ============================================================
+CREATE TABLE `wf_draft` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `process_def_key` varchar(128) NOT NULL COMMENT '流程定义Key',
+  `process_name` varchar(256) DEFAULT NULL COMMENT '流程名称',
+  `business_key` varchar(128) DEFAULT NULL COMMENT '业务关联键',
+  `draft_content` text COMMENT '草稿内容 (JSON)',
+  `status` varchar(32) NOT NULL DEFAULT 'DRAFT' COMMENT '状态: DRAFT/SUBMITTED',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
+  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_business_key` (`tenant_id`, `process_def_key`, `business_key`, `delete_flag`),
+  KEY `idx_tenant_user` (`tenant_id`, `create_user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='流程草稿表';
+
+-- ============================================================
+-- 6.7 审批统计表
+-- ============================================================
+CREATE TABLE `wf_approval_statistics` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
+  `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+  `user_name` varchar(64) DEFAULT NULL COMMENT '用户姓名',
+  `dept_id` bigint(20) DEFAULT NULL COMMENT '部门ID',
+  `dept_name` varchar(128) DEFAULT NULL COMMENT '部门名称',
+  `process_def_key` varchar(128) DEFAULT NULL COMMENT '流程定义Key',
+  `process_name` varchar(256) DEFAULT NULL COMMENT '流程名称',
+  `stat_period` varchar(16) NOT NULL COMMENT '统计周期: MONTH/QUARTER/YEAR',
+  `stat_date` date NOT NULL COMMENT '统计日期',
+  `total_count` int(11) NOT NULL DEFAULT 0 COMMENT '审批总数',
+  `approved_count` int(11) NOT NULL DEFAULT 0 COMMENT '通过数',
+  `rejected_count` int(11) NOT NULL DEFAULT 0 COMMENT '驳回数',
+  `transferred_count` int(11) NOT NULL DEFAULT 0 COMMENT '转办数',
+  `delegated_count` int(11) NOT NULL DEFAULT 0 COMMENT '委派数',
+  `avg_duration_ms` bigint(20) DEFAULT NULL COMMENT '平均耗时(ms)',
+  `max_duration_ms` bigint(20) DEFAULT NULL COMMENT '最大耗时(ms)',
+  `min_duration_ms` bigint(20) DEFAULT NULL COMMENT '最小耗时(ms)',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
+  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_tenant_user_period_date_process` (`tenant_id`, `user_id`, `stat_period`, `stat_date`, `process_def_key`),
+  KEY `idx_tenant_period` (`tenant_id`, `stat_period`, `stat_date`),
+  KEY `idx_user_period_date` (`user_id`, `stat_period`, `stat_date`),
+  KEY `idx_dept_period_date` (`dept_id`, `stat_period`, `stat_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='审批统计表';
+
+-- ============================================================
+-- 6.8 流程定义扩展表 (保留，加 model_id 字段)
+-- ============================================================
 CREATE TABLE `wf_process_definition_ext` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
-  `process_definition_id` varchar(128) NOT NULL COMMENT 'Flowable流程定义ID',
+  `process_definition_id` varchar(128) NOT NULL DEFAULT '' COMMENT 'Flowable流程定义ID',
   `process_key` varchar(128) NOT NULL COMMENT '流程标识',
   `process_name` varchar(256) NOT NULL COMMENT '流程名称',
   `category` varchar(64) DEFAULT NULL COMMENT '分类',
@@ -843,10 +1082,11 @@ CREATE TABLE `wf_process_definition_ext` (
   `form_type` tinyint(4) NOT NULL DEFAULT 0 COMMENT '表单类型 0-外链 1-内嵌JSON',
   `form_url` varchar(512) DEFAULT NULL COMMENT '表单URL',
   `form_config` text COMMENT '表单配置(JSON)',
-  `is_template` tinyint(4) NOT NULL DEFAULT 0 COMMENT '是否平台模板 0-自定义 1-模板',
+  `is_template` tinyint(4) NOT NULL DEFAULT 0 COMMENT '是否平台模板',
   `version` int(11) NOT NULL DEFAULT 1 COMMENT '版本号',
   `status` tinyint(4) NOT NULL DEFAULT 1 COMMENT '状态 0-挂起 1-激活',
   `sort_order` int(11) NOT NULL DEFAULT 0 COMMENT '排序',
+  `model_id` varchar(64) DEFAULT NULL COMMENT 'Flowable Model ID',
   `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
   `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -861,6 +1101,9 @@ CREATE TABLE `wf_process_definition_ext` (
   KEY `idx_flowable_def_id` (`process_definition_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='流程定义扩展表';
 
+-- ============================================================
+-- 6.9 流程实例扩展表 (加 flow_type 字段)
+-- ============================================================
 CREATE TABLE `wf_process_instance_ext` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
@@ -873,6 +1116,7 @@ CREATE TABLE `wf_process_instance_ext` (
   `initiator_name` varchar(64) DEFAULT NULL COMMENT '发起人姓名',
   `initiator_dept_id` bigint(20) DEFAULT NULL COMMENT '发起人部门ID',
   `business_key` varchar(256) DEFAULT NULL COMMENT '业务关联键',
+  `flow_type` varchar(32) DEFAULT 'NORMAL' COMMENT '流程类型: NORMAL/REJECT/AUTO_SUBMIT',
   `form_data` text COMMENT '表单数据(JSON)',
   `status` tinyint(4) NOT NULL DEFAULT 0 COMMENT '状态 0-进行中 1-已完成 2-已撤回 3-已终止',
   `result` tinyint(4) DEFAULT NULL COMMENT '结果 1-通过 2-驳回',
@@ -894,34 +1138,9 @@ CREATE TABLE `wf_process_instance_ext` (
   KEY `idx_tenant_time` (`tenant_id`, `create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='流程实例扩展表';
 
-CREATE TABLE `wf_task_ext` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
-  `task_id` varchar(128) NOT NULL COMMENT 'Flowable任务ID',
-  `process_instance_id` varchar(128) NOT NULL COMMENT '流程实例ID',
-  `task_name` varchar(256) DEFAULT NULL COMMENT '任务名称',
-  `assignee_id` bigint(20) DEFAULT NULL COMMENT '当前处理人ID',
-  `assignee_name` varchar(64) DEFAULT NULL COMMENT '当前处理人姓名',
-  `owner_id` bigint(20) DEFAULT NULL COMMENT '任务所有人ID',
-  `action` tinyint(4) DEFAULT NULL COMMENT '操作 1-通过 2-驳回 3-转办 4-委派 5-加签',
-  `comment` varchar(2048) DEFAULT NULL COMMENT '审批意见',
-  `duration` bigint(20) DEFAULT NULL COMMENT '处理耗时(ms)',
-  `complete_time` datetime DEFAULT NULL COMMENT '完成时间',
-  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
-  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
-  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
-  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
-  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`id`),
-  KEY `idx_task_id` (`task_id`),
-  KEY `idx_tenant_assignee` (`tenant_id`, `assignee_id`),
-  KEY `idx_instance_id` (`process_instance_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='任务扩展表';
-
+-- ============================================================
+-- 6.10 抄送表 (保留)
+-- ============================================================
 CREATE TABLE `wf_copy` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
@@ -949,28 +1168,7 @@ CREATE TABLE `wf_copy` (
   KEY `idx_instance_id` (`process_instance_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='流程抄送表';
 
-CREATE TABLE `wf_node_config` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `tenant_id` bigint(20) NOT NULL COMMENT '租户ID',
-  `process_definition_id` varchar(128) NOT NULL COMMENT '流程定义ID',
-  `node_id` varchar(128) NOT NULL COMMENT 'BPMN节点ID',
-  `node_name` varchar(256) DEFAULT NULL COMMENT '节点名称',
-  `assignee_type` tinyint(4) NOT NULL COMMENT '审批人类型 1-指定用户 2-指定角色 3-部门负责人 4-发起人自选',
-  `assignee_ids` varchar(1024) DEFAULT NULL COMMENT '审批人/角色ID列表(JSON)',
-  `approval_mode` tinyint(4) NOT NULL DEFAULT 1 COMMENT '审批模式 1-或签 2-会签 3-依次',
-  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
-  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
-  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `delete_flag` int(11) NOT NULL DEFAULT 0 COMMENT '删除标记',
-  `data_version` int(11) NOT NULL DEFAULT 0 COMMENT '数据版本号',
-  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_def_node` (`process_definition_id`, `node_id`),
-  KEY `idx_tenant` (`tenant_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='流程节点审批人配置表';
+-- 旧表 wf_task_ext 不重建，保留旧数据兼容，新代码写到 wf_approval_record
 
 -- #####################################################################
 --                        种子数据（SEED DATA）
@@ -1692,7 +1890,7 @@ UPDATE `sys_tenant` SET `admin_user_id` = 201 WHERE `id` = 3;
 --   rbac      : sys_user, sys_role, sys_dept, sys_menu, sys_user_role, sys_role_menu, sys_role_dept, sys_operation_log, sys_password_history, sys_login_log, sys_post, sys_user_post, sys_export_task, sys_social_user, sys_area, sys_sensitive_word, sys_notice, sys_notice_read
 --   wechat_oa : wechat_oa_account, wechat_oa_material, wechat_oa_article, wechat_oa_fan_user, wechat_oa_user_tag, wechat_oa_auto_reply_rule, wechat_oa_menu
 --   notify    : notify_message, notify_template, notify_channel_config
---   workflow  : wf_process_definition_ext, wf_process_instance_ext, wf_task_ext, wf_copy, wf_node_config
+--   workflow  : wf_approval_record, wf_node_config, wf_node_candidate, wf_task_relation, wf_urge_log, wf_draft, wf_approval_statistics, wf_process_definition_ext, wf_process_instance_ext, wf_copy
 --
 -- 默认账号:
 --   平台管理员: admin / Admin@2026 (platform.sys_platform_user)
@@ -1707,6 +1905,8 @@ UPDATE `sys_tenant` SET `admin_user_id` = 201 WHERE `id` = 3;
 --   超级管理员(SUPER_ADMIN) - 全部权限
 --   管理员(ADMIN)           - 系统管理 + 流程查看 + 通知管理
 --   普通用户(USER)          - 仪表盘 + 个人设置 + 流程使用 + 消息查看
+-- =====================================================================
+
 -- =====================================================================
 -- 11. common-mq 可靠性模式表（mq_outbox 生产本地消息表 / mq_consume_log 消费幂等日志）
 -- 启用 saas.mq.outbox.enabled 或 saas.mq.idempotent.enabled 的服务需在其库内存在对应表。

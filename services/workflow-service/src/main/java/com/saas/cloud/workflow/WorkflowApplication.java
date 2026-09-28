@@ -16,7 +16,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = "com.saas.cloud")
 @SpringBootApplication(scanBasePackages = "com.saas.cloud")
-@MapperScan("com.saas.cloud.workflow.mapper")
+@MapperScan({"com.saas.cloud.workflow.tunnel.mapper"})
 public class WorkflowApplication {
 
     public static void main(String[] args) {

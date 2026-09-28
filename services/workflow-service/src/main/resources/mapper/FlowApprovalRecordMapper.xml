@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.saas.cloud.workflow.tunnel.mapper.FlowApprovalRecordMapper">
+    <sql id="allColumns">id, tenant_id, process_instance_id, process_def_key, process_name,
+        task_id, task_def_key, task_name, operator_id, operator_name, operator_dept_id,
+        action, operator_type, comment, system_reason, action_time, flow_type,
+        source_node_key, target_node_key, parent_task_id, approve_strategy, is_final_decision,
+        create_user_id, create_user_name, create_time, update_user_id, update_user_name,
+        update_time, delete_flag, data_version, remark</sql>
+
+    <select id="selectById" resultType="com.saas.cloud.workflow.tunnel.dataobject.FlowApprovalRecordDO">
+        SELECT <include refid="allColumns"/> FROM wf_approval_record
+        WHERE id = #{id} AND delete_flag = 0
+    </select>
+
+    <select id="selectByProcessInstanceId" resultType="com.saas.cloud.workflow.tunnel.dataobject.FlowApprovalRecordDO">
+        SELECT <include refid="allColumns"/> FROM wf_approval_record
+        WHERE process_instance_id = #{processInstanceId} AND delete_flag = 0
+    </select>
+    <select id="selectList" resultType="com.saas.cloud.workflow.tunnel.dataobject.FlowApprovalRecordDO">
+        SELECT <include refid="allColumns"/> FROM wf_approval_record WHERE delete_flag = 0
+    </select>
+<select id="selectByOperatorId" resultType="com.saas.cloud.workflow.tunnel.dataobject.FlowApprovalRecordDO">
+        SELECT <include refid="allColumns"/> FROM wf_approval_record
+        WHERE operator_id = #{operatorId} AND delete_flag = 0 ORDER BY action_time DESC
+    </select>
+    <select id="selectByActionTimeRange" resultType="com.saas.cloud.workflow.tunnel.dataobject.FlowApprovalRecordDO">
+        SELECT <include refid="allColumns"/> FROM wf_approval_record
+        WHERE action_time &gt;= #{startTime} AND action_time &lt; #{endTime} AND delete_flag = 0
+        ORDER BY action_time ASC
+    </select>
+</mapper>

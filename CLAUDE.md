@@ -46,31 +46,28 @@ pnpm lint
 ```
 saas-cloud/
 ├── common/                          # 公共模块（所有服务共享）
-│   ├── common-core/                 # 基础: ApiResult<T>, ResultCode, 异常体系, 常量
-│   ├── common-security/             # 安全: TenantContext, @RequirePermission, @InnerApi, JWT 工具
-│   ├── common-data/                 # 数据: MyBatis-Plus 配置, 租户拦截器, DataScope 拦截器, 审计字段填充
-│   ├── common-redis/                # Redis: RedisTemplate 配置
-│   ├── common-kafka/                # Kafka: 生产者/消费者封装
-│   ├── common-feign/                # Feign: 租户上下文传播 + 内部调用签名
-│   ├── common-log/                  # 日志: @OperationLog 注解 + AOP
-│   └── common-storage/              # 存储: MinIO 客户端封装
+│   ├── common-core/                 # 基础: ApiResult<T>, ResultCode, 异常体系, XSS, 脱敏, 签名
+│   ├── common-data/                 # 数据: MyBatis-Plus配置, 租户拦截器, 安全(UserContext/TenantContext), Feign传播
+│   ├── common-redis/                # Redis: 缓存/分布式锁/幂等
+│   ├── common-log/                  # 日志: @OperationLog, Kafka生产者/消费者, TraceId
+│   ├── common-storage/              # MinIO 客户端
+│   ├── common-excel/                # FastExcel + 字典翻译
+│   └── common-websocket/            # WebSocket 多实例广播
 ├── services/
-│   ├── gateway/             (8080)  # Spring Cloud Gateway, JWT 解析, 路由转发
-│   ├── platform-api/                # platform-service 的 Feign 接口 + DTO/VO
-│   ├── platform-service/    (8084)  # 租户管理, 套餐配额, 全局配置, 数据库: platform
-│   ├── rbac-api/                    # rbac-service 的 Feign 接口 + DTO/VO
+│   ├── gateway/             (8080)  # Spring Cloud Gateway, JWT解析, 路由转发, 签名校验
+│   ├── platform-api/                # platform-service Feign接口 + DTO/VO
+│   ├── platform-service/    (8084)  # 租户管理, 套餐配额, 公告, 全局配置, 数据库: platform
+│   ├── rbac-api/                    # rbac-service Feign接口 + DTO/VO
 │   ├── rbac-service/        (8081)  # 用户/角色/部门/菜单/认证, 数据库: rbac
-│   ├── workflow-api/
-│   ├── workflow-service/    (8082)  # Flowable 流程引擎, 数据库: workflow
-│   ├── wechat-oa-api/
+│   ├── workflow-api/                # workflow-service Feign接口 + DTO/VO/Enum/Event
+│   ├── workflow-service/    (8082)  # Flowable 流程引擎 DDD架构(domain/tunnel/app), 数据库: workflow
 │   ├── wechat-oa-service/   (8083)  # 微信公众号管理, 数据库: wechat_oa
-│   ├── notify-api/
-│   └── notify-service/      (8085)  # 站内消息/邮件/Webhook, 数据库: notify
+│   ├── notify-api/                  # notify-service DTO/VO/Event
+│   └── notify-service/      (8085)  # 站内消息/邮件/短信/Webhook, 数据库: notify
 ├── code-generator/                  # MyBatis-Plus 代码生成器
 └── frontend/                        # Vue 3 + Vben Admin v5 (pnpm monorepo)
     ├── apps/web-admin/              # 租户管理端
-    ├── apps/web-platform/           # 平台运营端
-    └── apps/backend-mock/           # Mock 数据服务
+    └── apps/web-platform/           # 平台运营端
 ```
 
 ### API 分层约定
@@ -106,16 +103,14 @@ saas-cloud/
 
 ### Database
 
-5 个独立数据库: `platform` / `rbac` / `wechat_oa` / `notify` / `workflow`
+5 个独立数据库: `platform` / `rbac` / `wechat_oa` / `notify` / `workflow`（约 46 张表）
 
-DDL 脚本: `docs/sql/init.sql`（全量初始化）和各库独立的 `docs/sql/{db}.sql`
-
-MyBatis-Plus 配置: 逻辑删除字段 `deleteFlag`（0=未删除, 1=已删除），下划线转驼峰自动映射。
+DDL 脚本: `docs/sql/init.sql`（全量初始化, 包含种子数据）
 
 ### Inter-Service Communication
 
-- **同步 Feign**: rbac → platform（配额校验），workflow → rbac（查询审批人）
-- **异步 Kafka Topics**: `notification-events`（通知触发），`tenant-lifecycle`（租户状态变更），`quota-change`（配额变更）
+- **同步 Feign**: rbac → platform（配额校验）, wechat-oa → platform（配额校验）, workflow → rbac（查询审批人）
+- **异步 Kafka Topics**: `saas-notify-event`（通知触发）, `saas-operation-log`（操作日志）, `saas-websocket-broadcast`（WebSocket多实例广播）
 - Feign 调用通过 `TenantFeignInterceptor` 自动传播 `X-Tenant-Id` 和内部签名
 
 ### Infrastructure (docker-compose.yml)

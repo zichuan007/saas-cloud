@@ -1,37 +1,33 @@
-package com.saas.cloud.workflow.api.dto;
+package com.saas.cloud.workflow.tunnel.dataobject;
 
-import java.io.Serializable;
-import java.util.List;
-
-import jakarta.validation.constraints.NotBlank;
+import com.saas.cloud.common.data.base.TenantBaseEntity;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
- * 节点审批人配置请求 DTO
+ * 流程节点配置 DO
  *
  * @author saas-cloud
- * @version V2.0
+ * @version V1.0
  * @since 2026-08-14
  */
+@TableName("wf_node_config")
 @Data
-public class NodeConfigDTO implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+@EqualsAndHashCode(callSuper = true)
+public class FlowNodeConfigDO extends TenantBaseEntity {
 
     /** 流程定义Key */
-    @NotBlank(message = "流程定义Key不能为空")
     private String processDefKey;
 
-    /** BPMN节点定义Key */
-    @NotBlank(message = "节点定义Key不能为空")
+    /** 节点定义Key */
     private String nodeDefKey;
 
     /** 节点名称 */
-    @NotBlank(message = "节点名称不能为空")
     private String nodeName;
 
     /** 审批模式: ANY-或签/ALL-会签/SEQUENTIAL-顺签 */
-    private String approveMode = "ANY";
+    private String approveMode;
 
     /** 通过阈值 (会签模式下达到此数即通过) */
     private Integer passThreshold;
@@ -40,7 +36,7 @@ public class NodeConfigDTO implements Serializable {
     private Integer sequentialOrder;
 
     /** 是否启用超时: 0-禁用 1-启用 */
-    private Integer timeoutEnabled = 0;
+    private Integer timeoutEnabled;
 
     /** 超时小时数 */
     private Integer timeoutHours;
@@ -52,20 +48,17 @@ public class NodeConfigDTO implements Serializable {
     private Long timeoutTransferUserId;
 
     /** 驳回模式: BPMN-默认流/INITIATOR-发起人/PREVIOUS-上一节点/CUSTOM-自定义 */
-    private String rejectMode = "BPMN";
+    private String rejectMode;
 
     /** 自定义驳回目标节点Key */
     private String customTargetNode;
 
     /** 同审批人自动跳过: 0-不跳过 1-跳过 */
-    private Integer sameApproverSkip = 1;
+    private Integer sameApproverSkip;
 
     /** 是否启用: 0-禁用 1-启用 */
-    private Integer enabled = 1;
+    private Integer enabled;
 
     /** 排序 */
     private Integer sortOrder;
-
-    /** 候选人来源列表 */
-    private List<NodeCandidateDTO> candidates;
 }

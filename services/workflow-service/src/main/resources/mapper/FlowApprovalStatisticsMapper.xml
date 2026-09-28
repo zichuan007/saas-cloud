@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.saas.cloud.workflow.tunnel.mapper.FlowApprovalStatisticsMapper">
+    <sql id="allColumns">id, tenant_id, user_id, user_name, dept_id, dept_name,
+        process_def_key, process_name, stat_period, stat_date, total_count, approved_count,
+        rejected_count, transferred_count, delegated_count, avg_duration_ms, max_duration_ms, min_duration_ms,
+        create_user_id, create_user_name, create_time, update_user_id, update_user_name,
+        update_time, delete_flag, data_version, remark</sql>
+
+    <select id="selectById" resultType="com.saas.cloud.workflow.tunnel.dataobject.FlowApprovalStatisticsDO">
+        SELECT <include refid="allColumns"/> FROM wf_approval_statistics
+        WHERE id = #{id} AND delete_flag = 0
+    </select>
+
+    <select id="selectList" resultType="com.saas.cloud.workflow.tunnel.dataobject.FlowApprovalStatisticsDO">
+        SELECT <include refid="allColumns"/> FROM wf_approval_statistics WHERE delete_flag = 0
+    </select>
+
+    <select id="selectByUserId" resultType="com.saas.cloud.workflow.tunnel.dataobject.FlowApprovalStatisticsDO">
+        SELECT <include refid="allColumns"/> FROM wf_approval_statistics
+        WHERE user_id = #{userId} AND delete_flag = 0 ORDER BY stat_date DESC
+    </select>
+
+    <select id="selectByUserIdAndPeriod" resultType="com.saas.cloud.workflow.tunnel.dataobject.FlowApprovalStatisticsDO">
+        SELECT <include refid="allColumns"/> FROM wf_approval_statistics
+        WHERE user_id = #{userId} AND stat_period = #{statPeriod} AND delete_flag = 0
+        ORDER BY stat_date DESC
+    </select>
+</mapper>
