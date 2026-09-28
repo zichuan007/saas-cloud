@@ -15,6 +15,8 @@ import com.saas.cloud.common.mq.reliability.enums.OutboxMsgStatus;
 import com.saas.cloud.common.mq.reliability.mapper.MqOutboxMapper;
 import com.saas.cloud.common.security.context.TenantContext;
 
+import org.springframework.context.ApplicationEventPublisher;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,6 +40,8 @@ public class OutboxMessageSender implements MessageSender {
     private final ObjectMapper objectMapper;
 
     private final MqProperties properties;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public <T> SendResult send(MessageEnvelope<T> msg) {
@@ -71,10 +75,10 @@ public class OutboxMessageSender implements MessageSender {
             if (result != null && result.getStatus() == SendStatus.SUCCESS) {
                 updateStatus(outbox.getId(), OutboxMsgStatus.SEND_SUCCESS, null);
             } else {
-                markFail(outbox.getId(), 0, result == null ? "unknown" : result.getError());
+                markFail(outbox, 0, result == null ? "unknown" : result.getError());
             }
         } catch (Exception e) {
-            markFail(outbox.getId(), 0, e.getMessage());
+            markFail(outbox, 0, e.getMessage());
             log.warn("[MQ-Outbox] 实投失败，等待补偿 msgId={}: {}", msg.getMsgId(), e.getMessage());
         }
     }
@@ -95,26 +99,36 @@ public class OutboxMessageSender implements MessageSender {
     }
 
     /**
-     * 标记失败并安排下次重试
+     * 标记失败并安排下次重试；达上限置死信并发布事件
      *
-     * @param id          outbox 主键
+     * @param outbox      outbox 记录（用于死信事件携带原始负载）
      * @param retryCount  当前重试次数
      * @param error       错误信息
      */
-    public void markFail(Long id, int retryCount, String error) {
+    public void markFail(MqOutbox outbox, int retryCount, String error) {
         int maxRetry = properties.getOutbox().getMaxRetry();
         OutboxMsgStatus status = retryCount >= maxRetry
                 ? OutboxMsgStatus.SEND_GIVE_UP : OutboxMsgStatus.SEND_FAIL;
         LocalDateTime nextRetry = status == OutboxMsgStatus.SEND_GIVE_UP
                 ? null : LocalDateTime.now().plusSeconds((retryCount + 1) * 10L);
         MqOutbox update = new MqOutbox();
-        update.setId(id);
+        update.setId(outbox.getId());
         update.setMsgStatus(status.getCode());
         update.setRetryCount(retryCount + 1);
         update.setNextRetryTime(nextRetry);
         TenantContext.executeWithoutTenant(() -> outboxMapper.updateById(update));
-        log.debug("[MQ-Outbox] 标记 id={} status={} retryCount={} error={}",
-                id, status.getDesc(), retryCount + 1, error);
+        if (status == OutboxMsgStatus.SEND_GIVE_UP) {
+            // 达上限置死信：发布事件供告警/转死信队列/人工补偿，并打 ERROR 便于监控采集
+            MqDeadLetterEvent event = new MqDeadLetterEvent(
+                    outbox.getMsgId(), outbox.getBizId(), outbox.getTopic(),
+                    outbox.getMsgKey(), outbox.getPayload(), retryCount + 1, error, LocalDateTime.now());
+            eventPublisher.publishEvent(event);
+            log.error("[MQ-Outbox] 消息达死信上限 msgId={} topic={} retryCount={} error={}",
+                    event.getMsgId(), event.getTopic(), event.getRetryCount(), error);
+        } else {
+            log.debug("[MQ-Outbox] 标记 id={} status={} retryCount={} error={}",
+                    outbox.getId(), status.getDesc(), retryCount + 1, error);
+        }
     }
 
     /**

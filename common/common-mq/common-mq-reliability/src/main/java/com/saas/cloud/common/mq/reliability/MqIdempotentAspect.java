@@ -1,6 +1,8 @@
 package com.saas.cloud.common.mq.reliability;
 
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Method;
+import java.util.UUID;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -45,6 +47,27 @@ public class MqIdempotentAspect {
     private final MqConsumeLogMapper consumeLogMapper;
 
     private final SpelExpressionParser parser = new SpelExpressionParser();
+
+    /**
+     * 当前实例标识，用于广播模式下实例级幂等隔离
+     */
+    private static final String INSTANCE_ID = resolveInstanceId();
+
+    /**
+     * 解析实例标识：优先取 JVM 进程名中的 hostname（跨实例唯一、同实例稳定），
+     * 取不到回退随机 UUID（仅本进程内稳定）
+     *
+     * @return 实例标识
+     */
+    private static String resolveInstanceId() {
+        try {
+            String name = ManagementFactory.getRuntimeMXBean().getName();
+            int at = name.indexOf('@');
+            return at > 0 ? name.substring(at + 1) : name;
+        } catch (Exception e) {
+            return UUID.randomUUID().toString();
+        }
+    }
 
     /**
      * 幂等拦截
@@ -230,7 +253,15 @@ public class MqIdempotentAspect {
     private String resolveGroup(ProceedingJoinPoint pjp) {
         Class<?> clazz = ClassUtils.getUserClass(pjp.getTarget().getClass());
         MqConsumer meta = clazz.getAnnotation(MqConsumer.class);
-        return meta != null ? meta.group() : "default";
+        if (meta == null) {
+            return "default";
+        }
+        String group = meta.group();
+        // 广播模式每实例消费全量，幂等维度需含实例标识；否则首实例消费写 SUCCESS 后其他实例被跳过，广播失效
+        if (meta.broadcast()) {
+            return group + "@" + INSTANCE_ID;
+        }
+        return group;
     }
 
     /**

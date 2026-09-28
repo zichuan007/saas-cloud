@@ -3,6 +3,7 @@ package com.saas.cloud.common.mq.reliability;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -48,8 +49,9 @@ public class ReliabilityAutoConfiguration {
             @Qualifier("delegateMessageSender") MessageSender delegate,
             MqOutboxMapper outboxMapper,
             ObjectMapper objectMapper,
-            MqProperties properties) {
-        return new OutboxMessageSender(delegate, outboxMapper, objectMapper, properties);
+            MqProperties properties,
+            ApplicationEventPublisher eventPublisher) {
+        return new OutboxMessageSender(delegate, outboxMapper, objectMapper, properties, eventPublisher);
     }
 
     /**

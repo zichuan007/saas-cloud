@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.saas.cloud.common.mq.MessageEnvelope;
@@ -22,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Outbox 补偿重试 Job
  * <p>定时扫描 {@code mq_outbox} 中 INIT/SEND_FAIL 且到期的消息重投，超限置 SEND_GIVE_UP。</p>
+ * <p>多实例安全：查询使用 {@code SELECT ... FOR UPDATE SKIP LOCKED} 在事务内锁定本批次，
+ * 其他实例跳过已锁行，各取不相交批次，避免重复投递。</p>
  *
  * @author saas-cloud
  * @version V1.0
@@ -43,6 +46,7 @@ public class OutboxRetryJob {
      * 补偿扫描，cron 由 {@code saas.mq.outbox.retry-cron} 配置
      */
     @Scheduled(cron = "${saas.mq.outbox.retry-cron:0 */1 * * * ?}")
+    @Transactional(rollbackFor = Exception.class)
     public void retry() {
         int batchSize = properties.getOutbox().getBatchSize();
         List<Integer> pendingStatus = Arrays.asList(
@@ -52,7 +56,8 @@ public class OutboxRetryJob {
                 .and(w -> w.isNull(MqOutbox::getNextRetryTime)
                         .or().le(MqOutbox::getNextRetryTime, LocalDateTime.now()))
                 .orderByAsc(MqOutbox::getId)
-                .last("LIMIT " + batchSize);
+                // 行锁锁定本批次，SKIP LOCKED 让其他实例跳过已锁行，多实例各取不相交批次
+                .last("LIMIT " + batchSize + " FOR UPDATE SKIP LOCKED");
         // mq_outbox 无 tenant_id 列，查询需绕过租户过滤
         List<MqOutbox> list = TenantContext.executeWithoutTenant(() -> outboxMapper.selectList(wrapper));
         if (list.isEmpty()) {
@@ -84,11 +89,11 @@ public class OutboxRetryJob {
                 outboxMessageSender.updateStatus(outbox.getId(), OutboxMsgStatus.SEND_SUCCESS, null);
                 log.info("[MQ-Outbox] 重投成功 id={}, msgId={}", outbox.getId(), outbox.getMsgId());
             } else {
-                outboxMessageSender.markFail(outbox.getId(), retryCount,
+                outboxMessageSender.markFail(outbox, retryCount,
                         result == null ? "unknown" : result.getError());
             }
         } catch (Exception e) {
-            outboxMessageSender.markFail(outbox.getId(), retryCount, e.getMessage());
+            outboxMessageSender.markFail(outbox, retryCount, e.getMessage());
             log.warn("[MQ-Outbox] 重投失败 id={}, msgId={}: {}", outbox.getId(), outbox.getMsgId(), e.getMessage());
         }
     }

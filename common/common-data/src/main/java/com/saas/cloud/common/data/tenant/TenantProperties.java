@@ -43,6 +43,9 @@ public class TenantProperties {
             "sys_order",
             "sys_platform_menu",
             // 公告已读记录：按 (notice_id, user_id) 全局唯一，通过 notice_id 隐式隔离，表本身无 tenant_id 列
-            "sys_notice_read"
+            "sys_notice_read",
+            // MQ 可靠性表：平台级，无 tenant_id 列，DB 操作虽已用 executeWithoutTenant 包裹，列入此处做防御性兜底
+            "mq_outbox",
+            "mq_consume_log"
     );
 }
