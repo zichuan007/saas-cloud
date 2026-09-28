@@ -86,6 +86,10 @@ sa-token:
   token-style: uuid
   is-log: false
 
+saas:
+  security:
+    signature-enforced: true
+
 knife4j:
   gateway:
     enabled: true

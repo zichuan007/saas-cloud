@@ -81,3 +81,7 @@ management:
   zipkin:
     tracing:
       endpoint: http://${ZIPKIN_HOST:localhost}:9411/api/v2/spans
+
+saas:
+  security:
+    signature-enforced: true

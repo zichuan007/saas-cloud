@@ -120,3 +120,7 @@ social:
         client-id: ${SOCIAL_DINGTALK_CLIENT_ID:}
         client-secret: ${SOCIAL_DINGTALK_CLIENT_SECRET:}
         redirect-uri: ${SOCIAL_DINGTALK_REDIRECT_URI:http://localhost:8080/api/rbac/auth/social/dingtalk/callback}
+
+saas:
+  security:
+    signature-enforced: true
