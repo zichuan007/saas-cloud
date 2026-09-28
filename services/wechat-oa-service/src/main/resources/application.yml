@@ -1,6 +1,15 @@
 server:
   port: 8083
 
+feign:
+  client:
+    config:
+      default:
+        connect-timeout: 5000
+        read-timeout: 10000
+  sentinel:
+    enabled: true
+
 spring:
   application:
     name: wechat-oa-service
