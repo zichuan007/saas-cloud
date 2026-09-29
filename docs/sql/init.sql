@@ -1,6 +1,6 @@
 -- SaaS Cloud 数据库初始化脚本（schema + seed）
 -- 行政区划数据见 init_area.sql；nacos schema 见 nacos 容器 mysql-schema.sql
--- 含 valid_status/trace_id 审计字段，表结构与代码 @TableName 一致
+-- 含 valid_status/trace_id，表结构与代码 @TableName 及实体字段一致
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -554,10 +554,12 @@ CREATE TABLE `sys_operation_log` (
   `username` varchar(64) DEFAULT NULL COMMENT '操作用户名',
   `module` varchar(64) DEFAULT NULL COMMENT '操作模块',
   `operation` varchar(128) DEFAULT NULL COMMENT '操作描述',
+  `operate_type` varchar(32) DEFAULT NULL COMMENT '操作类型 CREATE/UPDATE/DELETE 等',
   `method` varchar(256) DEFAULT NULL COMMENT '请求方法',
   `request_url` varchar(512) DEFAULT NULL COMMENT '请求URL',
   `request_method` varchar(16) DEFAULT NULL COMMENT 'HTTP方法',
   `request_params` text COMMENT '请求参数',
+  `change_diff` text COMMENT '变更内容(字段Diff)',
   `response_code` int DEFAULT NULL COMMENT '响应状态码',
   `error_msg` text COMMENT '错误信息',
   `ip` varchar(64) DEFAULT NULL COMMENT '操作IP',
@@ -2520,12 +2522,21 @@ DROP TABLE IF EXISTS `wf_node_config`;
 CREATE TABLE `wf_node_config` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
   `tenant_id` bigint NOT NULL COMMENT '租户ID',
-  `process_definition_id` varchar(128) NOT NULL COMMENT '流程定义ID',
-  `node_id` varchar(128) NOT NULL COMMENT 'BPMN节点ID',
-  `node_name` varchar(256) DEFAULT NULL COMMENT '节点名称',
-  `assignee_type` tinyint NOT NULL COMMENT '审批人类型 1-指定用户 2-指定角色 3-部门负责人 4-发起人自选',
-  `assignee_ids` varchar(1024) DEFAULT NULL COMMENT '审批人/角色ID列表(JSON)',
-  `approval_mode` tinyint NOT NULL DEFAULT '1' COMMENT '审批模式 1-或签 2-会签 3-依次',
+  `process_def_key` varchar(128) NOT NULL COMMENT '流程定义Key',
+  `node_def_key` varchar(128) NOT NULL COMMENT '节点定义Key',
+  `node_name` varchar(64) DEFAULT NULL COMMENT '节点名称',
+  `approve_mode` varchar(32) DEFAULT NULL COMMENT '审批模式 ANY-或签/ALL-会签/SEQUENTIAL-顺签',
+  `pass_threshold` int DEFAULT NULL COMMENT '通过阈值(会签模式)',
+  `sequential_order` int DEFAULT NULL COMMENT '顺签顺序',
+  `timeout_enabled` tinyint DEFAULT '0' COMMENT '是否启用超时',
+  `timeout_hours` int DEFAULT NULL COMMENT '超时小时数',
+  `timeout_strategy` varchar(32) DEFAULT NULL COMMENT '超时策略 APPROVE/REJECT/TRANSFER/REMIND',
+  `timeout_transfer_user_id` bigint DEFAULT NULL COMMENT '超时转办人ID',
+  `reject_mode` varchar(32) DEFAULT NULL COMMENT '驳回模式 BPMN/INITIATOR/PREVIOUS/CUSTOM',
+  `custom_target_node` varchar(128) DEFAULT NULL COMMENT '自定义驳回目标节点Key',
+  `same_approver_skip` tinyint DEFAULT '0' COMMENT '同审批人自动跳过',
+  `enabled` tinyint DEFAULT '1' COMMENT '是否启用',
+  `sort_order` int DEFAULT '0' COMMENT '排序',
   `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
   `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -2533,14 +2544,13 @@ CREATE TABLE `wf_node_config` (
   `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `delete_flag` int NOT NULL DEFAULT '0' COMMENT '删除标记',
-  `data_version` int NOT NULL DEFAULT '0' COMMENT '数据版本号',
-  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
   `valid_status` int NOT NULL DEFAULT '1' COMMENT '有效状态',
+  `data_version` int NOT NULL DEFAULT '0' COMMENT '数据版本号',
   `trace_id` varchar(255) DEFAULT NULL COMMENT '链路追踪ID',
+  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_def_node` (`process_definition_id`,`node_id`),
-  KEY `idx_tenant` (`tenant_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='流程节点审批人配置表';
+  KEY `idx_tenant_process_node` (`tenant_id`,`process_def_key`,`node_def_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='流程节点策略配置表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `wf_process_definition_ext`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -3037,7 +3047,7 @@ USE `xxl_job`;
 
 LOCK TABLES `xxl_job_group` WRITE;
 /*!40000 ALTER TABLE `xxl_job_group` DISABLE KEYS */;
-INSERT INTO `xxl_job_group` VALUES (1,'xxl-job-executor-sample','通用执行器Sample',0,NULL,'2026-09-29 16:42:57'),(2,'xxl-job-executor-sample-ai','AI执行器Sample',0,NULL,'2026-09-29 16:42:57');
+INSERT INTO `xxl_job_group` VALUES (1,'xxl-job-executor-sample','通用执行器Sample',0,NULL,'2026-09-29 16:50:27'),(2,'xxl-job-executor-sample-ai','AI执行器Sample',0,NULL,'2026-09-29 16:50:27');
 /*!40000 ALTER TABLE `xxl_job_group` ENABLE KEYS */;
 UNLOCK TABLES;
 
