@@ -1,6 +1,6 @@
 -- SaaS Cloud 数据库初始化脚本（schema + seed）
 -- 行政区划数据见 init_area.sql；nacos schema 见 nacos 容器 mysql-schema.sql
--- 生成自当前已修正的本地库（含 valid_status/trace_id 审计字段）
+-- 含 valid_status/trace_id 审计字段，表结构与代码 @TableName 一致
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -130,6 +130,37 @@ CREATE TABLE `sys_global_config` (
   UNIQUE KEY `uk_config_key` (`config_key`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='全局配置表';
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `sys_order`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `sys_order` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `tenant_id` bigint NOT NULL COMMENT '租户ID',
+  `package_id` bigint DEFAULT NULL COMMENT '套餐ID',
+  `order_no` varchar(64) NOT NULL COMMENT '订单号',
+  `order_type` tinyint DEFAULT NULL COMMENT '订单类型',
+  `amount` decimal(10,2) NOT NULL COMMENT '金额',
+  `pay_status` tinyint NOT NULL DEFAULT '0' COMMENT '支付状态 0-待支付 1-已支付 2-已取消 3-已退款',
+  `pay_channel` varchar(32) DEFAULT NULL COMMENT '支付渠道',
+  `pay_time` datetime DEFAULT NULL COMMENT '支付时间',
+  `expire_time` datetime DEFAULT NULL COMMENT '订阅到期时间',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int NOT NULL DEFAULT '0' COMMENT '删除标记',
+  `valid_status` int NOT NULL DEFAULT '1' COMMENT '有效状态',
+  `data_version` int NOT NULL DEFAULT '0' COMMENT '数据版本号',
+  `trace_id` varchar(255) DEFAULT NULL COMMENT '链路追踪ID',
+  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_order_no` (`order_no`),
+  KEY `idx_tenant_id` (`tenant_id`),
+  KEY `idx_pay_status` (`pay_status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='租户订单表';
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `sys_package`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -162,6 +193,39 @@ CREATE TABLE `sys_package` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_package_code` (`package_code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='套餐表';
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `sys_platform_menu`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `sys_platform_menu` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '菜单ID',
+  `menu_name` varchar(64) NOT NULL COMMENT '菜单名称',
+  `parent_id` bigint NOT NULL DEFAULT '0' COMMENT '父菜单ID 0-顶级',
+  `menu_type` tinyint NOT NULL COMMENT '类型 0-目录 1-菜单 2-按钮',
+  `path` varchar(256) DEFAULT NULL COMMENT '路由路径',
+  `component` varchar(256) DEFAULT NULL COMMENT '组件路径',
+  `permission` varchar(128) DEFAULT NULL COMMENT '权限标识',
+  `icon` varchar(128) DEFAULT NULL COMMENT '图标',
+  `sort_order` int NOT NULL DEFAULT '0' COMMENT '排序',
+  `status` tinyint NOT NULL DEFAULT '1' COMMENT '状态 0-禁用 1-启用',
+  `visible` tinyint NOT NULL DEFAULT '1' COMMENT '是否可见 0-隐藏 1-显示',
+  `is_external` tinyint NOT NULL DEFAULT '0' COMMENT '是否外链',
+  `is_cached` tinyint NOT NULL DEFAULT '0' COMMENT '是否缓存',
+  `create_user_id` varchar(64) DEFAULT NULL COMMENT '创建人ID',
+  `create_user_name` varchar(64) DEFAULT NULL COMMENT '创建人姓名',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_user_id` varchar(64) DEFAULT NULL COMMENT '更新人ID',
+  `update_user_name` varchar(64) DEFAULT NULL COMMENT '更新人姓名',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `delete_flag` int NOT NULL DEFAULT '0' COMMENT '删除标记',
+  `valid_status` int NOT NULL DEFAULT '1' COMMENT '有效状态',
+  `data_version` int NOT NULL DEFAULT '0' COMMENT '数据版本号',
+  `trace_id` varchar(255) DEFAULT NULL COMMENT '链路追踪ID',
+  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`),
+  KEY `idx_parent` (`parent_id`),
+  KEY `idx_status` (`status`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='平台菜单表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `sys_platform_user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -229,35 +293,6 @@ CREATE TABLE `sys_tenant` (
   KEY `idx_package_id` (`package_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='租户表';
 /*!40101 SET character_set_client = @saved_cs_client */;
-DROP TABLE IF EXISTS `sys_tenant_order`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `sys_tenant_order` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
-  `tenant_id` bigint NOT NULL COMMENT 'ç§Ÿæˆ·ID',
-  `package_id` bigint NOT NULL COMMENT 'å¥—é¤ID',
-  `order_no` varchar(64) NOT NULL COMMENT 'è®¢å•å·',
-  `amount` decimal(10,2) NOT NULL COMMENT 'é‡‘é¢ï¼ˆå…ƒï¼‰',
-  `pay_type` tinyint DEFAULT NULL COMMENT 'æ”¯ä»˜æ–¹å¼ 1-å¾®ä¿¡ 2-æ”¯ä»˜å®',
-  `status` tinyint NOT NULL DEFAULT '0' COMMENT 'çŠ¶æ€ 0-å¾…æ”¯ä»˜ 1-å·²æ”¯ä»˜ 2-å·²å–æ¶ˆ 3-å·²é€€æ¬¾',
-  `pay_time` datetime DEFAULT NULL COMMENT 'æ”¯ä»˜æ—¶é—´',
-  `expire_time` datetime DEFAULT NULL COMMENT 'è®¢é˜…åˆ°æœŸæ—¶é—´',
-  `create_user_id` varchar(64) DEFAULT NULL,
-  `create_user_name` varchar(64) DEFAULT NULL,
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `update_user_id` varchar(64) DEFAULT NULL,
-  `update_user_name` varchar(64) DEFAULT NULL,
-  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `delete_flag` int NOT NULL DEFAULT '0',
-  `data_version` int NOT NULL DEFAULT '0',
-  `remark` varchar(512) DEFAULT NULL,
-  `valid_status` int NOT NULL DEFAULT '1' COMMENT '有效状态',
-  `trace_id` varchar(255) DEFAULT NULL COMMENT '链路追踪ID',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_order_no` (`order_no`),
-  KEY `idx_tenant` (`tenant_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='ç§Ÿæˆ·è®¢é˜…è®¢å•è¡¨';
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 DROP DATABASE IF EXISTS `rbac`*/;
 
@@ -286,7 +321,7 @@ CREATE TABLE `sys_area` (
   UNIQUE KEY `uk_area_code` (`area_code`),
   KEY `idx_parent_code` (`parent_code`),
   KEY `idx_first_letter` (`first_letter`)
-) ENGINE=InnoDB AUTO_INCREMENT=4019 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='行政区划表';
+) ENGINE=InnoDB AUTO_INCREMENT=8037 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='行政区划表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `sys_dept`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -2457,7 +2492,7 @@ DROP TABLE IF EXISTS `wf_node_candidate`;
 CREATE TABLE `wf_node_candidate` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键',
   `tenant_id` bigint NOT NULL COMMENT '租户ID',
-  `node_config_id` bigint NOT NULL COMMENT '节点配置ID (关联 wf_node_config.id)',
+  `node_config_id` bigint NOT NULL COMMENT '节点配置ID (关联 wf_node_config_new.id)',
   `process_def_key` varchar(128) NOT NULL COMMENT '流程定义Key (冗余)',
   `node_def_key` varchar(128) NOT NULL COMMENT '节点定义Key (冗余)',
   `assign_type` varchar(32) NOT NULL COMMENT '分配策略: USER/ROLE/DEPT/GROUP/EXPRESSION/API/INITIATOR',
@@ -2742,7 +2777,7 @@ CREATE TABLE `xxl_job_log_report` (
   `update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `i_trigger_day` (`trigger_day`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `xxl_job_logglue`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -2829,10 +2864,21 @@ INSERT INTO `sys_global_config` VALUES (1,'default_package_id','1','NUMBER','默
 /*!40000 ALTER TABLE `sys_global_config` ENABLE KEYS */;
 UNLOCK TABLES;
 
+LOCK TABLES `sys_order` WRITE;
+/*!40000 ALTER TABLE `sys_order` DISABLE KEYS */;
+/*!40000 ALTER TABLE `sys_order` ENABLE KEYS */;
+UNLOCK TABLES;
+
 LOCK TABLES `sys_package` WRITE;
 /*!40000 ALTER TABLE `sys_package` DISABLE KEYS */;
 INSERT INTO `sys_package` VALUES (1,'免费版','FREE',0.00,0.00,10,5,10,5,1,1024,NULL,1,1,NULL,NULL,'2026-05-19 01:31:27',NULL,NULL,'2026-05-19 01:31:27',0,0,'免费体验套餐',1,NULL),(2,'基础版','BASIC',299.00,2990.00,50,20,50,20,3,10240,NULL,2,1,NULL,NULL,'2026-05-19 01:31:27',NULL,NULL,'2026-05-19 01:31:27',0,0,'适合小型团队',1,NULL),(3,'专业版','PRO',999.00,9990.00,200,50,200,0,10,102400,NULL,3,1,NULL,NULL,'2026-05-19 01:31:27',NULL,NULL,'2026-05-19 01:31:27',0,0,'适合中型企业',1,NULL),(4,'旗舰版','ENTERPRISE',0.00,0.00,0,0,0,0,0,0,NULL,4,1,NULL,NULL,'2026-05-19 01:31:27',NULL,NULL,'2026-05-19 01:31:27',0,0,'按需定制，所有配额不限',1,NULL);
 /*!40000 ALTER TABLE `sys_package` ENABLE KEYS */;
+UNLOCK TABLES;
+
+LOCK TABLES `sys_platform_menu` WRITE;
+/*!40000 ALTER TABLE `sys_platform_menu` DISABLE KEYS */;
+INSERT INTO `sys_platform_menu` VALUES (1,'平台概览',0,0,'/overview',NULL,NULL,'lucide:layout-dashboard',1,1,1,0,0,NULL,NULL,'2026-09-29 08:43:02',NULL,NULL,'2026-09-29 08:43:02',0,1,0,NULL,NULL),(2,'概览首页',1,1,'/overview/index','/overview/index',NULL,NULL,1,1,1,0,0,NULL,NULL,'2026-09-29 08:43:02',NULL,NULL,'2026-09-29 08:43:02',0,1,0,NULL,NULL),(3,'租户管理',0,0,'/tenant',NULL,NULL,'lucide:building-2',2,1,1,0,0,NULL,NULL,'2026-09-29 08:43:02',NULL,NULL,'2026-09-29 08:43:02',0,1,0,NULL,NULL),(4,'租户列表',3,1,'/tenant/index','/tenant/index',NULL,NULL,1,1,1,0,0,NULL,NULL,'2026-09-29 08:43:02',NULL,NULL,'2026-09-29 08:43:02',0,1,0,NULL,NULL),(5,'套餐管理',0,0,'/package',NULL,NULL,'lucide:package',3,1,1,0,0,NULL,NULL,'2026-09-29 08:43:02',NULL,NULL,'2026-09-29 08:43:02',0,1,0,NULL,NULL),(6,'套餐列表',5,1,'/package/index','/package/index',NULL,NULL,1,1,1,0,0,NULL,NULL,'2026-09-29 08:43:02',NULL,NULL,'2026-09-29 08:43:02',0,1,0,NULL,NULL),(7,'订单管理',0,0,'/order',NULL,NULL,'lucide:receipt',4,1,1,0,0,NULL,NULL,'2026-09-29 08:43:02',NULL,NULL,'2026-09-29 08:43:02',0,1,0,NULL,NULL),(8,'订单列表',7,1,'/order/index','/order/index',NULL,NULL,1,1,1,0,0,NULL,NULL,'2026-09-29 08:43:02',NULL,NULL,'2026-09-29 08:43:02',0,1,0,NULL,NULL),(9,'公告管理',0,0,'/announcement',NULL,NULL,'lucide:megaphone',5,1,1,0,0,NULL,NULL,'2026-09-29 08:43:02',NULL,NULL,'2026-09-29 08:43:02',0,1,0,NULL,NULL),(10,'公告列表',9,1,'/announcement/index','/announcement/index',NULL,NULL,1,1,1,0,0,NULL,NULL,'2026-09-29 08:43:02',NULL,NULL,'2026-09-29 08:43:02',0,1,0,NULL,NULL),(11,'数据分析',0,0,'/dashboard',NULL,NULL,'lucide:bar-chart-3',6,1,1,0,0,NULL,NULL,'2026-09-29 08:43:02',NULL,NULL,'2026-09-29 08:43:02',0,1,0,NULL,NULL),(12,'统计分析',11,1,'/dashboard/analytics','/dashboard/analytics/index',NULL,NULL,1,1,1,0,0,NULL,NULL,'2026-09-29 08:43:02',NULL,NULL,'2026-09-29 08:43:02',0,1,0,NULL,NULL),(13,'系统配置',0,0,'/config',NULL,NULL,'lucide:settings',7,1,1,0,0,NULL,NULL,'2026-09-29 08:43:02',NULL,NULL,'2026-09-29 08:43:02',0,1,0,NULL,NULL),(14,'配置管理',13,1,'/config/index','/config/index',NULL,NULL,1,1,1,0,0,NULL,NULL,'2026-09-29 08:43:02',NULL,NULL,'2026-09-29 08:43:02',0,1,0,NULL,NULL);
+/*!40000 ALTER TABLE `sys_platform_menu` ENABLE KEYS */;
 UNLOCK TABLES;
 
 LOCK TABLES `sys_platform_user` WRITE;
@@ -2845,11 +2891,6 @@ LOCK TABLES `sys_tenant` WRITE;
 /*!40000 ALTER TABLE `sys_tenant` DISABLE KEYS */;
 INSERT INTO `sys_tenant` VALUES (1,'默认租户','DEFAULT','系统管理员','13800000000','admin@saas-cloud.com',1,4,NULL,NULL,NULL,NULL,1,NULL,NULL,NULL,NULL,'2026-05-19 01:31:27',NULL,NULL,'2026-05-19 01:31:27',0,0,'系统初始化默认租户',1,NULL),(2,'星辰科技','STAR_TECH','张星辰','13900001001','zhangxc@startech.com',1,3,NULL,NULL,NULL,NULL,101,NULL,NULL,NULL,NULL,'2026-05-23 09:48:50',NULL,NULL,'2026-05-23 09:53:30',0,0,'测试租户-专业版',1,NULL),(3,'蓝海集团','BLUE_OCEAN','李蓝海','13900002001','lilh@blueocean.com',1,2,NULL,NULL,NULL,NULL,201,NULL,NULL,NULL,NULL,'2026-05-23 09:48:50',NULL,NULL,'2026-05-23 09:53:30',0,0,'测试租户-基础版',1,NULL);
 /*!40000 ALTER TABLE `sys_tenant` ENABLE KEYS */;
-UNLOCK TABLES;
-
-LOCK TABLES `sys_tenant_order` WRITE;
-/*!40000 ALTER TABLE `sys_tenant_order` DISABLE KEYS */;
-/*!40000 ALTER TABLE `sys_tenant_order` ENABLE KEYS */;
 UNLOCK TABLES;
 
 USE `rbac`;
@@ -2996,7 +3037,7 @@ USE `xxl_job`;
 
 LOCK TABLES `xxl_job_group` WRITE;
 /*!40000 ALTER TABLE `xxl_job_group` DISABLE KEYS */;
-INSERT INTO `xxl_job_group` VALUES (1,'xxl-job-executor-sample','通用执行器Sample',0,NULL,'2026-09-29 16:25:57'),(2,'xxl-job-executor-sample-ai','AI执行器Sample',0,NULL,'2026-09-29 16:25:57');
+INSERT INTO `xxl_job_group` VALUES (1,'xxl-job-executor-sample','通用执行器Sample',0,NULL,'2026-09-29 16:42:57'),(2,'xxl-job-executor-sample-ai','AI执行器Sample',0,NULL,'2026-09-29 16:42:57');
 /*!40000 ALTER TABLE `xxl_job_group` ENABLE KEYS */;
 UNLOCK TABLES;
 
