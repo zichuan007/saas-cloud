@@ -12,7 +12,7 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
       TZ: Asia/Shanghai
     volumes:
-      - mysql-data:/var/lib/mysql
+      - "G:/docker/saas-cloud/mysql/data:/var/lib/mysql"
     networks:
       - saas-cloud-net
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --character-set-client-handshake=FALSE
@@ -32,7 +32,7 @@ services:
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD:-123456}
     volumes:
-      - redis-data:/data
+      - "G:/docker/saas-cloud/redis/data:/data"
     command: redis-server --requirepass $${REDIS_PASSWORD}
     networks:
       - saas-cloud-net
@@ -57,7 +57,7 @@ services:
       MYSQL_SERVICE_PORT: 3306
       MYSQL_SERVICE_USER: root
       MYSQL_SERVICE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
-      MYSQL_SERVICE_DB_NAME: nacos
+      MYSQL_SERVICE_DB_NAME: nacos_config
       MYSQL_SERVICE_DB_PARAM: characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
       JVM_XMS: 256m
       JVM_XMX: 256m
@@ -65,6 +65,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    volumes:
+      - "G:/docker/saas-cloud/nacos/logs:/home/nacos/logs"
     networks:
       - saas-cloud-net
     healthcheck:
@@ -79,16 +81,17 @@ services:
     container_name: saas-zookeeper
     restart: always
     ports:
-      - "2181:2181"
+      # 2181 在 Windows Hyper-V 保留端口段(2176-2275)，host 映射改用 12181；kafka 内部仍连 zookeeper:2181
+      - "12181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     volumes:
-      - zookeeper-data:/var/lib/zookeeper/data
+      - "G:/docker/saas-cloud/zookeeper/data:/var/lib/zookeeper/data"
     networks:
       - saas-cloud-net
     healthcheck:
-      test: ["CMD-SHELL", "echo ruok | nc localhost 2181 | grep imok || exit 1"]
+      test: ["CMD-SHELL", "nc -z localhost 2181 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -109,7 +112,7 @@ services:
       zookeeper:
         condition: service_healthy
     volumes:
-      - kafka-data:/var/lib/kafka/data
+      - "G:/docker/saas-cloud/kafka/data:/var/lib/kafka/data"
     networks:
       - saas-cloud-net
     healthcheck:
@@ -128,8 +131,9 @@ services:
     networks:
       - saas-cloud-net
 
+  # SBA 监控 UI；codecentric 镜像无 3.4.5 tag，用 3.4.1（同 3.4.x，与 client 3.4.5 兼容）
   spring-boot-admin:
-    image: codecentric/spring-boot-admin:3.4.5
+    image: codecentric/spring-boot-admin:3.4.1
     container_name: saas-spring-boot-admin
     restart: always
     ports:
@@ -166,7 +170,7 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
     volumes:
-      - minio-data:/data
+      - "G:/docker/saas-cloud/minio/data:/data"
     command: server /data --console-address ":9001"
     networks:
       - saas-cloud-net
@@ -176,13 +180,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
-
-volumes:
-  mysql-data:
-  redis-data:
-  zookeeper-data:
-  kafka-data:
-  minio-data:
 
 networks:
   saas-cloud-net:
