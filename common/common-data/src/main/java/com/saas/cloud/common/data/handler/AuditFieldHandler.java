@@ -3,6 +3,7 @@ package com.saas.cloud.common.data.handler;
 import java.time.LocalDateTime;
 
 import org.apache.ibatis.reflection.MetaObject;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
@@ -32,6 +33,14 @@ public class AuditFieldHandler implements MetaObjectHandler {
         Long tenantId = TenantContext.getTenantId();
         if (tenantId != null) {
             this.strictInsertFill(metaObject, "tenantId", Long.class, tenantId);
+        }
+
+        // 有效状态默认置 1
+        this.strictInsertFill(metaObject, "validStatus", Integer.class, 1);
+        // 链路追踪ID 从 MDC 注入（Micrometer Tracing 运行时写入）
+        String traceId = MDC.get("traceId");
+        if (traceId != null && !traceId.isEmpty()) {
+            this.strictInsertFill(metaObject, "traceId", String.class, traceId);
         }
     }
 

@@ -52,4 +52,16 @@ public abstract class BaseEntity implements Serializable {
     private Integer dataVersion;
 
     private String remark;
+
+    /**
+     * 有效状态：1-有效 0-禁用
+     */
+    @TableField(fill = FieldFill.INSERT)
+    private Integer validStatus;
+
+    /**
+     * 链路追踪ID，插入时从 MDC 注入
+     */
+    @TableField(fill = FieldFill.INSERT)
+    private String traceId;
 }
