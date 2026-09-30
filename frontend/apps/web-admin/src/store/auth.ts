@@ -74,7 +74,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function logout(redirect: boolean = true) {
     try {
-      await logoutApi();
+      await logoutApi(localStorage.getItem('refreshToken'));
     } catch {
       // 不做任何处理
     }

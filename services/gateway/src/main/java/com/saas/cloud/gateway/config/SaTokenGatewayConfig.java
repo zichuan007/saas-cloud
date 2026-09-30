@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.reactor.filter.SaReactorFilter;
 import cn.dev33.satoken.router.SaHttpMethod;
 import cn.dev33.satoken.router.SaRouter;
@@ -41,6 +42,7 @@ public class SaTokenGatewayConfig {
                         "/api/rbac/auth/login",
                         "/api/rbac/auth/refresh",
                         "/api/rbac/auth/register",
+                        "/api/rbac/auth/logout",
                         "/api/rbac/captcha/**",
                         "/api/rbac/auth/social/**",
                         "/api/platform/auth/login",
@@ -66,6 +68,9 @@ public class SaTokenGatewayConfig {
                 })
                 .setError(e -> {
                     log.warn("Sa-Token 认证失败: {}", e.getMessage());
+                    // 设 HTTP 401 状态码，使前端拦截器(按 HTTP status 判定)触发重新登录
+                    SaHolder.getResponse().setStatus(HttpStatus.UNAUTHORIZED.value());
+                    SaHolder.getResponse().setHeader("Content-Type", "application/json;charset=UTF-8");
                     Map<String, Object> result = new LinkedHashMap<>();
                     result.put("code", HttpStatus.UNAUTHORIZED.value());
                     result.put("message", "Token无效或已过期");

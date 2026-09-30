@@ -20,7 +20,7 @@ public interface IAuthService {
 
     Map<String, Object> refreshToken(String refreshToken);
 
-    void logout(String token);
+    void logout(String accessToken, String refreshToken);
 
     /**
      * 租户注册：创建租户 + 管理员用户 + 默认角色 + 根部门，返回Token直接登录

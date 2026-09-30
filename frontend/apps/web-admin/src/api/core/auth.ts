@@ -51,8 +51,8 @@ export async function refreshTokenApi(refreshToken: string) {
 /**
  * 登出
  */
-export async function logoutApi() {
-  return requestClient.post('/rbac/auth/logout');
+export async function logoutApi(refreshToken?: null | string) {
+  return requestClient.post('/rbac/auth/logout', { refreshToken });
 }
 
 /**

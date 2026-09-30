@@ -90,11 +90,13 @@ public class AuthController {
      */
     @Operation(summary = "登出")
     @PostMapping("/logout")
-    public ApiResult<Void> logout(HttpServletRequest request) {
+    public ApiResult<Void> logout(HttpServletRequest request,
+                                   @RequestBody(required = false) Map<String, String> body) {
         String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            authService.logout(header.substring(7));
-        }
+        String accessToken = (header != null && header.startsWith("Bearer "))
+                ? header.substring(7) : null;
+        String refreshToken = body != null ? body.get("refreshToken") : null;
+        authService.logout(accessToken, refreshToken);
         return ApiResult.ok();
     }
 

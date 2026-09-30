@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -57,6 +58,7 @@ import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
 
+import cn.dev33.satoken.stp.SaLoginModel;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
@@ -91,6 +93,25 @@ public class AuthServiceImpl implements IAuthService {
     /** Sa-Token 绝对超时时间（秒），刷新时据此滑动续期 */
     @org.springframework.beans.factory.annotation.Value("${sa-token.timeout:604800}")
     private long saTokenTimeout;
+
+    /** refreshToken 有效天数（独立于 accessToken，不随 active-timeout 失效） */
+    private static final long REFRESH_TOKEN_TTL_DAYS = 7;
+
+    /** refreshToken 在 Redis 的 key 前缀 */
+    private static final String REFRESH_TOKEN_KEY_PREFIX = "auth:refresh:";
+
+    /**
+     * 签发独立的 refreshToken（UUID），存 Redis 映射到 userId
+     *
+     * @param userId 用户ID
+     * @return refreshToken
+     */
+    private String issueRefreshToken(Long userId) {
+        String refreshToken = UUID.randomUUID().toString().replace("-", "");
+        redisTemplate.opsForValue().set(REFRESH_TOKEN_KEY_PREFIX + refreshToken, userId,
+                REFRESH_TOKEN_TTL_DAYS, TimeUnit.DAYS);
+        return refreshToken;
+    }
 
     /** 是否启用登录验证码校验（前端联调后将 saas.captcha.enabled 置 true 启用） */
     @org.springframework.beans.factory.annotation.Value("${saas.captcha.enabled:false}")
@@ -200,7 +221,7 @@ public class AuthServiceImpl implements IAuthService {
 
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("accessToken", tokenValue);
-        result.put("refreshToken", tokenValue);
+        result.put("refreshToken", issueRefreshToken(user.getId()));
         result.put("expiresIn", StpUtil.getTokenTimeout());
         result.put("userId", user.getId());
         result.put("username", user.getUsername());
@@ -214,36 +235,55 @@ public class AuthServiceImpl implements IAuthService {
     @TenantIgnore
     @Override
     public Map<String, Object> refreshToken(String refreshToken) {
-        Object loginId = StpUtil.getLoginIdByToken(refreshToken);
-        if (loginId == null) {
-            throw new BusinessException(ResultCode.UNAUTHORIZED.getCode(), "令牌无效或已过期");
+        // 校验独立的 refreshToken：Redis 查 userId 映射，不依赖已过期的 accessToken
+        Object userIdObj = redisTemplate.opsForValue().get(REFRESH_TOKEN_KEY_PREFIX + refreshToken);
+        if (userIdObj == null) {
+            throw new BusinessException(ResultCode.UNAUTHORIZED.getCode(), "refresh token 无效或已过期");
         }
+        Long userId = Long.valueOf(userIdObj.toString());
 
-        cn.dev33.satoken.session.SaSession session = StpUtil.getSessionByLoginId(loginId);
-        Long userId = session.get("userId", null);
-        if (userId == null) {
-            throw new BusinessException(ResultCode.UNAUTHORIZED.getCode(), "会话信息已失效");
+        // 旋转：删除旧 refreshToken，防止重放
+        redisTemplate.delete(REFRESH_TOKEN_KEY_PREFIX + refreshToken);
+
+        // 重新加载用户并构建 userInfo（新 token 对应新 session，需重建上下文）
+        User user = userMapper.selectById(userId);
+        if (user == null || user.getStatus() == 0) {
+            throw new BusinessException(ResultCode.UNAUTHORIZED.getCode(), "用户不存在或已禁用");
         }
+        Set<String> permissions = loadPermissions(userId);
+        UserContext.UserInfo userInfo = new UserContext.UserInfo();
+        userInfo.setUserId(user.getId());
+        userInfo.setUsername(user.getUsername());
+        userInfo.setTenantId(user.getTenantId());
+        userInfo.setDeptId(user.getDeptId());
+        userInfo.setRoleLevel(user.getRoleLevel().intValue());
+        userInfo.setDataScope(resolveDataScope(userId));
+        userInfo.setPermissions(permissions);
 
-        Set<String> latestPermissions = loadPermissions(userId);
-        session.set("permissions", String.join(",", latestPermissions));
-
-        // 滑动续期：刷新时把绝对超时推回完整周期，活跃用户不会被硬截止踢出
-        StpUtil.renewTimeout(saTokenTimeout);
+        // 签发全新 accessToken：isShare=false 强制生成新 token，旧过期 token 自然失效
+        StpUtil.login(userId, SaLoginModel.create()
+                .setIsShare(false)
+                .setTimeout(saTokenTimeout));
+        storeUserInfoToSession(userInfo);
+        String newAccessToken = StpUtil.getTokenValue();
 
         Map<String, Object> result = new LinkedHashMap<>();
-        result.put("accessToken", refreshToken);
-        result.put("refreshToken", refreshToken);
+        result.put("accessToken", newAccessToken);
+        result.put("refreshToken", issueRefreshToken(userId));
         result.put("expiresIn", StpUtil.getTokenTimeout());
         return result;
     }
 
     @Override
-    public void logout(String token) {
+    public void logout(String accessToken, String refreshToken) {
         try {
-            Object loginId = StpUtil.getLoginIdByToken(token);
-            if (loginId != null) {
-                StpUtil.logout(loginId);
+            // 失效 accessToken：logoutByTokenValue 对已过期/冻结的 token 也能清理
+            if (accessToken != null) {
+                StpUtil.logoutByTokenValue(accessToken);
+            }
+            // 删除 refreshToken，防止登出后被重放换新
+            if (refreshToken != null) {
+                redisTemplate.delete(REFRESH_TOKEN_KEY_PREFIX + refreshToken);
             }
         } catch (Exception e) {
             log.warn("登出时处理失败: {}", e.getMessage());
