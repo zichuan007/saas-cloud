@@ -2,8 +2,10 @@ package com.saas.cloud.rbac.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +84,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         // 批量查询部门名称
         List<User> userList = userPage.getRecords();
         Map<Long, String> deptNameMap = Collections.emptyMap();
+        Map<Long, Integer> roleLevelMap = Collections.emptyMap();
         if (!CollectionUtils.isEmpty(userList)) {
             List<Long> deptIds = userList.stream()
                     .map(User::getDeptId)
@@ -93,10 +96,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 deptNameMap = deptList.stream()
                         .collect(Collectors.toMap(Dept::getId, Dept::getDeptName, (a, b) -> a));
             }
+            // 批量推导角色等级
+            List<Long> userIds = userList.stream()
+                    .map(User::getId)
+                    .collect(Collectors.toList());
+            roleLevelMap = batchResolveRoleLevel(userIds);
         }
 
         // 转换为VO
         Map<Long, String> finalDeptNameMap = deptNameMap;
+        Map<Long, Integer> finalRoleLevelMap = roleLevelMap;
         List<UserPageVO> voList = userList.stream()
                 .map(user -> {
                     UserPageVO vo = new UserPageVO();
@@ -107,7 +116,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                     vo.setDeptId(user.getDeptId());
                     vo.setDeptName(finalDeptNameMap.get(user.getDeptId()));
                     vo.setStatus(user.getStatus() != null ? user.getStatus().intValue() : null);
-                    vo.setRoleLevel(user.getRoleLevel() != null ? user.getRoleLevel().intValue() : null);
+                    vo.setRoleLevel(finalRoleLevelMap.get(user.getId()));
                     vo.setCreateTime(user.getCreateTime());
                     return vo;
                 })
@@ -131,7 +140,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         vo.setAvatar(user.getAvatar());
         vo.setTenantId(user.getTenantId());
         vo.setDeptId(user.getDeptId());
-        vo.setRoleLevel(user.getRoleLevel() != null ? user.getRoleLevel().intValue() : null);
+        vo.setRoleLevel(resolveRoleLevel(userId));
 
         // 查询部门名称
         if (user.getDeptId() != null) {
@@ -194,7 +203,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setEmail(dto.getEmail());
         user.setDeptId(dto.getDeptId());
         user.setStatus((byte) 1);
-        user.setRoleLevel((byte) 2);
         user.setPasswordUpdateTime(LocalDateTime.now());
         baseMapper.insert(user);
         log.info("用户创建成功, id={}", user.getId());
@@ -328,6 +336,72 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setPasswordUpdateTime(LocalDateTime.now());
         baseMapper.updateById(user);
         log.info("密码修改成功, userId={}", userId);
+    }
+
+    /**
+     * 推导用户角色等级：取其所有角色中 role_level 最小值（0=超管），无角色默认 99
+     *
+     * @param userId 用户ID
+     * @return 角色等级
+     */
+    private int resolveRoleLevel(Long userId) {
+        List<UserRole> userRoles = userRoleMapper.selectList(
+                new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, userId));
+        if (userRoles.isEmpty()) {
+            return 99;
+        }
+        List<Long> roleIds = userRoles.stream()
+                .map(UserRole::getRoleId)
+                .collect(Collectors.toList());
+        List<Role> roles = roleMapper.selectBatchIds(roleIds);
+        return roles.stream()
+                .map(Role::getRoleLevel)
+                .filter(Objects::nonNull)
+                .mapToInt(Byte::intValue)
+                .min()
+                .orElse(99);
+    }
+
+    /**
+     * 批量推导用户角色等级
+     *
+     * @param userIds 用户ID列表
+     * @return userId -> 角色等级
+     */
+    private Map<Long, Integer> batchResolveRoleLevel(List<Long> userIds) {
+        if (CollectionUtils.isEmpty(userIds)) {
+            return Collections.emptyMap();
+        }
+        List<UserRole> userRoles = userRoleMapper.selectList(
+                new LambdaQueryWrapper<UserRole>().in(UserRole::getUserId, userIds));
+        if (userRoles.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<Long> roleIds = userRoles.stream()
+                .map(UserRole::getRoleId)
+                .distinct()
+                .collect(Collectors.toList());
+        List<Role> roles = roleMapper.selectBatchIds(roleIds);
+        Map<Long, Byte> roleIdToLevel = new HashMap<>();
+        for (Role role : roles) {
+            if (role.getRoleLevel() != null) {
+                roleIdToLevel.put(role.getId(), role.getRoleLevel());
+            }
+        }
+        Map<Long, List<Long>> userIdToRoleIds = userRoles.stream()
+                .collect(Collectors.groupingBy(UserRole::getUserId,
+                        Collectors.mapping(UserRole::getRoleId, Collectors.toList())));
+        Map<Long, Integer> result = new HashMap<>();
+        userIdToRoleIds.forEach((uid, rids) -> {
+            int minLevel = rids.stream()
+                    .map(roleIdToLevel::get)
+                    .filter(Objects::nonNull)
+                    .mapToInt(Byte::intValue)
+                    .min()
+                    .orElse(99);
+            result.put(uid, minLevel);
+        });
+        return result;
     }
 
     /**

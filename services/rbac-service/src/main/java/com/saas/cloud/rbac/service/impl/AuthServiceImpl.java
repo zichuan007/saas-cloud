@@ -201,7 +201,7 @@ public class AuthServiceImpl implements IAuthService {
         userInfo.setUsername(user.getUsername());
         userInfo.setTenantId(tenantId);
         userInfo.setDeptId(user.getDeptId());
-        userInfo.setRoleLevel(user.getRoleLevel().intValue());
+        userInfo.setRoleLevel(resolveRoleLevel(user.getId()));
         userInfo.setDataScope(resolveDataScope(user.getId()));
         userInfo.setPermissions(permissions);
 
@@ -227,7 +227,7 @@ public class AuthServiceImpl implements IAuthService {
         result.put("username", user.getUsername());
         result.put("realName", user.getRealName());
         result.put("avatar", user.getAvatar());
-        result.put("roleLevel", user.getRoleLevel());
+        result.put("roleLevel", userInfo.getRoleLevel());
         result.put("permissions", permissions);
         return result;
     }
@@ -256,7 +256,7 @@ public class AuthServiceImpl implements IAuthService {
         userInfo.setUsername(user.getUsername());
         userInfo.setTenantId(user.getTenantId());
         userInfo.setDeptId(user.getDeptId());
-        userInfo.setRoleLevel(user.getRoleLevel().intValue());
+        userInfo.setRoleLevel(resolveRoleLevel(userId));
         userInfo.setDataScope(resolveDataScope(userId));
         userInfo.setPermissions(permissions);
 
@@ -338,7 +338,7 @@ public class AuthServiceImpl implements IAuthService {
             userInfo.setUsername(dto.getPhone());
             userInfo.setTenantId(tenantId);
             userInfo.setDeptId(rootDeptId);
-            userInfo.setRoleLevel(0);
+            userInfo.setRoleLevel(resolveRoleLevel(adminUserId));
             userInfo.setDataScope(1);
             userInfo.setPermissions(Collections.emptySet());
 
@@ -406,9 +406,32 @@ public class AuthServiceImpl implements IAuthService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 推导用户角色等级：取其所有角色中 role_level 最小值（0=超管），无角色默认 99
+     *
+     * @param userId 用户ID
+     * @return 角色等级
+     */
+    private int resolveRoleLevel(Long userId) {
+        List<UserRole> userRoles = userRoleMapper.selectList(
+                new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, userId));
+        if (userRoles.isEmpty()) {
+            return 99;
+        }
+        List<Long> roleIds = userRoles.stream()
+                .map(UserRole::getRoleId)
+                .collect(Collectors.toList());
+        List<Role> roles = roleMapper.selectBatchIds(roleIds);
+        return roles.stream()
+                .map(Role::getRoleLevel)
+                .filter(Objects::nonNull)
+                .mapToInt(Byte::intValue)
+                .min()
+                .orElse(99);
+    }
+
     private Set<String> loadPermissions(Long userId) {
-        User user = userMapper.selectById(userId);
-        if (user != null && user.getRoleLevel() != null && user.getRoleLevel() == 0) {
+        if (resolveRoleLevel(userId) == 0) {
             List<Menu> allMenus = menuMapper.selectList(
                     new LambdaQueryWrapper<Menu>().eq(Menu::getStatus, (byte) 1));
             return allMenus.stream()

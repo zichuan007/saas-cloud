@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,9 +27,13 @@ import com.saas.cloud.rbac.api.dto.MenuCreateDTO;
 import com.saas.cloud.rbac.api.dto.MenuUpdateDTO;
 import com.saas.cloud.rbac.api.vo.MenuTreeVO;
 import com.saas.cloud.rbac.entity.Menu;
+import com.saas.cloud.rbac.entity.Role;
 import com.saas.cloud.rbac.entity.User;
+import com.saas.cloud.rbac.entity.UserRole;
 import com.saas.cloud.rbac.mapper.MenuMapper;
+import com.saas.cloud.rbac.mapper.RoleMapper;
 import com.saas.cloud.rbac.mapper.UserMapper;
+import com.saas.cloud.rbac.mapper.UserRoleMapper;
 import com.saas.cloud.rbac.service.IMenuService;
 
 import lombok.RequiredArgsConstructor;
@@ -47,6 +52,8 @@ import lombok.extern.slf4j.Slf4j;
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IMenuService {
 
     private final UserMapper userMapper;
+    private final UserRoleMapper userRoleMapper;
+    private final RoleMapper roleMapper;
     private final PlatformFeignClient platformFeignClient;
     private final ObjectMapper objectMapper;
 
@@ -83,7 +90,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
         User user = userMapper.selectById(userId);
         List<Menu> menuList;
 
-        if (user != null && user.getRoleLevel() != null && user.getRoleLevel() == 0) {
+        if (user != null && resolveRoleLevel(userId) == 0) {
             LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.in(Menu::getMenuType, (byte) 0, (byte) 1)
                     .eq(Menu::getStatus, (byte) 1)
@@ -102,6 +109,30 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
                 .map(this::convertToMenuTreeVO)
                 .collect(Collectors.toList());
         return buildTree(voList);
+    }
+
+    /**
+     * 推导用户角色等级：取其所有角色中 role_level 最小值（0=超管），无角色默认 99
+     *
+     * @param userId 用户ID
+     * @return 角色等级
+     */
+    private int resolveRoleLevel(Long userId) {
+        List<UserRole> userRoles = userRoleMapper.selectList(
+                new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, userId));
+        if (userRoles.isEmpty()) {
+            return 99;
+        }
+        List<Long> roleIds = userRoles.stream()
+                .map(UserRole::getRoleId)
+                .collect(Collectors.toList());
+        List<Role> roles = roleMapper.selectBatchIds(roleIds);
+        return roles.stream()
+                .map(Role::getRoleLevel)
+                .filter(Objects::nonNull)
+                .mapToInt(Byte::intValue)
+                .min()
+                .orElse(99);
     }
 
     @Override

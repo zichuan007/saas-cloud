@@ -158,7 +158,7 @@ public class UserController {
     @PutMapping("/{id}/reset-password")
     public ApiResult<Void> resetPassword(@PathVariable("id") Long id,
                                          @RequestBody Map<String, String> params) {
-        String newPassword = params.get("newPassword");
+        String newPassword = params.get("password");
         userService.resetPassword(id, newPassword);
         return ApiResult.ok();
     }

@@ -77,12 +77,6 @@ public class User extends TenantBaseEntity {
     private Byte status;
 
     /**
-     * 角色等级 0-租户超管 1-部门主管 2-普通
-     */
-    @TableField("role_level")
-    private Byte roleLevel;
-
-    /**
      * 邀请码
      */
     @TableField("invite_code")

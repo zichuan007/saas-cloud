@@ -51,7 +51,6 @@ public class AdminUserInitializer implements TenantInitializer {
         adminUser.setPhone(context.getContactPhone());
         adminUser.setDeptId(rootDeptId);
         adminUser.setStatus((byte) 1);
-        adminUser.setRoleLevel((byte) 0);
         adminUser.setPasswordUpdateTime(LocalDateTime.now());
         adminUser.setTenantId(context.getTenantId());
         userMapper.insert(adminUser);
