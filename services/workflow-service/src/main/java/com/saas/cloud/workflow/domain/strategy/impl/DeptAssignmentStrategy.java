@@ -36,7 +36,7 @@ public class DeptAssignmentStrategy implements AssignmentStrategy {
                 UserInfoVO leader = result.getData();
                 return Collections.singletonList(
                         AssigneeDTO.builder()
-                                .userId(String.valueOf(leader.getUserId()))
+                                .userId(String.valueOf(leader.getId()))
                                 .userName(leader.getRealName())
                                 .build()
                 );

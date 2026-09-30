@@ -8,6 +8,7 @@ import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -173,8 +174,8 @@ public class FlowableProcessEngineGateway implements ProcessEngineGateway {
     @Override
     public String getProcessModel(String processDefinitionId) {
         try {
-            byte[] bytes = repositoryService.getProcessModel(processDefinitionId);
-            return bytes != null ? new String(bytes) : null;
+            InputStream inputStream = repositoryService.getProcessModel(processDefinitionId);
+            return inputStream != null ? new String(inputStream.readAllBytes()) : null;
         } catch (Exception e) {
             log.warn("获取流程模型失败: {}", processDefinitionId, e);
             return null;

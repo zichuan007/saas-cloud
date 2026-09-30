@@ -34,7 +34,8 @@ public class ExpressionAssignmentStrategy implements AssignmentStrategy {
             org.springframework.expression.spel.standard.SpelExpressionParser parser =
                     new org.springframework.expression.spel.standard.SpelExpressionParser();
             org.springframework.expression.EvaluationContext context =
-                    org.springframework.expression.spel.support.SimpleEvaluationContext.Builder()
+                    org.springframework.expression.spel.support.SimpleEvaluationContext
+                            .forReadOnlyDataBinding()
                             .withRootObject(variables)
                             .build();
             String userId = parser.parseExpression(assignValue).getValue(context, String.class);

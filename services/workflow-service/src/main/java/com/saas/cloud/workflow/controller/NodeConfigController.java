@@ -1,12 +1,13 @@
 package com.saas.cloud.workflow.controller;
 
-import com.saas.cloud.common.core.api.ApiResult;
+import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.workflow.api.dto.NodeCandidateDTO;
 import com.saas.cloud.workflow.api.dto.NodeConfigDTO;
 import com.saas.cloud.workflow.tunnel.mapper.FlowNodeConfigMapper;
 import com.saas.cloud.workflow.tunnel.mapper.FlowNodeCandidateMapper;
 import com.saas.cloud.workflow.tunnel.dataobject.FlowNodeConfigDO;
 import com.saas.cloud.workflow.tunnel.dataobject.FlowNodeCandidateDO;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -30,22 +31,22 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class NodeConfigController {
 
-    private final FlowNodeConfigDAO nodeConfigDAO;
+    private final FlowNodeConfigMapper nodeConfigMapper;
     private final FlowNodeCandidateMapper candidateMapper;
 
     @Operation(summary = "查询节点配置列表")
     @GetMapping("/{processDefKey}")
     public ApiResult<List<FlowNodeConfigDO>> list(@PathVariable String processDefKey) {
-        FlowNodeConfigDO condition = new FlowNodeConfigDO();
-        condition.setProcessDefKey(processDefKey);
-        return ApiResult.success(nodeConfigMapper.selectList(condition));
+        return ApiResult.ok(nodeConfigMapper.selectList(
+                new LambdaQueryWrapper<FlowNodeConfigDO>()
+                        .eq(FlowNodeConfigDO::getProcessDefKey, processDefKey)));
     }
 
     @Operation(summary = "查询节点候选人列表")
     @GetMapping("/{processDefKey}/{nodeDefKey}/candidates")
     public ApiResult<List<FlowNodeCandidateDO>> candidates(
             @PathVariable String processDefKey, @PathVariable String nodeDefKey) {
-        return ApiResult.success(candidateMapper.selectByProcessDefKeyAndNodeDefKey(processDefKey, nodeDefKey));
+        return ApiResult.ok(candidateMapper.selectByProcessDefKeyAndNodeDefKey(processDefKey, nodeDefKey));
     }
 
     @Operation(summary = "批量保存节点配置(含候选人)")
@@ -82,7 +83,7 @@ public class NodeConfigController {
                 }
             }
         }
-        return ApiResult.success();
+        return ApiResult.ok();
     }
 
     @Operation(summary = "删除节点配置")
@@ -90,6 +91,6 @@ public class NodeConfigController {
     @Transactional(rollbackFor = Exception.class)
     public ApiResult<Void> delete(@PathVariable Long id) {
         nodeConfigMapper.deleteById(id);
-        return ApiResult.success();
+        return ApiResult.ok();
     }
 }

@@ -1,6 +1,6 @@
 package com.saas.cloud.workflow.controller;
 
-import com.saas.cloud.common.core.api.ApiResult;
+import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.security.context.UserContext;
 import com.saas.cloud.workflow.tunnel.mapper.FlowApprovalStatisticsMapper;
 import com.saas.cloud.workflow.tunnel.dataobject.FlowApprovalStatisticsDO;
@@ -25,14 +25,14 @@ public class ApprovalStatisticsController {
     @Operation(summary = "审批概览统计")
     public ApiResult<Map<String, Object>> overview() {
         Long userId = UserContext.getUserId();
-        if (userId == null) return ApiResult.success(Map.of());
+        if (userId == null) return ApiResult.ok(Map.of());
         List<FlowApprovalStatisticsDO> list = statisticsMapper.selectByUserId(userId);
         int total = list.stream().mapToInt(FlowApprovalStatisticsDO::getTotalCount).sum();
         int approved = list.stream().mapToInt(FlowApprovalStatisticsDO::getApprovedCount).sum();
         int rejected = list.stream().mapToInt(FlowApprovalStatisticsDO::getRejectedCount).sum();
         long avgMs = list.isEmpty() ? 0
                 : (long) list.stream().mapToLong(s -> s.getAvgDurationMs() != null ? s.getAvgDurationMs() : 0).average().orElse(0);
-        return ApiResult.success(Map.of(
+        return ApiResult.ok(Map.of(
                 "totalCount", total,
                 "approvedCount", approved,
                 "rejectedCount", rejected,
@@ -47,7 +47,7 @@ public class ApprovalStatisticsController {
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate) {
         Long userId = UserContext.getUserId();
-        return userId == null ? ApiResult.success(List.of())
-                : ApiResult.success(statisticsMapper.selectByUserIdAndPeriod(userId, period));
+        return userId == null ? ApiResult.ok(List.of())
+                : ApiResult.ok(statisticsMapper.selectByUserIdAndPeriod(userId, period));
     }
 }

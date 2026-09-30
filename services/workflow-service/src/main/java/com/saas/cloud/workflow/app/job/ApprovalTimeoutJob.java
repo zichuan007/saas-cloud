@@ -1,5 +1,6 @@
 package com.saas.cloud.workflow.app.job;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.saas.cloud.workflow.domain.gateway.ProcessEngineGateway;
 import com.saas.cloud.workflow.tunnel.mapper.FlowNodeConfigMapper;
 import com.saas.cloud.workflow.tunnel.dataobject.FlowNodeConfigDO;
@@ -17,14 +18,13 @@ import java.util.Map;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ApprovalTimeoutJob {
 
-    private final FlowNodeConfigDAO nodeConfigDAO;
+    private final FlowNodeConfigMapper nodeConfigMapper;
     private final ProcessEngineGateway processEngine;
 
     @Scheduled(cron = "0 0 * * * ?")
     public void handleTimeout() {
-        FlowNodeConfigDO condition = new FlowNodeConfigDO();
-        condition.setTimeoutEnabled(1);
-        List<FlowNodeConfigDO> configs = nodeConfigMapper.selectList(condition);
+        List<FlowNodeConfigDO> configs = nodeConfigMapper.selectList(
+                new LambdaQueryWrapper<FlowNodeConfigDO>().eq(FlowNodeConfigDO::getTimeoutEnabled, 1));
         for (FlowNodeConfigDO config : configs) {
             try {
                 handleNodeTimeout(config);

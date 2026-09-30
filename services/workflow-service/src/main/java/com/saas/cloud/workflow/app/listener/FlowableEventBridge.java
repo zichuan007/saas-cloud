@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEvent;
+import org.flowable.common.engine.api.delegate.event.FlowableEngineEventType;
+import org.flowable.common.engine.api.delegate.event.FlowableEvent;
+import org.flowable.common.engine.api.delegate.event.FlowableEventType;
 import org.flowable.common.engine.api.delegate.event.FlowableEventListener;
 import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,50 +32,47 @@ public class FlowableEventBridge implements FlowableEventListener {
 
     @Override
     public void onEvent(FlowableEvent event) {
-        if (!(event instanceof FlowableEngineEntityEvent entityEvent)) {
+        if (!(event instanceof FlowableEngineEntityEvent)) {
             return;
         }
+        FlowableEngineEntityEvent entityEvent = (FlowableEngineEntityEvent) event;
+        FlowableEventType type = event.getType();
 
-        switch (event.getType()) {
-            case TASK_CREATED -> {
-                if (entityEvent.getEntity() instanceof Task task) {
-                    TaskCreatedEvent springEvent = TaskCreatedEvent.builder()
-                            .taskId(task.getId())
-                            .processInstanceId(task.getProcessInstanceId())
-                            .processDefKey(task.getProcessDefinitionId())
-                            .taskDefKey(task.getTaskDefinitionKey())
-                            .taskName(task.getName())
-                            .assignee(task.getAssignee())
-                            .build();
-                    eventPublisher.publishEvent(springEvent);
-                    log.debug("发布 TaskCreatedEvent: taskId={}", task.getId());
-                }
-            }
-            case TASK_COMPLETED -> {
-                if (entityEvent.getEntity() instanceof org.flowable.task.api.Task task) {
-                    TaskCompletedEvent springEvent = TaskCompletedEvent.builder()
-                            .taskId(task.getId())
-                            .processInstanceId(task.getProcessInstanceId())
-                            .processDefKey(task.getProcessDefinitionId())
-                            .taskDefKey(task.getTaskDefinitionKey())
-                            .taskName(task.getName())
-                            .assignee(task.getAssignee())
-                            .build();
-                    eventPublisher.publishEvent(springEvent);
-                    log.debug("发布 TaskCompletedEvent: taskId={}", task.getId());
-                }
-            }
-            case PROCESS_COMPLETED -> {
-                String processInstanceId = entityEvent.getProcessInstanceId();
-                ProcessCompletedEvent springEvent = ProcessCompletedEvent.builder()
-                        .processInstanceId(processInstanceId)
+        if (type == FlowableEngineEventType.TASK_CREATED) {
+            if (entityEvent.getEntity() instanceof Task) {
+                Task task = (Task) entityEvent.getEntity();
+                TaskCreatedEvent springEvent = TaskCreatedEvent.builder()
+                        .taskId(task.getId())
+                        .processInstanceId(task.getProcessInstanceId())
+                        .processDefKey(task.getProcessDefinitionId())
+                        .taskDefKey(task.getTaskDefinitionKey())
+                        .taskName(task.getName())
+                        .assignee(task.getAssignee())
                         .build();
                 eventPublisher.publishEvent(springEvent);
-                log.debug("发布 ProcessCompletedEvent: processInstanceId={}", processInstanceId);
+                log.debug("发布 TaskCreatedEvent: taskId={}", task.getId());
             }
-            default -> {
-                // 忽略其他事件类型
+        } else if (type == FlowableEngineEventType.TASK_COMPLETED) {
+            if (entityEvent.getEntity() instanceof Task) {
+                Task task = (Task) entityEvent.getEntity();
+                TaskCompletedEvent springEvent = TaskCompletedEvent.builder()
+                        .taskId(task.getId())
+                        .processInstanceId(task.getProcessInstanceId())
+                        .processDefKey(task.getProcessDefinitionId())
+                        .taskDefKey(task.getTaskDefinitionKey())
+                        .taskName(task.getName())
+                        .assignee(task.getAssignee())
+                        .build();
+                eventPublisher.publishEvent(springEvent);
+                log.debug("发布 TaskCompletedEvent: taskId={}", task.getId());
             }
+        } else if (type == FlowableEngineEventType.PROCESS_COMPLETED) {
+            String processInstanceId = entityEvent.getProcessInstanceId();
+            ProcessCompletedEvent springEvent = ProcessCompletedEvent.builder()
+                    .processInstanceId(processInstanceId)
+                    .build();
+            eventPublisher.publishEvent(springEvent);
+            log.debug("发布 ProcessCompletedEvent: processInstanceId={}", processInstanceId);
         }
     }
 

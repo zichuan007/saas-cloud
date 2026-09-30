@@ -1,5 +1,6 @@
 package com.saas.cloud.workflow.app.listener;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.saas.cloud.workflow.api.event.ProcessCompletedEvent;
 import com.saas.cloud.workflow.domain.gateway.ProcessEngineGateway;
 import com.saas.cloud.workflow.tunnel.mapper.FlowProcessInstanceExtMapper;
@@ -19,11 +20,13 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ProcessCompletedEventListener {
 
-    private final FlowProcessInstanceExtDAO processInstanceExtDAO;
+    private final FlowProcessInstanceExtMapper processInstanceExtMapper;
 
     @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void onProcessCompleted(ProcessCompletedEvent event) {
-        List<FlowProcessInstanceExtDO> instances = processInstanceExtMapper.selectByProcessInstanceId(event.getProcessInstanceId());
+        List<FlowProcessInstanceExtDO> instances = processInstanceExtMapper.selectList(
+                new LambdaQueryWrapper<FlowProcessInstanceExtDO>()
+                        .eq(FlowProcessInstanceExtDO::getProcessInstanceId, event.getProcessInstanceId()));
         for (FlowProcessInstanceExtDO instance : instances) {
             instance.setStatus(1); // 已完成
             instance.setEndTime(LocalDateTime.now());

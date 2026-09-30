@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class ApprovalStatisticsAggregationJob {
 
-    private final FlowApprovalRecordDAO approvalRecordDAO;
+    private final FlowApprovalRecordMapper approvalRecordMapper;
     private final FlowApprovalStatisticsMapper statisticsMapper;
 
     @Scheduled(cron = "0 0 2 * * ?")

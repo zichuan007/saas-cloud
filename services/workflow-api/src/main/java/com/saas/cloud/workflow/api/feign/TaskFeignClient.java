@@ -2,7 +2,6 @@ package com.saas.cloud.workflow.api.feign;
 
 import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.workflow.api.dto.request.*;
-import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;

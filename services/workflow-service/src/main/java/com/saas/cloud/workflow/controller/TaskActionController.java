@@ -1,6 +1,6 @@
 package com.saas.cloud.workflow.controller;
 
-import com.saas.cloud.common.core.api.ApiResult;
+import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.security.context.UserContext;
 import com.saas.cloud.workflow.api.dto.request.*;
 import com.saas.cloud.workflow.api.enums.ApprovalActionEnum;
@@ -32,23 +32,22 @@ import java.util.stream.Collectors;
 @Tag(name = "任务管理")
 @RestController
 @RequestMapping("/task")
-@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class TaskActionController {
 
     private final Map<ApprovalActionEnum, ApprovalAction<?>> actionMap;
-    private final FlowApprovalRecordDAO approvalRecordDAO;
-    private final FlowCcRecordDAO ccRecordDAO;
+    private final FlowApprovalRecordMapper approvalRecordMapper;
+    private final FlowCcRecordMapper ccRecordMapper;
     private final ProcessEngineGateway processEngine;
 
     @Autowired
     public TaskActionController(List<ApprovalAction<?>> actions,
-                                 FlowApprovalRecordDAO approvalRecordDAO,
-                                 FlowCcRecordDAO ccRecordDAO,
+                                 FlowApprovalRecordMapper approvalRecordMapper,
+                                 FlowCcRecordMapper ccRecordMapper,
                                  ProcessEngineGateway processEngine) {
         this.actionMap = actions.stream()
                 .collect(Collectors.toMap(ApprovalAction::getActionType, Function.identity()));
-        this.approvalRecordDAO = approvalRecordDAO;
-        this.ccRecordDAO = ccRecordDAO;
+        this.approvalRecordMapper = approvalRecordMapper;
+        this.ccRecordMapper = ccRecordMapper;
         this.processEngine = processEngine;
     }
 
@@ -56,39 +55,39 @@ public class TaskActionController {
     @GetMapping("/{taskId}")
     public ApiResult<Map<String, Object>> detail(@PathVariable String taskId) {
         Map<String, Object> task = processEngine.queryTask(taskId);
-        return task == null ? ApiResult.error("任务不存在") : ApiResult.success(task);
+        return task == null ? ApiResult.fail("任务不存在") : ApiResult.ok(task);
     }
 
     @Operation(summary = "任务评论")
     @GetMapping("/{taskId}/comments")
     public ApiResult<List<Map<String, Object>>> comments(@PathVariable String taskId) {
-        return ApiResult.success(processEngine.getComments(taskId));
+        return ApiResult.ok(processEngine.getComments(taskId));
     }
 
     @Operation(summary = "我的待办任务")
     @GetMapping("/todo")
     public ApiResult<List<Map<String, Object>>> todo() {
         Long userId = UserContext.getUserId();
-        if (userId == null) return ApiResult.error("未登录");
+        if (userId == null) return ApiResult.fail("未登录");
         FlowApprovalRecordDO condition = new FlowApprovalRecordDO();
         condition.setOperatorId(userId);
-        return ApiResult.success(List.of());
+        return ApiResult.ok(List.of());
     }
 
     @Operation(summary = "我的已办任务")
     @GetMapping("/done")
     public ApiResult<List<FlowApprovalRecordDO>> done() {
         Long userId = UserContext.getUserId();
-        return userId == null ? ApiResult.success(List.of())
-                : ApiResult.success(approvalRecordMapper.selectByOperatorId(userId));
+        return userId == null ? ApiResult.ok(List.of())
+                : ApiResult.ok(approvalRecordMapper.selectByOperatorId(userId));
     }
 
     @Operation(summary = "抄送给我的")
     @GetMapping("/copy")
     public ApiResult<List<FlowCcRecordDO>> copy() {
         Long userId = UserContext.getUserId();
-        return userId == null ? ApiResult.success(List.of())
-                : ApiResult.success(ccRecordMapper.selectByReceiverId(userId));
+        return userId == null ? ApiResult.ok(List.of())
+                : ApiResult.ok(ccRecordMapper.selectByReceiverId(userId));
     }
 
     @Operation(summary = "标记抄送已读")
@@ -99,7 +98,7 @@ public class TaskActionController {
             record.setIsRead(1);
             ccRecordMapper.updateById(record);
         }
-        return ApiResult.success();
+        return ApiResult.ok();
     }
 
     @Operation(summary = "审批通过")
@@ -107,7 +106,7 @@ public class TaskActionController {
     public ApiResult<Void> approve(@PathVariable String id, @Valid @RequestBody ApproveRequest request) {
         request.setTaskId(id);
         getAction(ApprovalActionEnum.APPROVED).execute(request);
-        return ApiResult.success();
+        return ApiResult.ok();
     }
 
     @Operation(summary = "驳回")
@@ -115,7 +114,7 @@ public class TaskActionController {
     public ApiResult<Void> reject(@PathVariable String id, @Valid @RequestBody RejectRequest request) {
         request.setTaskId(id);
         getAction(ApprovalActionEnum.REJECTED).execute(request);
-        return ApiResult.success();
+        return ApiResult.ok();
     }
 
     @Operation(summary = "转办")
@@ -123,7 +122,7 @@ public class TaskActionController {
     public ApiResult<Void> transfer(@PathVariable String id, @Valid @RequestBody TransferRequest request) {
         request.setTaskId(id);
         getAction(ApprovalActionEnum.TRANSFER).execute(request);
-        return ApiResult.success();
+        return ApiResult.ok();
     }
 
     @Operation(summary = "委派")
@@ -131,7 +130,7 @@ public class TaskActionController {
     public ApiResult<Void> delegate(@PathVariable String id, @Valid @RequestBody DelegateRequest request) {
         request.setTaskId(id);
         getAction(ApprovalActionEnum.DELEGATE).execute(request);
-        return ApiResult.success();
+        return ApiResult.ok();
     }
 
     @Operation(summary = "加签")
@@ -139,7 +138,7 @@ public class TaskActionController {
     public ApiResult<Void> addSign(@PathVariable String id, @Valid @RequestBody AddSignRequest request) {
         request.setTaskId(id);
         getAction(ApprovalActionEnum.ADD_SIGN).execute(request);
-        return ApiResult.success();
+        return ApiResult.ok();
     }
 
     @Operation(summary = "催办")
@@ -147,7 +146,7 @@ public class TaskActionController {
     public ApiResult<Void> urge(@PathVariable String id, @Valid @RequestBody UrgeRequest request) {
         request.setTaskId(id);
         getAction(ApprovalActionEnum.URGE).execute(request);
-        return ApiResult.success();
+        return ApiResult.ok();
     }
 
     @SuppressWarnings("unchecked")

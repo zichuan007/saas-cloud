@@ -1,6 +1,6 @@
 package com.saas.cloud.workflow.controller;
 
-import com.saas.cloud.common.core.api.ApiResult;
+import com.saas.cloud.common.core.result.ApiResult;
 import com.saas.cloud.common.security.context.UserContext;
 import com.saas.cloud.workflow.tunnel.mapper.FlowCcRecordMapper;
 import com.saas.cloud.workflow.tunnel.dataobject.FlowCcRecordDO;
@@ -18,14 +18,14 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CcRecordController {
 
-    private final FlowCcRecordDAO ccRecordDAO;
+    private final FlowCcRecordMapper ccRecordMapper;
 
     @GetMapping("/my")
     @Operation(summary = "我的抄送列表")
     public ApiResult<List<FlowCcRecordDO>> myCopies() {
         Long userId = UserContext.getUserId();
-        return userId == null ? ApiResult.success(List.of())
-                : ApiResult.success(ccRecordMapper.selectByReceiverId(userId));
+        return userId == null ? ApiResult.ok(List.of())
+                : ApiResult.ok(ccRecordMapper.selectByReceiverId(userId));
     }
 
     @PutMapping("/{id}/read")
@@ -36,6 +36,6 @@ public class CcRecordController {
             record.setIsRead(1);
             ccRecordMapper.updateById(record);
         }
-        return ApiResult.success();
+        return ApiResult.ok();
     }
 }

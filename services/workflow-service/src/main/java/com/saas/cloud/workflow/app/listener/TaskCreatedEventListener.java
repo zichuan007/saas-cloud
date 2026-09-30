@@ -31,7 +31,7 @@ public class TaskCreatedEventListener {
 
     private final TaskInterceptorChain interceptorChain;
     private final ProcessEngineGateway processEngine;
-    private final FlowApprovalRecordDAO approvalRecordDAO;
+    private final FlowApprovalRecordMapper approvalRecordMapper;
 
     /**
      * 监听 TaskCreatedEvent，与 Flowable 引擎共享事务

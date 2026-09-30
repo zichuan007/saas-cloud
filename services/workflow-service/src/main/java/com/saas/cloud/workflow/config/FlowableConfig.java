@@ -1,7 +1,8 @@
 package com.saas.cloud.workflow.config;
 
+import java.util.List;
+
 import com.saas.cloud.workflow.app.listener.FlowableEventBridge;
-import org.flowable.common.engine.api.delegate.event.FlowableEngineEventType;
 import org.flowable.spring.SpringProcessEngineConfiguration;
 import org.flowable.spring.boot.EngineConfigurationConfigurer;
 import org.springframework.context.annotation.Bean;
@@ -28,11 +29,9 @@ public class FlowableConfig {
                     configuration.getDatabaseSchemaUpdate(),
                     configuration.isAsyncExecutorActivate());
 
-            // 注册事件桥接器，将 Flowable 内部事件统一转换为 Spring ApplicationEvent
-            configuration.getEventDispatcher().addEventListener(eventBridge,
-                    FlowableEngineEventType.TASK_CREATED,
-                    FlowableEngineEventType.TASK_COMPLETED,
-                    FlowableEngineEventType.PROCESS_COMPLETED);
+            // 注册事件桥接器：用 setEventListeners 在引擎 init 阶段应用（configurer 阶段 getEventDispatcher() 尚为 null）
+            // bridge.onEvent 内部按 FlowableEventType 过滤，仅处理 TASK_CREATED/TASK_COMPLETED/PROCESS_COMPLETED
+            configuration.setEventListeners(List.of(eventBridge));
         };
     }
 }

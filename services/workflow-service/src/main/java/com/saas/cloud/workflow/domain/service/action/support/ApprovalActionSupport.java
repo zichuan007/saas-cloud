@@ -21,13 +21,13 @@ public abstract class ApprovalActionSupport {
     protected ProcessEngineGateway processEngine;
 
     @Autowired
-    protected FlowApprovalRecordDAO approvalRecordDAO;
+    protected FlowApprovalRecordMapper approvalRecordMapper;
 
     @Autowired
-    protected FlowTaskRelationDAO taskRelationDAO;
+    protected FlowTaskRelationMapper taskRelationMapper;
 
     @Autowired
-    protected FlowUrgeLogDAO urgeLogDAO;
+    protected FlowUrgeLogMapper urgeLogMapper;
 
     protected Map<String, Object> getAndValidateTask(String taskId) {
         Map<String, Object> task = processEngine.queryTask(taskId);
