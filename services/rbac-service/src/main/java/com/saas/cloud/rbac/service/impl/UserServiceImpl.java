@@ -100,7 +100,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         List<UserPageVO> voList = userList.stream()
                 .map(user -> {
                     UserPageVO vo = new UserPageVO();
-                    vo.setUserId(user.getId());
+                    vo.setId(user.getId());
                     vo.setUsername(user.getUsername());
                     vo.setRealName(user.getRealName());
                     vo.setPhone(user.getPhone());
@@ -125,7 +125,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
 
         UserInfoVO vo = new UserInfoVO();
-        vo.setUserId(user.getId());
+        vo.setId(user.getId());
         vo.setUsername(user.getUsername());
         vo.setRealName(user.getRealName());
         vo.setAvatar(user.getAvatar());
