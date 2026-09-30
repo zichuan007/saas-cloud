@@ -72,7 +72,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
                     vo.setId(role.getId());
                     vo.setRoleName(role.getRoleName());
                     vo.setRoleCode(role.getRoleCode());
-                    vo.setRoleLevel(role.getRoleLevel() != null ? role.getRoleLevel().intValue() : null);
+                    vo.setRoleLevel("super_admin".equals(role.getRoleCode()) ? 0 : 99);
                     vo.setDataScope(role.getDataScope() != null ? role.getDataScope().intValue() : null);
                     vo.setSortOrder(role.getSortOrder());
                     vo.setStatus(role.getStatus() != null ? role.getStatus().intValue() : null);
@@ -118,7 +118,6 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
         role.setSortOrder(dto.getSortOrder() != null ? dto.getSortOrder() : 0);
         role.setDataScope(dto.getDataScope() != null ? dto.getDataScope().byteValue() : 4);
         role.setStatus((byte) 1);
-        role.setRoleLevel((byte) 2);
         role.setIsSystem((byte) 0);
         this.save(role);
         log.info("角色创建成功, id={}", role.getId());

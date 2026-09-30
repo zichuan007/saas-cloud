@@ -39,8 +39,7 @@ public class RoleInitializer implements TenantInitializer {
     public void initialize(TenantInitContext context) {
         Role adminRole = new Role();
         adminRole.setRoleName("租户超管");
-        adminRole.setRoleCode("tenant_admin");
-        adminRole.setRoleLevel((byte) 0);
+        adminRole.setRoleCode("super_admin");
         adminRole.setDataScope((byte) 1);
         adminRole.setSortOrder(0);
         adminRole.setStatus((byte) 1);

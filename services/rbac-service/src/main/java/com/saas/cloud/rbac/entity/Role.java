@@ -33,12 +33,6 @@ public class Role extends TenantBaseEntity {
     private String roleCode;
 
     /**
-     * 角色等级 0-超管 1-管理员 2-普通
-     */
-    @TableField("role_level")
-    private Byte roleLevel;
-
-    /**
      * 数据范围 1-全部 2-本部门及下级 3-本部门 4-仅本人 5-自定义
      */
     @TableField("data_scope")

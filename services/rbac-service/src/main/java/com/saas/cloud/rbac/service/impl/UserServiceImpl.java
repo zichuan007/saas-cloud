@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -339,7 +340,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     /**
-     * 推导用户角色等级：取其所有角色中 role_level 最小值（0=超管），无角色默认 99
+     * 推导用户角色等级：是否拥有 super_admin 角色决定（0=超管，99=普通），无角色默认 99
      *
      * @param userId 用户ID
      * @return 角色等级
@@ -354,12 +355,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 .map(UserRole::getRoleId)
                 .collect(Collectors.toList());
         List<Role> roles = roleMapper.selectBatchIds(roleIds);
-        return roles.stream()
-                .map(Role::getRoleLevel)
-                .filter(Objects::nonNull)
-                .mapToInt(Byte::intValue)
-                .min()
-                .orElse(99);
+        return roles.stream().anyMatch(r -> "super_admin".equals(r.getRoleCode())) ? 0 : 99;
     }
 
     /**
@@ -382,24 +378,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
                 .distinct()
                 .collect(Collectors.toList());
         List<Role> roles = roleMapper.selectBatchIds(roleIds);
-        Map<Long, Byte> roleIdToLevel = new HashMap<>();
-        for (Role role : roles) {
-            if (role.getRoleLevel() != null) {
-                roleIdToLevel.put(role.getId(), role.getRoleLevel());
-            }
-        }
+        Set<Long> superAdminRoleIds = roles.stream()
+                .filter(r -> "super_admin".equals(r.getRoleCode()))
+                .map(Role::getId)
+                .collect(Collectors.toSet());
         Map<Long, List<Long>> userIdToRoleIds = userRoles.stream()
                 .collect(Collectors.groupingBy(UserRole::getUserId,
                         Collectors.mapping(UserRole::getRoleId, Collectors.toList())));
         Map<Long, Integer> result = new HashMap<>();
         userIdToRoleIds.forEach((uid, rids) -> {
-            int minLevel = rids.stream()
-                    .map(roleIdToLevel::get)
-                    .filter(Objects::nonNull)
-                    .mapToInt(Byte::intValue)
-                    .min()
-                    .orElse(99);
-            result.put(uid, minLevel);
+            boolean hasSuperAdmin = rids.stream().anyMatch(superAdminRoleIds::contains);
+            result.put(uid, hasSuperAdmin ? 0 : 99);
         });
         return result;
     }

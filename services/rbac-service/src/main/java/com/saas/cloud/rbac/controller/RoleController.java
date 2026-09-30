@@ -154,7 +154,7 @@ public class RoleController {
             RoleExportVO vo = new RoleExportVO();
             vo.setRoleName(role.getRoleName());
             vo.setRoleCode(role.getRoleCode());
-            vo.setRoleLevelDesc(roleLevelDesc(role.getRoleLevel()));
+            vo.setRoleLevelDesc(roleLevelDesc(role.getRoleCode()));
             vo.setDataScopeDesc(dataScopeDesc(role.getDataScope()));
             vo.setStatusDesc(role.getStatus() != null && role.getStatus() == 1 ? "启用" : "禁用");
             vo.setCreateTime(role.getCreateTime());
@@ -163,14 +163,8 @@ public class RoleController {
         ExcelUtils.write(response, "角色列表", "角色", RoleExportVO.class, voList);
     }
 
-    private String roleLevelDesc(Byte level) {
-        if (level == null) return "未知";
-        switch (level) {
-            case 0: return "超管";
-            case 1: return "管理员";
-            case 2: return "普通";
-            default: return "未知";
-        }
+    private String roleLevelDesc(String roleCode) {
+        return "super_admin".equals(roleCode) ? "超级管理员" : "普通角色";
     }
 
     private String dataScopeDesc(Byte scope) {

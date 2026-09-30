@@ -112,7 +112,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
     }
 
     /**
-     * 推导用户角色等级：取其所有角色中 role_level 最小值（0=超管），无角色默认 99
+     * 推导用户角色等级：是否拥有 super_admin 角色决定（0=超管，99=普通），无角色默认 99
      *
      * @param userId 用户ID
      * @return 角色等级
@@ -127,12 +127,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
                 .map(UserRole::getRoleId)
                 .collect(Collectors.toList());
         List<Role> roles = roleMapper.selectBatchIds(roleIds);
-        return roles.stream()
-                .map(Role::getRoleLevel)
-                .filter(Objects::nonNull)
-                .mapToInt(Byte::intValue)
-                .min()
-                .orElse(99);
+        return roles.stream().anyMatch(r -> "super_admin".equals(r.getRoleCode())) ? 0 : 99;
     }
 
     @Override
