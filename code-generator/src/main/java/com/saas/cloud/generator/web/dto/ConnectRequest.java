@@ -1,5 +1,8 @@
 package com.saas.cloud.generator.web.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -13,8 +16,11 @@ import lombok.Data;
 @Data
 public class ConnectRequest {
 
-    /** JDBC 连接地址 */
+    /**
+     * JDBC 连接地址（跳过 XSS 清洗，URL 中的 & 不能被转义）
+     */
     @NotBlank(message = "JDBC 连接地址不能为空")
+    @JsonDeserialize(using = StringDeserializer.class)
     private String jdbcUrl;
 
     /** 数据库用户名 */
