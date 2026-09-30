@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saas.cloud.common.core.result.ApiResult;
+import com.saas.cloud.common.core.result.ResultCode;
 import com.saas.cloud.generator.engine.GeneratorConfig;
 import com.saas.cloud.generator.engine.GeneratorEngine;
 import com.saas.cloud.generator.web.dto.ConnectRequest;
@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RestController
-@CrossOrigin(origins = "*")
 public class GeneratorController {
 
     private final GeneratorEngine engine = new GeneratorEngine();
@@ -46,9 +45,14 @@ public class GeneratorController {
         config.setUsername(req.getUsername());
         config.setPassword(req.getPassword());
 
-        List<Map<String, String>> tables = engine.listTables(config);
-        log.info("连接成功，发现 {} 张表", tables.size());
-        return ApiResult.ok(tables);
+        try {
+            List<Map<String, String>> tables = engine.listTables(config);
+            log.info("连接成功，发现 {} 张表", tables.size());
+            return ApiResult.ok(tables);
+        } catch (Exception e) {
+            log.warn("数据库连接失败: {}", e.getMessage());
+            return ApiResult.fail(ResultCode.BAD_REQUEST.getCode(), "数据库连接失败: " + e.getMessage());
+        }
     }
 
     /**
@@ -60,8 +64,13 @@ public class GeneratorController {
     @PostMapping("/preview")
     public ApiResult<Map<String, String>> preview(@Valid @RequestBody GenerateRequest req) {
         GeneratorConfig config = toConfig(req);
-        Map<String, String> files = engine.preview(config, req.getPreviewTable());
-        return ApiResult.ok(files);
+        try {
+            Map<String, String> files = engine.preview(config, req.getPreviewTable());
+            return ApiResult.ok(files);
+        } catch (Exception e) {
+            log.warn("代码预览失败: {}", e.getMessage());
+            return ApiResult.fail(ResultCode.BAD_REQUEST.getCode(), "代码预览失败: " + e.getMessage());
+        }
     }
 
     /**
