@@ -94,6 +94,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
             LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.in(Menu::getMenuType, (byte) 0, (byte) 1)
                     .eq(Menu::getStatus, (byte) 1)
+                    .eq(Menu::getVisible, (byte) 1)
                     .orderByAsc(Menu::getSortOrder);
             menuList = this.list(queryWrapper);
         } else {

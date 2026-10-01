@@ -110,6 +110,12 @@ const [Modal, modalApi] = useVbenModal({
       return false;
     }
     const submitData = { ...formData.value };
+    // 清洗：删 children/name（后端 DTO 不要），visible 布尔转 0/1
+    delete submitData.children;
+    delete submitData.name;
+    if (typeof submitData.visible === 'boolean') {
+      submitData.visible = submitData.visible ? 1 : 0;
+    }
     if (mode.value === 'add') {
       await createMenu(submitData);
       message.success('新增成功');

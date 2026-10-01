@@ -11,6 +11,7 @@
         WHERE ur.user_id = #{userId}
           AND m.menu_type IN (0, 1)
           AND m.status = 1
+          AND m.visible = 1
           AND m.delete_flag = 0
         ORDER BY m.sort_order ASC
     </select>
