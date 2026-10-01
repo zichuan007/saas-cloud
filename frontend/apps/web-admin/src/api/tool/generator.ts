@@ -1,7 +1,10 @@
-import {requestClient} from '#/api/request';
+import {baseRequestClient, requestClient} from '#/api/request';
 
 export interface ConnectRequest {
-  jdbcUrl: string;
+  dbType: string;
+  host: string;
+  port: string;
+  dbName: string;
   username: string;
   password: string;
 }
@@ -15,8 +18,8 @@ export interface GenerateRequest extends ConnectRequest {
 }
 
 export interface TableInfo {
-  TABLE_NAME: string;
-  TABLE_COMMENT: string;
+  name: string;
+  comment: string;
 }
 
 export function connectDatabase(data: ConnectRequest) {
@@ -28,7 +31,8 @@ export function previewCode(data: GenerateRequest) {
 }
 
 export function downloadCode(data: GenerateRequest) {
-  return requestClient.post('/generator/download', data, {
+  // 用 baseRequestClient 跳过响应拦截器（download 返回原始 zip blob，不是 {code,data} JSON）
+  return baseRequestClient.post('/generator/download', data, {
     responseType: 'blob',
   });
 }

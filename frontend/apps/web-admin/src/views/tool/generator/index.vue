@@ -30,7 +30,10 @@ const loading = ref(false);
 
 // Step 1: 数据库连接
 const connectForm = ref({
-  jdbcUrl: 'jdbc:mysql://localhost:3306/demo?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai',
+  dbType: 'MYSQL',
+  host: 'localhost',
+  port: '3306',
+  dbName: 'rbac',
   username: 'root',
   password: '',
 });
@@ -50,12 +53,12 @@ const previewFiles = ref<Record<string, string>>({});
 const previewTableName = ref('');
 
 const tableColumns = [
-  { title: '表名', dataIndex: 'TABLE_NAME', key: 'TABLE_NAME' },
-  { title: '注释', dataIndex: 'TABLE_COMMENT', key: 'TABLE_COMMENT' },
+  { title: '表名', dataIndex: 'name', key: 'name' },
+  { title: '注释', dataIndex: 'comment', key: 'comment' },
 ];
 
 async function handleConnect() {
-  if (!connectForm.value.jdbcUrl || !connectForm.value.username) {
+  if (!connectForm.value.host || !connectForm.value.username) {
     message.warning('请填写连接信息');
     return;
   }
@@ -113,7 +116,9 @@ async function handleDownload() {
   loading.value = true;
   try {
     const res = await downloadCode(buildRequest());
-    const blob = new Blob([res as any], { type: 'application/octet-stream' });
+    // baseRequestClient 返回完整 AxiosResponse，data 才是 blob
+    const blobData = (res as any)?.data ?? res;
+    const blob = new Blob([blobData], { type: 'application/zip' });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -150,10 +155,32 @@ function handleBack(step: number) {
             :wrapper-col="{ span: 14 }"
             style="max-width: 600px; margin: 40px auto"
           >
-            <FormItem label="JDBC URL">
+            <FormItem label="数据库类型">
+              <select
+                v-model="connectForm.dbType"
+                style="width: 100%; height: 32px; border: 1px solid #d9d9d9; border-radius: 6px; padding: 0 8px"
+              >
+                <option value="MYSQL">MySQL</option>
+                <option value="POSTGRESQL">PostgreSQL</option>
+                <option value="ORACLE">Oracle</option>
+              </select>
+            </FormItem>
+            <FormItem label="主机地址">
               <Input
-                v-model:value="connectForm.jdbcUrl"
-                placeholder="jdbc:mysql://localhost:3306/demo?..."
+                v-model:value="connectForm.host"
+                placeholder="localhost"
+              />
+            </FormItem>
+            <FormItem label="端口">
+              <Input
+                v-model:value="connectForm.port"
+                placeholder="3306"
+              />
+            </FormItem>
+            <FormItem label="数据库名">
+              <Input
+                v-model:value="connectForm.dbName"
+                placeholder="rbac"
               />
             </FormItem>
             <FormItem label="用户名">
@@ -208,7 +235,7 @@ function handleBack(step: number) {
           <Table
             :columns="tableColumns"
             :data-source="tables"
-            :row-key="(r: any) => r.TABLE_NAME"
+            :row-key="(r: any) => r.name"
             :row-selection="{
               selectedRowKeys,
               onChange: (keys: any) => (selectedRowKeys = keys),
@@ -217,13 +244,13 @@ function handleBack(step: number) {
             size="small"
           >
             <template #bodyCell="{ column, record }">
-              <template v-if="column.key === 'TABLE_NAME'">
+              <template v-if="column.key === 'name'">
                 <Button
                   type="link"
                   size="small"
-                  @click="handlePreview(record.TABLE_NAME)"
+                  @click="handlePreview(record.name)"
                 >
-                  {{ record.TABLE_NAME }}
+                  {{ record.name }}
                 </Button>
               </template>
             </template>

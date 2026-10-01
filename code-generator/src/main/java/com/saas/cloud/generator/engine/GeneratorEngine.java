@@ -16,6 +16,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -116,14 +117,14 @@ public class GeneratorEngine {
         String database = extractDatabase(config.getJdbcUrl());
 
         try (Connection conn = DriverManager.getConnection(config.getJdbcUrl(), config.getUsername(), config.getPassword())) {
-            DatabaseMetaData metaData = conn.getMetaData();
-            List<String> tableNames = listTableNames(metaData, database, config);
+            // 不用 DatabaseMetaData（REMARKS 字段有 MySQL JDBC 编码 bug），直接查 information_schema
+            List<String> tableNames = listTableNamesFromSchema(conn, database, config);
 
             for (String tableName : tableNames) {
-                Set<String> pkColumns = readPrimaryKeys(metaData, database, tableName);
-                List<FieldMeta> allFields = readFields(metaData, database, tableName, pkColumns);
+                Set<String> pkColumns = readPrimaryKeys(conn, database, tableName);
+                List<FieldMeta> allFields = readFieldsFromSchema(conn, database, tableName, pkColumns);
                 String entityName = tableToEntityName(tableName, config.getTablePrefix());
-                String comment = readTableComment(metaData, database, tableName);
+                String comment = readTableCommentFromSchema(conn, database, tableName);
 
                 TableMeta table = new TableMeta();
                 table.setTableName(tableName);
@@ -220,9 +221,11 @@ public class GeneratorEngine {
         List<Map<String, String>> result = new ArrayList<>();
         String database = extractDatabase(config.getJdbcUrl());
 
-        try (Connection conn = DriverManager.getConnection(config.getJdbcUrl(), config.getUsername(), config.getPassword())) {
-            DatabaseMetaData metaData = conn.getMetaData();
-            ResultSet rs = metaData.getTables(database, null, null, new String[]{"TABLE"});
+        try (Connection conn = DriverManager.getConnection(config.getJdbcUrl(), config.getUsername(), config.getPassword());
+             PreparedStatement ps = conn.prepareStatement(
+                     "SELECT TABLE_NAME, TABLE_COMMENT FROM information_schema.tables WHERE TABLE_SCHEMA = ? AND TABLE_TYPE = 'BASE TABLE'")) {
+            ps.setString(1, database);
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 String name = rs.getString("TABLE_NAME");
                 if (isSystemTable(name)) {
@@ -230,7 +233,7 @@ public class GeneratorEngine {
                 }
                 Map<String, String> info = new LinkedHashMap<>();
                 info.put("name", name);
-                String comment = rs.getString("REMARKS");
+                String comment = rs.getString("TABLE_COMMENT");
                 info.put("comment", comment != null && !comment.isEmpty() ? comment : name);
                 result.add(info);
             }
@@ -309,71 +312,90 @@ public class GeneratorEngine {
 
     // ======================== 数据库元数据读取 ========================
 
-    private List<String> listTableNames(DatabaseMetaData metaData, String database, GeneratorConfig config) throws SQLException {
+    private List<String> listTableNamesFromSchema(Connection conn, String database, GeneratorConfig config) throws SQLException {
         List<String> names = new ArrayList<>();
-        ResultSet rs = metaData.getTables(database, null, null, new String[]{"TABLE"});
-        while (rs.next()) {
-            String name = rs.getString("TABLE_NAME");
-            if (isSystemTable(name)) {
-                continue;
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT TABLE_NAME FROM information_schema.tables WHERE TABLE_SCHEMA = ? AND TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME")) {
+            ps.setString(1, database);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String name = rs.getString("TABLE_NAME");
+                if (isSystemTable(name)) {
+                    continue;
+                }
+                if (!config.getExcludeTables().isEmpty() && config.getExcludeTables().contains(name)) {
+                    continue;
+                }
+                if (!config.getIncludeTables().isEmpty() && !config.getIncludeTables().contains(name)) {
+                    continue;
+                }
+                names.add(name);
             }
-            if (!config.getExcludeTables().isEmpty() && config.getExcludeTables().contains(name)) {
-                continue;
-            }
-            if (!config.getIncludeTables().isEmpty() && !config.getIncludeTables().contains(name)) {
-                continue;
-            }
-            names.add(name);
         }
         return names;
     }
 
-    private List<FieldMeta> readFields(DatabaseMetaData metaData, String database, String tableName, Set<String> pkColumns) throws SQLException {
+    private List<FieldMeta> readFieldsFromSchema(Connection conn, String database, String tableName, Set<String> pkColumns) throws SQLException {
         List<FieldMeta> fields = new ArrayList<>();
-        ResultSet rs = metaData.getColumns(database, null, tableName, null);
-        while (rs.next()) {
-            String columnName = rs.getString("COLUMN_NAME");
-            String typeName = rs.getString("TYPE_NAME").toLowerCase().split("\\s")[0];
-            String comment = rs.getString("REMARKS");
-            if (comment == null || comment.isEmpty()) {
-                comment = columnName;
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_TYPE, COLUMN_COMMENT, IS_NULLABLE, CHARACTER_MAXIMUM_LENGTH FROM information_schema.columns WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? ORDER BY ORDINAL_POSITION")) {
+            ps.setString(1, database);
+            ps.setString(2, tableName);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String columnName = rs.getString("COLUMN_NAME");
+                String typeName = rs.getString("DATA_TYPE").toLowerCase().split("\\s")[0];
+                String comment = rs.getString("COLUMN_COMMENT");
+                if (comment == null || comment.isEmpty()) {
+                    comment = columnName;
+                }
+
+                String javaType = TYPE_MAP.getOrDefault(typeName, "String");
+                String propertyName = columnToProperty(columnName);
+                String simpleType = javaType.contains(".") ? javaType.substring(javaType.lastIndexOf(".") + 1) : javaType;
+
+                FieldMeta field = new FieldMeta();
+                field.setColumnName(columnName);
+                field.setPropertyName(propertyName);
+                field.setCapitalizedName(Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1));
+                field.setFullType(javaType);
+                field.setPropertyType(simpleType);
+                field.setComment(comment);
+                field.setPrimaryKey(pkColumns.contains(columnName));
+                field.setColumnType(rs.getString("COLUMN_TYPE"));
+                field.setNullable("YES".equalsIgnoreCase(rs.getString("IS_NULLABLE")));
+                field.setLength(rs.getObject("CHARACTER_MAXIMUM_LENGTH") != null ? rs.getInt("CHARACTER_MAXIMUM_LENGTH") : 0);
+                fields.add(field);
             }
-
-            String javaType = TYPE_MAP.getOrDefault(typeName, "String");
-            String propertyName = columnToProperty(columnName);
-            String simpleType = javaType.contains(".") ? javaType.substring(javaType.lastIndexOf(".") + 1) : javaType;
-
-            FieldMeta field = new FieldMeta();
-            field.setColumnName(columnName);
-            field.setPropertyName(propertyName);
-            field.setCapitalizedName(Character.toUpperCase(propertyName.charAt(0)) + propertyName.substring(1));
-            field.setFullType(javaType);
-            field.setPropertyType(simpleType);
-            field.setComment(comment);
-            field.setPrimaryKey(pkColumns.contains(columnName));
-            field.setColumnType(rs.getString("TYPE_NAME"));
-            field.setNullable("YES".equalsIgnoreCase(rs.getString("IS_NULLABLE")));
-            field.setLength(rs.getInt("COLUMN_SIZE"));
-            fields.add(field);
         }
         return fields;
     }
 
-    private Set<String> readPrimaryKeys(DatabaseMetaData metaData, String database, String tableName) throws SQLException {
+    private Set<String> readPrimaryKeys(Connection conn, String database, String tableName) throws SQLException {
         Set<String> pks = new HashSet<>();
-        ResultSet rs = metaData.getPrimaryKeys(database, null, tableName);
-        while (rs.next()) {
-            pks.add(rs.getString("COLUMN_NAME"));
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT COLUMN_NAME FROM information_schema.key_column_usage WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ? AND CONSTRAINT_NAME = 'PRIMARY'")) {
+            ps.setString(1, database);
+            ps.setString(2, tableName);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                pks.add(rs.getString("COLUMN_NAME"));
+            }
         }
         return pks;
     }
 
-    private String readTableComment(DatabaseMetaData metaData, String database, String tableName) throws SQLException {
-        ResultSet rs = metaData.getTables(database, null, tableName, new String[]{"TABLE"});
-        if (rs.next()) {
-            String comment = rs.getString("REMARKS");
-            if (comment != null && !comment.isEmpty()) {
-                return comment;
+    private String readTableCommentFromSchema(Connection conn, String database, String tableName) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT TABLE_COMMENT FROM information_schema.tables WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?")) {
+            ps.setString(1, database);
+            ps.setString(2, tableName);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String comment = rs.getString("TABLE_COMMENT");
+                if (comment != null && !comment.isEmpty()) {
+                    return comment;
+                }
             }
         }
         return tableName;

@@ -4,29 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 代码生成请求
+ * <p>继承 ConnectRequest，复用连接参数，后端统一拼 JDBC URL</p>
  *
  * @author saas-cloud
  * @version V1.0
  * @since 2026-05-18
  */
 @Data
-public class GenerateRequest {
-
-    /** JDBC 连接地址 */
-    @NotBlank(message = "JDBC 连接地址不能为空")
-    private String jdbcUrl;
-
-    /** 数据库用户名 */
-    @NotBlank(message = "用户名不能为空")
-    private String username;
-
-    /** 数据库密码 */
-    @NotBlank(message = "密码不能为空")
-    private String password;
+@EqualsAndHashCode(callSuper = true)
+public class GenerateRequest extends ConnectRequest {
 
     /** 生成代码的根包名 */
     @NotBlank(message = "包名不能为空")

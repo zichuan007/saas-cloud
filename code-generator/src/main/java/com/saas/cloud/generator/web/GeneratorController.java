@@ -41,7 +41,7 @@ public class GeneratorController {
     @PostMapping("/connect")
     public ApiResult<List<Map<String, String>>> connect(@Valid @RequestBody ConnectRequest req) {
         GeneratorConfig config = new GeneratorConfig();
-        config.setJdbcUrl(req.getJdbcUrl());
+        config.setJdbcUrl(req.buildJdbcUrl());
         config.setUsername(req.getUsername());
         config.setPassword(req.getPassword());
 
@@ -97,7 +97,7 @@ public class GeneratorController {
 
     private GeneratorConfig toConfig(GenerateRequest req) {
         GeneratorConfig config = new GeneratorConfig();
-        config.setJdbcUrl(req.getJdbcUrl());
+        config.setJdbcUrl(req.buildJdbcUrl());
         config.setUsername(req.getUsername());
         config.setPassword(req.getPassword());
         config.setPackageName(req.getPackageName());
